@@ -1,0 +1,6 @@
+@AndalusiaApp_HostAddress = http://localhost:5082
+
+GET {{AndalusiaApp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
