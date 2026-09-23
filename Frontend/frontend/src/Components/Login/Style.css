@@ -1,0 +1,47 @@
+.login_form_component {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.login_form_component h2 {
+  font-size: 30px;
+}
+.login_intro h3 {
+  font-size: 18px;
+}
+.login_intro p {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.login_form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.login_password_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.login_password_row a,
+.login_footer a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-light);
+  text-decoration: none;
+}
+.login_password_row a:hover,
+.login_footer a:hover {
+  text-decoration: underline;
+}
+.login_footer {
+  font-size: 13px;
+  text-align: center;
+  color: var(--muted);
+}
+@media (max-width: 480px) {
+  .login_roles button {
+    font-size: 11.5px;
+  }
+}
