@@ -1,0 +1,226 @@
+.career-path {
+  padding: 80px 0;
+  background-color: #fff;
+  border-bottom: 1px solid var(--color-warm-border);
+}
+
+.career-path_head {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 48px;
+}
+
+@media (min-width: 768px) {
+  .career-path_head {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+
+.career-path_title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.career-path_intro {
+  font-size: 14px;
+  color: var(--color-slate-700);
+  max-width: 420px;
+}
+
+.career-path_panel {
+  background-color: var(--color-surface-low);
+  border: 1px solid var(--color-warm-border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+@media (min-width: 640px) {
+  .career-path_panel {
+    padding: 32px;
+  }
+}
+
+.career-path_panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-warm-border);
+  margin-bottom: 32px;
+}
+
+.career-path_pathway {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.career-path_pathway > span:first-child {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.career-path_pathway-badge {
+  padding: 4px 12px;
+  border-radius: 6px;
+  background-color: var(--color-slate-800);
+  color: #fff;
+  font-weight: 700;
+}
+
+.career-path_switcher {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.career-path_switcher button {
+  padding: 4px 12px;
+  border-radius: 6px;
+  background-color: #fff;
+  border: 1px solid var(--color-warm-border);
+  color: var(--color-slate-800);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.career-path_steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .career-path_steps {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.career-path_step {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--color-warm-border);
+  transition: border-color 0.2s;
+}
+
+.career-path_step:hover {
+  border-color: var(--color-primary);
+}
+
+.career-path_step--highlight {
+  background-color: rgba(184, 93, 59, 0.05);
+  border: 2px solid var(--color-primary);
+}
+
+.career-path_step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-primary-surface);
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.career-path_step--highlight .career-path_step-number {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.career-path_step-phase {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+.career-path_step--highlight .career-path_step-phase {
+  color: var(--color-primary);
+}
+
+.career-path_step h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.career-path_step p {
+  font-size: 12px;
+  color: var(--color-slate-700);
+  margin-top: 8px;
+}
+
+.career-path_step-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-warm-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.career-path_step--highlight .career-path_step-footer {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.career-path_cta {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+}
+
+@media (min-width: 640px) {
+  .career-path_cta {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.career-path_cta-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.career-path_cta-icon {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: #fffbeb;
+  color: var(--color-amber-accent);
+}
+
+.career-path_cta-left p {
+  font-size: 12px;
+  color: var(--color-slate-800);
+}
+
+.career-path_cta > a {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
