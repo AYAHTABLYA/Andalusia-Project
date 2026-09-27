@@ -31,7 +31,12 @@ function LoginContainer() {
     <AuthLayoutComponent
       title="Excellence in clinical, digital, and leadership education"
       text="One portal for students, mentors, coordinators, and administrators. Sign in and we take you to the right workspace."
-      headerAction={<Link to="/register">Create account</Link>}
+      headerAction={
+        <Link to="/" className="auth_back_link">
+          <span className="material-symbols-outlined">arrow_back</span>
+          Back to Main Platform
+        </Link>
+      }
     >
       <LoginComponent
         role={role}

@@ -54,7 +54,15 @@ function RegisterContainer() {
     <AuthLayoutComponent
       title="Begin your executive learning journey in Alexandria"
       text="Join certified in-person cohorts, executive masterclasses, and hands-on lab diplomas for medical leaders and enterprise practitioners."
-      headerAction={<Link to="/login">Sign in</Link>}
+      headerAction={
+        <span className="auth_header_pill">
+          Already registered?
+          <Link to="/login" className="auth_header_pill-btn">
+            Sign In
+            <span className="material-symbols-outlined">arrow_forward</span>
+          </Link>
+        </span>
+      }
     >
       <RegisterComponent
         status={status}

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { PILLARS } from "./constants";
-import "./style.css";
+import "./Style.css";
 
 function AuthLayoutComponent({
   title,

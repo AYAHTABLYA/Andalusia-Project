@@ -1,21 +1,21 @@
 import RegisterContainer from "./Components/Register/RegisterContainer";
+import Home from "./Components/Home/Home";
 import LoginContainer from "./Components/Login/LoginContainer";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import LandingPage from "./Components/Landing/LandingPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginContainer />} />
-        <Route path="/register" element={<RegisterContainer />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
+    <div className="container">
+      <Router>
+        <Routes>
+          <Route path="/register" element={<RegisterContainer />} />
+          <Route path="/login" element={<LoginContainer />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/starter" element={<Home />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
