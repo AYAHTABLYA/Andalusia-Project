@@ -16,4 +16,5 @@ public class Program
     public Category Category { get; set; } = null!;
     public CareerPath? CareerPath { get; set; }
     public ICollection<ProgramCourse> ProgramCourses { get; set; } = new List<ProgramCourse>();
+    public ICollection<ProgramPartner> ProgramPartners { get; set; } = new List<ProgramPartner>();
 }

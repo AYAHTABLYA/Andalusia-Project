@@ -16,4 +16,5 @@ public class Course
 
     public Category Category { get; set; } = null!;
     public ICollection<ProgramCourse> ProgramCourses { get; set; } = new List<ProgramCourse>();
+    public ICollection<Testimonial> Testimonials { get; set; } = new List<Testimonial>();
 }

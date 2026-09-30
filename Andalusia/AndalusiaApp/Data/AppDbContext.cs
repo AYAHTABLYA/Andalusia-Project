@@ -6,7 +6,7 @@ namespace AndalusiaApp.Data
 {
     public class AppDbContext : DbContext
     {
- 
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users => Set<User>();
@@ -40,6 +40,7 @@ namespace AndalusiaApp.Data
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<ContactEnquiry> ContactEnquiries => Set<ContactEnquiry>();
         public DbSet<Partner> Partners => Set<Partner>();
+        public DbSet<ProgramPartner> ProgramPartners => Set<ProgramPartner>();
         public DbSet<Testimonial> Testimonials => Set<Testimonial>();
         public DbSet<Faq> Faqs => Set<Faq>();
         public DbSet<ContentPage> ContentPages => Set<ContentPage>();
@@ -395,6 +396,8 @@ namespace AndalusiaApp.Data
                 e.Property(x => x.MobileNumber).HasMaxLength(20);
                 e.Property(x => x.SubjectType).HasMaxLength(50);
                 e.Property(x => x.Status).HasMaxLength(50);
+                e.HasOne(x => x.User).WithMany(u => u.SubmittedEnquiries).HasForeignKey(x => x.UserId);
+                e.HasOne(x => x.HandledByUser).WithMany(u => u.HandledEnquiries).HasForeignKey(x => x.HandledBy);
             });
 
             b.Entity<Partner>(e =>
@@ -407,6 +410,15 @@ namespace AndalusiaApp.Data
                 e.Property(x => x.Type).HasMaxLength(50);
             });
 
+            b.Entity<ProgramPartner>(e =>
+            {
+                e.ToTable("PROGRAM_PARTNERS");
+                e.HasKey(x => new { x.ProgramId, x.PartnerId });
+                e.Property(x => x.AccreditationDetails).HasMaxLength(500);
+                e.HasOne(x => x.Program).WithMany(p => p.ProgramPartners).HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Cascade);
+                e.HasOne(x => x.Partner).WithMany(p => p.ProgramPartners).HasForeignKey(x => x.PartnerId);
+            });
+
             b.Entity<Testimonial>(e =>
             {
                 e.ToTable("TESTIMONIALS");
@@ -414,6 +426,8 @@ namespace AndalusiaApp.Data
                 e.Property(x => x.ClientName).HasMaxLength(150);
                 e.Property(x => x.TitleOrRole).HasMaxLength(150);
                 e.Property(x => x.AvatarUrl).HasMaxLength(500);
+                e.HasOne(x => x.User).WithMany(u => u.Testimonials).HasForeignKey(x => x.UserId).IsRequired(false);
+                e.HasOne(x => x.Course).WithMany(c => c.Testimonials).HasForeignKey(x => x.CourseId).IsRequired(false);
             });
 
             b.Entity<Faq>(e =>
@@ -444,4 +458,3 @@ namespace AndalusiaApp.Data
 
 
 }
-

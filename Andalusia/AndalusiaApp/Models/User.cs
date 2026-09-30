@@ -16,4 +16,7 @@ public class User
 
     public Instructor? Instructor { get; set; }
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    public ICollection<Testimonial> Testimonials { get; set; } = new List<Testimonial>();
+    public ICollection<ContactEnquiry> SubmittedEnquiries { get; set; } = new List<ContactEnquiry>();
+    public ICollection<ContactEnquiry> HandledEnquiries { get; set; } = new List<ContactEnquiry>();
 }
