@@ -1,5 +1,5 @@
 import { memo } from "react";
-import type { Course } from "../../../types/Course";
+import type { Course } from "../../../Types/Course";
 import "./style.css";
 
 function FeaturedCoursesComponent({ courses }: { courses: Course[] }) {

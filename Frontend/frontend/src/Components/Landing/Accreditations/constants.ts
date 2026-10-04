@@ -1,4 +1,4 @@
-import type { Accreditation } from "../../../types/Accreditation";
+import type { Accreditation } from "../../../Types/Accreditation";
 
 const ACCREDITATIONS: Accreditation[] = [
   { id: 1, name: "CPD", label: "Standards UK" },

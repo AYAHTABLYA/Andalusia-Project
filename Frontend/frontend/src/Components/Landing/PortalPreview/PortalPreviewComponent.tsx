@@ -1,5 +1,5 @@
 import { memo } from "react";
-import type { PortalTab } from "../../../types/PortalTab";
+import type { PortalTab } from "../../../Types/PortalTab";
 import "./style.css";
 
 function PortalPreviewComponent({

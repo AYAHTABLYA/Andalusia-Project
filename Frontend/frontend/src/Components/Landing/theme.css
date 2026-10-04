@@ -1,25 +1,23 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
-
 .landing-page {
-  --color-primary: #b85d3b;
-  --color-primary-dark: #994525;
-  --color-primary-hover: #a04d2f;
-  --color-primary-light: #ffdbcf;
-  --color-primary-surface: #fbf4f1;
+  --color-primary: var(--brand-500);
+  --color-primary-dark: var(--brand-700);
+  --color-primary-hover: var(--brand-600);
+  --color-primary-light: var(--brand-100);
+  --color-primary-surface: var(--brand-50);
 
   --color-slate-700: #334155;
   --color-slate-800: #1e293b;
   --color-slate-900: #0f172a;
   --color-slate-950: #080d1a;
 
-  --color-warm-canvas: #f9f9f7;
-  --color-surface-low: #f4f4f2;
+  --color-warm-canvas: var(--canvas);
+  --color-surface-low: var(--surface-low);
   --color-surface-lowest: #ffffff;
-  --color-amber-accent: #b46100;
-  --color-warm-border: #e2e8f0;
+  --color-amber-accent: var(--amber);
+  --color-warm-border: var(--line);
 
-  --font-serif: "Cinzel", Georgia, serif;
-  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-display);
+  --font-sans: var(--font-body);
 
   --shadow-elevated: 0 10px 30px -5px rgba(30, 41, 59, 0.06),
     0 4px 6px -2px rgba(30, 41, 59, 0.03);
@@ -128,3 +126,28 @@
   border: 1px solid var(--color-warm-border);
   border-radius: 16px;
 }
+
+/* ================= Advanced layer ================= */
+.landing-page { scroll-behavior: smooth; }
+.landing-page .btn-primary { position: relative; overflow: hidden; background-image: var(--grad-brand); border: 0; transition: transform .25s var(--ease), box-shadow .25s ease; }
+.landing-page .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 24px 40px -14px rgba(184, 93, 59, .55); }
+.landing-page .btn-primary::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); transform: skewX(-18deg); }
+.landing-page .btn-primary:hover::after { animation: ds-shine .8s ease; }
+.landing-page .btn-outline { transition: transform .25s var(--ease), border-color .2s, box-shadow .25s; }
+.landing-page .btn-outline:hover { transform: translateY(-2px); border-color: var(--brand-500); box-shadow: var(--shadow-md); }
+.landing-page .card { box-shadow: var(--shadow-sm); transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .3s; }
+.landing-page .eyebrow { display: inline-flex; align-items: center; gap: 8px; }
+
+/* Hero: gradient headline accent + glass cards */
+.landing-page .hero_title-accent { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.landing-page .hero_session-card, .landing-page .hero_finder { backdrop-filter: blur(12px); background: rgba(255, 255, 255, .88); box-shadow: var(--shadow-lg); }
+.landing-page .hero_session-card { animation: ds-float 14s ease-in-out infinite; }
+.landing-page .hero_content > * { animation: ds-rise .7s var(--ease) both; }
+.landing-page .hero_content > *:nth-child(2) { animation-delay: .08s; }
+.landing-page .hero_content > *:nth-child(3) { animation-delay: .16s; }
+.landing-page .hero_content > *:nth-child(4) { animation-delay: .24s; }
+.landing-page .hero_content > *:nth-child(5) { animation-delay: .32s; }
+
+/* Cards lift with a brand glow */
+.landing-page .course-card:hover, .landing-page .card:hover { transform: translateY(-6px); border-color: rgba(184, 93, 59, .4); box-shadow: 0 30px 50px -26px rgba(184, 93, 59, .45), var(--shadow-md); }
+.landing-page .course-card { transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .3s; }

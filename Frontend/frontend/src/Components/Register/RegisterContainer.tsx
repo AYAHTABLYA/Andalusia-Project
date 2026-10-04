@@ -3,12 +3,12 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import RegisterComponent from "./RegisterComponent";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
-import type { registerFormType } from "../../Types/registerFormType";
+import type { RegisterFormValues } from "../../Types/registerFormType";
 import type { SubmitStatus } from "../../Types/SubmitStatus";
 
 function RegisterContainer() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
-  const [formData, setFormData] = useState<registerFormType>({
+  const [formData, setFormData] = useState<RegisterFormValues>({
     firstName: "",
     lastName: "",
     email: "",

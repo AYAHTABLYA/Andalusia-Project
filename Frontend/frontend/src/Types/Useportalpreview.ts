@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { PortalTab } from "../types/PortalTab";
+import type { PortalTab } from "../Types/PortalTab";
 
 function usePortalPreview() {
   const [activeTab, setActiveTab] = useState<PortalTab>("student");

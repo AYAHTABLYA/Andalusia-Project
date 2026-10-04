@@ -1,5 +1,5 @@
 import { memo } from "react";
-import type { Accreditation } from "../../../types/Accreditation";
+import type { Accreditation } from "../../../Types/Accreditation";
 import "./style.css";
 
 function AccreditationsComponent({

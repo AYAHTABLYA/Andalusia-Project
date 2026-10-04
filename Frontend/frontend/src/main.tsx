@@ -1,3 +1,4 @@
+import "./styles/design-system.css";
 import { createRoot } from "react-dom/client";
 import "material-symbols/outlined.css";
 import App from "./App.tsx";

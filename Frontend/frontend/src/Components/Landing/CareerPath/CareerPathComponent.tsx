@@ -1,5 +1,5 @@
 import { memo } from "react";
-import type { CareerStep } from "../../../types/CareerStep";
+import type { CareerStep } from "../../../Types/CareerStep";
 import "./style.css";
 
 function CareerPathComponent({ steps }: { steps: CareerStep[] }) {

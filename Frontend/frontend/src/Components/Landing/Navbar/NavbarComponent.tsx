@@ -32,11 +32,11 @@ function NavbarComponent() {
         </div>
 
         <nav className="navbar_links">
-          <a href="#programs-section">Programs</a>
-          <a href="#offline-cohorts">
+          <Link to="/programs">Programs</Link>
+          <Link to="/courses">
             Offline Courses <span className="navbar_pill">Alex Campus</span>
-          </a>
-          <a href="#career-tracks">Career Paths</a>
+          </Link>
+          <Link to="/career-paths">Career Paths</Link>
           <a href="#enterprise-section">For Business</a>
           <a href="#accreditations">Accreditations</a>
           <a href="#portal-preview-section">Campus Portals</a>

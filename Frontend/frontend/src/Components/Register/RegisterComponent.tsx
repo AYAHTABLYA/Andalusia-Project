@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
-import type { registerFormType } from "../../Types/registerFormType";
+import type { RegisterFormValues } from "../../Types/registerFormType";
 
 import type { SubmitStatus } from "../../Types/SubmitStatus";
 import { CAMPUSES, PHONE_CODES} from "./constants";
@@ -22,7 +22,7 @@ function RegisterComponent({
   status: SubmitStatus;
   rules: { label: string; ok: boolean }[];
   canSubmit: boolean;
-  formData: registerFormType;
+  formData: RegisterFormValues;
   handleChange: ChangeHandler;
   handleSubmit: (e: FormEvent) => void;
 }) {

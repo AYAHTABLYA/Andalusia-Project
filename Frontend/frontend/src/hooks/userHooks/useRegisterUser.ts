@@ -1,4 +1,4 @@
-import type { registerFormType } from "../../types/registerFormType.ts";
+import type { registerFormType } from "../../Types/registerFormType.ts";
 import { HTTPS_STATUS_OKAY } from "./constants.ts";
 import axios from "../../apis/axios.ts";
 import urls from "../../apis/urls.json";

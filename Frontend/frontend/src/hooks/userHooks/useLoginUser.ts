@@ -1,4 +1,4 @@
-import type { loginFormType } from "../../types/loginFormType.ts";
+import type { loginFormType } from "../../Types/loginFormType.ts";
 import { HTTPS_STATUS_OKAY } from "./constants.ts";
 import axios from "../../apis/axios.ts";
 import urls from "../../apis/urls.json";

@@ -1,4 +1,4 @@
-import type { CareerStep } from "../../../types/CareerStep";
+import type { CareerStep } from "../../../Types/CareerStep";
 
 const CAREER_STEPS: CareerStep[] = [
   {
