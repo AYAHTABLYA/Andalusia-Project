@@ -1,13 +1,16 @@
-using System.Text.Json.Serialization;
-using AndalusiaApp.Data;
-using Microsoft.EntityFrameworkCore;
 using Andalusia.Domain.Contracts;
-using Andalusia.Persistance.Repositories;
 using Andalusia.Persistance.Data.DataSeed;
+using Andalusia.Persistance.Repositories;
+using AndalusiaApp.Data;
+using AndalusiaApp.Services;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ==========================================
-// 1. Database
+// 1. Database Configuration
 // ==========================================
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? throw new InvalidOperationException("Connection string 'Default' was not found.");
@@ -22,10 +25,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         options.EnableSensitiveDataLogging();
     }
 });
+
+// ==========================================
+// 2. Dependency Injection (Services & Repositories)
+// ==========================================
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDataInitializer, DataInitializer>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+
 // ==========================================
-// 2. Controllers & JSON
+// 3. Controllers & JSON Serializer
 // ==========================================
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -37,9 +46,10 @@ builder.Services.AddControllers()
 builder.Services.AddProblemDetails();
 
 // ==========================================
-// 3. OpenAPI & CORS
+// 4. OpenAPI & CORS
 // ==========================================
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?? ["http://localhost:5173", "http://localhost:3000"];
@@ -54,14 +64,27 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// ==========================================
+// 5. Database Initialization (Data Seeding)
+// ==========================================
 using (var scope = app.Services.CreateScope())
 {
-    var initializer = scope.ServiceProvider.GetRequiredService<IDataInitializer>();
-    await initializer.InitializeAsync();
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        var initializer = services.GetRequiredService<IDataInitializer>();
+        await initializer.InitializeAsync();
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
 }
 
 // ==========================================
-// 4. Middleware Pipeline
+// 6. Middleware Pipeline
 // ==========================================
 if (app.Environment.IsDevelopment())
 {
@@ -69,7 +92,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler();  
+    app.UseExceptionHandler();
     app.UseHsts();
 }
 

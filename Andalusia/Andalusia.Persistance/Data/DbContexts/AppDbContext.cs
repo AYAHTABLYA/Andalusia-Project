@@ -1,7 +1,8 @@
-﻿using System.Reflection;
+﻿using Andalusia.Domain.Models;
 using AndalusiaApp.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System.Reflection;
 
 namespace AndalusiaApp.Data
 {
@@ -43,6 +44,11 @@ namespace AndalusiaApp.Data
         public DbSet<Testimonial> Testimonials => Set<Testimonial>();
         public DbSet<Faq> Faqs => Set<Faq>();
         public DbSet<ContentPage> ContentPages => Set<ContentPage>();
+        public DbSet<Mentor> Mentors => Set<Mentor>();
+        public DbSet<CourseCohort> CourseCohorts => Set<CourseCohort>();
+        public DbSet<LearningOutcome> LearningOutcomes => Set<LearningOutcome>();
+        public DbSet<CourseBullet> CourseBullets => Set<CourseBullet>();
+        public DbSet<CourseApplication> CourseApplications => Set<CourseApplication>();
 
         protected override void OnModelCreating(ModelBuilder b)
         {

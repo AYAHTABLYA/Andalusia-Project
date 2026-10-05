@@ -13,6 +13,7 @@ public class Program
     public string Structure { get; set; } = "";
     public string Duration { get; set; } = "";
     public decimal Price { get; set; }
+    public string Slug { get; set; } = string.Empty;
     public ProgramStatus Status { get; set; } = ProgramStatus.Draft;
 
     public Category Category { get; set; } = null!;

@@ -2,27 +2,42 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace AndalusiaApp.Data.Configurations
+public class CourseConfiguration : IEntityTypeConfiguration<Course>
 {
-    public class CourseConfiguration : IEntityTypeConfiguration<Course>
+    public void Configure(EntityTypeBuilder<Course> builder)
     {
-        public void Configure(EntityTypeBuilder<Course> builder)
-        {
-            builder.ToTable("COURSES", t =>
-                t.HasCheckConstraint("CK_Courses_Status", "[Status] IN ('Draft','Upcoming','Active','Closed')"));
+        builder.ToTable("COURSES");
+        builder.HasKey(c => c.CourseId);
 
-            builder.HasKey(x => x.CourseId);
-            builder.Property(x => x.Title).HasMaxLength(200);
-            builder.Property(x => x.ShortDescription).HasMaxLength(500);
-            builder.Property(x => x.Duration).HasMaxLength(100);
-            builder.Property(x => x.Price).HasColumnType("decimal(18,2)");
-            builder.Property(x => x.Type).HasMaxLength(50);
-            builder.Property(x => x.Status)
-                   .HasConversion<string>()
-                   .HasMaxLength(50);
-            builder.Property(x => x.ImageUrl).HasMaxLength(500);
+        builder.Property(c => c.Slug).HasMaxLength(150).IsRequired();
+        builder.HasIndex(c => c.Slug).IsUnique();
 
-            builder.HasOne(x => x.Category).WithMany(c => c.Courses).HasForeignKey(x => x.CategoryId);
-        }
+        builder.Property(c => c.Title).HasMaxLength(250).IsRequired();
+        builder.Property(c => c.Description).HasMaxLength(2000);
+        builder.Property(c => c.Category).HasMaxLength(100);
+        builder.Property(c => c.DeliveryMode).HasMaxLength(100);
+        builder.Property(c => c.Hall).HasMaxLength(150);
+        builder.Property(c => c.DurationLabel).HasMaxLength(100);
+        builder.Property(c => c.Level).HasMaxLength(100);
+        builder.Property(c => c.Accreditation).HasMaxLength(150);
+        builder.Property(c => c.Tuition).HasPrecision(18, 2);
+        builder.Property(c => c.TuitionNote).HasMaxLength(500);
+
+        builder.HasOne(c => c.Mentor)
+               .WithMany(m => m.Courses)
+               .HasForeignKey(c => c.MentorId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(c => c.Program)
+               .WithMany()
+               .HasForeignKey(c => c.ProgramId)
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(c => c.CareerPath)
+               .WithMany()
+               .HasForeignKey(c => c.CareerPathId)
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
     }
 }
