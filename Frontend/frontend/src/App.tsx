@@ -23,11 +23,20 @@ function App() {
 
           <Route element={<AcademyLayout />}>
             <Route path="/career-paths" element={<CareerPathsContainer />} />
-            <Route path="/career-paths/fintech-cloud" element={<CareerPathDetailComponent />} />
+            <Route
+              path="/career-paths/fintech-cloud"
+              element={<CareerPathDetailComponent />}
+            />
             <Route path="/programs" element={<ProgramsContainer />} />
-            <Route path="/programs/digital-banking" element={<ProgramDetailComponent />} />
+            <Route
+              path="/programs/digital-banking"
+              element={<ProgramDetailComponent />}
+            />
             <Route path="/courses" element={<CoursesContainer />} />
-            <Route path="/courses/generative-ai-banking" element={<CourseDetailComponent />} />
+            <Route
+              path="/courses/generative-ai-banking"
+              element={<CourseDetailComponent />}
+            />
           </Route>
         </Routes>
       </Router>

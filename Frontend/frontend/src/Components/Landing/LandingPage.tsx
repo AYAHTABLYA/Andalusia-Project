@@ -1,4 +1,4 @@
-import TopBarComponent from "./TopBar/TopBarComponent";
+import TopBarComponent from "./TopBar/Topbarcomponent";
 import NavbarComponent from "./Navbar/NavbarComponent";
 import HeroComponent from "./Hero/HeroComponent";
 import CareerPathContainer from "./CareerPath/CareerPathContainer";

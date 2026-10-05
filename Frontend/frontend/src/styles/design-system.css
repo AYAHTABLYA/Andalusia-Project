@@ -6,30 +6,30 @@
    these tokens, so changing a colour here changes it everywhere.
    ===================================================================== */
 :root {
-  /* Brand (terracotta) */
-  --brand-50: #fbf4f1;
-  --brand-100: #ffdbcf;
-  --brand-300: #ffb59b;
-  --brand-400: #c76b48;
-  --brand-500: #b85d3b;
-  --brand-600: #a04d2f;
-  --brand-700: #994525;
-  --amber: #b46100;
+  /* Brand (rose-bronze, from the Andalusia Academy logo) */
+  --brand-50: #faf4f1;
+  --brand-100: #f2e3dc;
+  --brand-300: #e4c9bb;
+  --brand-400: #c2907b;
+  --brand-500: #b07963;
+  --brand-600: #99634f;
+  --brand-700: #7d4f3e;
+  --amber: #a0684a;
 
-  /* Ink (navy / slate) */
-  --ink-950: #080d1a;
-  --ink-900: #0f172a;
-  --ink-800: #1e293b;
-  --ink-700: #334155;
-  --muted: #64748b;
-  --faint: #94a3b8;
+  /* Ink (dark teal-charcoal) */
+  --ink-950: #141b1d;
+  --ink-900: #243033;
+  --ink-800: #334246;
+  --ink-700: #4a5a5e;
+  --muted: #6c7b7f;
+  --faint: #9aa6a9;
 
   /* Surfaces */
   --canvas: #f9f9f7;
   --surface-low: #f4f4f2;
   --surface-mid: #ecece8;
   --surface: #ffffff;
-  --line: #e2e8f0;
+  --line: #e5e7e7;
 
   /* Gradients */
   --grad-brand: linear-gradient(135deg, var(--brand-400), var(--brand-500) 55%, var(--brand-700));
@@ -37,11 +37,11 @@
   --grad-text: linear-gradient(100deg, var(--brand-700), var(--brand-400) 60%, var(--amber));
 
   /* Depth */
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 10px 30px -10px rgba(15, 23, 42, 0.12);
-  --shadow-lg: 0 28px 60px -24px rgba(15, 23, 42, 0.28);
-  --shadow-brand: 0 18px 36px -12px rgba(184, 93, 59, 0.38);
-  --ring: 0 0 0 4px rgba(184, 93, 59, 0.16);
+  --shadow-sm: 0 1px 2px rgba(36, 48, 51, 0.05);
+  --shadow-md: 0 10px 30px -10px rgba(36, 48, 51, 0.12);
+  --shadow-lg: 0 28px 60px -24px rgba(36, 48, 51, 0.28);
+  --shadow-brand: 0 18px 36px -12px rgba(176, 121, 99, 0.38);
+  --ring: 0 0 0 4px rgba(176, 121, 99, 0.16);
 
   /* Type */
   --font-display: "Cinzel", Georgia, serif;
@@ -59,10 +59,10 @@ body { margin: 0; background: var(--canvas); font-family: var(--font-body); }
 .ds-backdrop {
   background-color: var(--canvas);
   background-image:
-    radial-gradient(900px 420px at 6% -10%, rgba(184, 93, 59, 0.10), transparent 70%),
-    radial-gradient(760px 380px at 100% 0%, rgba(180, 97, 0, 0.07), transparent 70%),
-    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+    radial-gradient(900px 420px at 6% -10%, rgba(176, 121, 99, 0.10), transparent 70%),
+    radial-gradient(760px 380px at 100% 0%, rgba(160, 104, 74, 0.07), transparent 70%),
+    linear-gradient(rgba(36, 48, 51, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 48, 51, 0.035) 1px, transparent 1px);
   background-size: auto, auto, 44px 44px, 44px 44px;
 }
 

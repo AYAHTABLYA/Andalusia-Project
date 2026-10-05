@@ -5,10 +5,10 @@
   --color-primary-light: var(--brand-100);
   --color-primary-surface: var(--brand-50);
 
-  --color-slate-700: #334155;
-  --color-slate-800: #1e293b;
-  --color-slate-900: #0f172a;
-  --color-slate-950: #080d1a;
+  --color-slate-700: #4a5a5e;
+  --color-slate-800: #334246;
+  --color-slate-900: #243033;
+  --color-slate-950: #141b1d;
 
   --color-warm-canvas: var(--canvas);
   --color-surface-low: var(--surface-low);
@@ -19,9 +19,9 @@
   --font-serif: var(--font-display);
   --font-sans: var(--font-body);
 
-  --shadow-elevated: 0 10px 30px -5px rgba(30, 41, 59, 0.06),
-    0 4px 6px -2px rgba(30, 41, 59, 0.03);
-  --shadow-premium: 0 18px 36px -12px rgba(184, 93, 59, 0.22);
+  --shadow-elevated: 0 10px 30px -5px rgba(51, 66, 70, 0.06),
+    0 4px 6px -2px rgba(51, 66, 70, 0.03);
+  --shadow-premium: 0 18px 36px -12px rgba(176, 121, 99, 0.22);
 
   font-family: var(--font-sans);
   background-color: var(--color-warm-canvas);
@@ -130,7 +130,7 @@
 /* ================= Advanced layer ================= */
 .landing-page { scroll-behavior: smooth; }
 .landing-page .btn-primary { position: relative; overflow: hidden; background-image: var(--grad-brand); border: 0; transition: transform .25s var(--ease), box-shadow .25s ease; }
-.landing-page .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 24px 40px -14px rgba(184, 93, 59, .55); }
+.landing-page .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 24px 40px -14px rgba(176, 121, 99, .55); }
 .landing-page .btn-primary::after { content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); transform: skewX(-18deg); }
 .landing-page .btn-primary:hover::after { animation: ds-shine .8s ease; }
 .landing-page .btn-outline { transition: transform .25s var(--ease), border-color .2s, box-shadow .25s; }
@@ -149,5 +149,5 @@
 .landing-page .hero_content > *:nth-child(5) { animation-delay: .32s; }
 
 /* Cards lift with a brand glow */
-.landing-page .course-card:hover, .landing-page .card:hover { transform: translateY(-6px); border-color: rgba(184, 93, 59, .4); box-shadow: 0 30px 50px -26px rgba(184, 93, 59, .45), var(--shadow-md); }
+.landing-page .course-card:hover, .landing-page .card:hover { transform: translateY(-6px); border-color: rgba(176, 121, 99, .4); box-shadow: 0 30px 50px -26px rgba(176, 121, 99, .45), var(--shadow-md); }
 .landing-page .course-card { transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .3s; }

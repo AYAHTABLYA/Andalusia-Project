@@ -2,8 +2,9 @@
 .academy-navbar_inner { max-width: 80rem; margin: 0 auto; height: 4.25rem; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 
 .academy-navbar_brand { display: flex; align-items: center; gap: .75rem; }
-.academy-navbar_logo { width: 2.5rem; height: 2.5rem; border-radius: .75rem; display: flex; align-items: center; justify-content: center; color: #fff; background-image: linear-gradient(135deg, var(--color-primary-container), var(--color-primary)); box-shadow: 0 8px 18px -8px rgba(184, 93, 59, .7); transition: transform .25s ease; }
+.academy-navbar_logo { width: 2.5rem; height: 2.5rem; border-radius: .75rem; display: flex; align-items: center; justify-content: center; color: #fff; background-image: linear-gradient(135deg, var(--color-primary-container), var(--color-primary)); box-shadow: 0 8px 18px -8px rgba(176, 121, 99, .7); transition: transform .25s ease; }
 .academy-navbar_brand:hover .academy-navbar_logo { transform: rotate(-6deg) scale(1.06); }
+.academy-navbar_logo-img { display: block; height: 2.6rem; width: auto; }
 .academy-navbar_brand-text { display: flex; flex-direction: column; }
 .academy-navbar_brand-text strong { font-size: 1rem; font-weight: 800; letter-spacing: -.02em; line-height: 1; color: var(--color-primary); }
 .academy-navbar_brand-text small { margin-top: .2rem; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-on-surface-variant); }
@@ -11,8 +12,8 @@
 .academy-navbar_links { display: none; align-items: center; gap: .25rem; }
 .academy-navbar_link { position: relative; display: flex; align-items: center; gap: .4rem; padding: .5rem .8rem; border-radius: .6rem; font-size: .85rem; font-weight: 600; color: var(--color-on-surface-variant); transition: background-color .2s ease, color .2s ease; }
 .academy-navbar_link .material-symbols-outlined { font-size: 1.1rem; }
-.academy-navbar_link:hover { background-color: rgba(184, 93, 59, .08); color: var(--color-primary); }
-.academy-navbar_link--active { color: var(--color-primary); background-color: rgba(184, 93, 59, .1); }
+.academy-navbar_link:hover { background-color: rgba(176, 121, 99, .08); color: var(--color-primary); }
+.academy-navbar_link--active { color: var(--color-primary); background-color: rgba(176, 121, 99, .1); }
 .academy-navbar_link--active::after { content: ""; position: absolute; left: .8rem; right: .8rem; bottom: .2rem; height: 2px; border-radius: 2px; background-color: var(--color-primary); }
 .academy-navbar_badge { font-size: .65rem; font-weight: 800; padding: .1rem .4rem; border-radius: 9999px; color: #fff; background-color: var(--color-primary-container); }
 
@@ -22,12 +23,12 @@
 .academy-navbar_phone:hover { color: var(--color-primary); }
 .academy-navbar_portal { display: flex; align-items: center; gap: .4rem; padding: .5rem .9rem; border-radius: .6rem; font-size: .75rem; font-weight: 700; color: #fff; background-color: var(--color-on-surface); transition: transform .2s ease, box-shadow .2s ease; }
 .academy-navbar_portal .material-symbols-outlined { font-size: 1rem; }
-.academy-navbar_portal:hover { transform: translateY(-1px); box-shadow: 0 10px 20px -10px rgba(30, 41, 59, .7); }
+.academy-navbar_portal:hover { transform: translateY(-1px); box-shadow: 0 10px 20px -10px rgba(51, 66, 70, .7); }
 .academy-navbar_menu-btn { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: .6rem; border: 1px solid var(--color-outline-variant); background-color: #fff; color: var(--color-primary); }
 
 .academy-navbar_drawer { display: flex; flex-direction: column; gap: .25rem; padding: .75rem 1.5rem 1rem; border-top: 1px solid var(--color-outline-variant); animation: academy-rise .25s ease both; }
 .academy-navbar_drawer-link { display: flex; align-items: center; gap: .6rem; padding: .7rem .8rem; border-radius: .6rem; font-size: .9rem; font-weight: 600; color: var(--color-on-surface); }
-.academy-navbar_drawer-link:hover, .academy-navbar_drawer-link--active { background-color: rgba(184, 93, 59, .1); color: var(--color-primary); }
+.academy-navbar_drawer-link:hover, .academy-navbar_drawer-link--active { background-color: rgba(176, 121, 99, .1); color: var(--color-primary); }
 
 @media (min-width: 768px) {
   .academy-navbar_links { display: flex; }

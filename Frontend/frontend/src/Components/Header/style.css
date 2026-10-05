@@ -7,7 +7,7 @@
   padding: 12px clamp(16px, 4vw, 40px);
   margin: 0;
   background: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e5e7e7;
 }
 
 .header_brand {
@@ -25,9 +25,9 @@
     700 20px "Cinzel",
     Georgia,
     serif;
-  color: #b85d3b;
+  color: #b07963;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e5e7e7;
   border-radius: 8px;
 }
 
@@ -39,13 +39,13 @@
 
 .header_brand-text strong {
   font-size: 15px;
-  color: #1e293b;
+  color: #334246;
 }
 
 .header_brand-text small {
   font-family: "Cairo", "Segoe UI", sans-serif;
   font-size: 11px;
-  color: #c76b48;
+  color: #c2907b;
 }
 
 .header_side {
@@ -57,14 +57,14 @@
 .header_side h2 {
   font-size: 16px;
   font-weight: 600;
-  color: #1e293b;
+  color: #334246;
   margin: 0;
 }
 
 .header button {
   height: 40px;
   padding: 0 16px;
-  background-color: #b85d3b;
+  background-color: #b07963;
   color: white;
   border-width: 0px;
   border-radius: 8px;
@@ -74,7 +74,7 @@
 }
 
 .header button:hover {
-  background-color: #a04d2f;
+  background-color: #99634f;
 }
 /*
 .header_actions {
@@ -82,3 +82,5 @@
   justify-content: center;
 
 } */
+
+.header_logo-img { display: block; height: 40px; width: auto; }

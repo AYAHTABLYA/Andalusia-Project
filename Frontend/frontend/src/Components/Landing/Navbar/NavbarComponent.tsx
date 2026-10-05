@@ -1,3 +1,4 @@
+import logo from "../../../assets/andalusia-logo.png";
 import { Link } from "react-router-dom";
 import "./style.css";
 
@@ -6,11 +7,11 @@ function NavbarComponent() {
     <header className="navbar" data-purpose="site-navigation">
       <div className="navbar_inner">
         <Link className="navbar_brand" to="/">
-          <span className="navbar_logo">A</span>
-          <div className="navbar_brand-text">
-            <strong>Andalusia Academy</strong>
-            <small lang="ar">أكاديمية أندلسية</small>
-          </div>
+          <img
+            className="navbar_logo-img"
+            src={logo}
+            alt="Andalusia Academy"
+          />
         </Link>
 
         <div className="navbar_search">

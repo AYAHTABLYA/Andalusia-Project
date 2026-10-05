@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { PILLARS } from "./constants";
 import "./Style.css";
+import logo from "../../assets/andalusia-logo.png";
 
 function AuthLayoutComponent({
   title,
@@ -17,11 +18,7 @@ function AuthLayoutComponent({
     <div className="auth">
       <header className="auth_header">
         <div className="auth_brand">
-          <span className="auth_logo">A</span>
-          <div>
-            <strong>Andalusia Academy</strong>
-            <small lang="ar">أكاديمية أندلسية</small>
-          </div>
+          <img className="auth_logo-img" src={logo} alt="Andalusia Academy" />
         </div>
         <div className="auth_header_side">
           <span className="auth_phone">Support: +20 3 584-9020</span>

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&display=swap");
+
 .navbar {
   position: sticky;
   top: 0;
@@ -17,8 +19,11 @@
   justify-content: space-between;
   gap: 16px;
 }
-
-
+.navbar_logo-img {
+  display: block;
+  height: 46px;
+  width: auto;
+}
 .navbar_brand {
   display: flex;
   align-items: center;

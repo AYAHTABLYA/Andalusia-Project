@@ -5,10 +5,8 @@ import LoginComponent from "./LoginComponent";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
 import type { loginFormType } from "../../Types/LoginFormType";
 import type { SubmitStatus } from "../../Types/SubmitStatus";
-import { ROLES } from "./constants";
 
 function LoginContainer() {
-  const [role, setRole] = useState<string>(ROLES[0].key);
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [formData, setFormData] = useState<loginFormType>({
     email: "",
@@ -39,8 +37,6 @@ function LoginContainer() {
       }
     >
       <LoginComponent
-        role={role}
-        setRole={setRole}
         status={status}
         formData={formData}
         handleChange={handleChange}

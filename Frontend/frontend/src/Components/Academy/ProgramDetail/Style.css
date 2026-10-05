@@ -1,0 +1,210 @@
+.program-detail_box-1 > * + * {
+  margin-top: 2rem;
+}
+
+.program-detail_box-2 {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 2rem;
+  align-items: flex-start;
+}
+@media (min-width: 1024px) {
+  .program-detail_box-2 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+.program-detail_box-3 > * + * {
+  margin-top: 1.5rem;
+}
+@media (min-width: 1024px) {
+  .program-detail_box-3 {
+    grid-column: span 8 / span 8;
+  }
+}
+
+.program-detail_box-4 {
+  background-color: var(--color-surface-bright);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--color-outline-variant);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.program-detail_box-4 > * + * {
+  margin-top: 1rem;
+}
+@media (min-width: 768px) {
+  .program-detail_box-4 {
+    padding: 2rem;
+  }
+}
+
+.program-detail_box-5 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.program-detail_text-1 {
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 700;
+  background-color: #f6ebe6;
+  color: #5a3427;
+}
+
+.program-detail_text-2 {
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  background-color: var(--color-surface-container);
+  color: var(--color-on-surface-variant);
+}
+
+.program-detail_title-1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 800;
+}
+@media (min-width: 768px) {
+  .program-detail_title-1 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+.program-detail_text-3 {
+  font-size: 0.75rem;
+  color: var(--color-on-surface-variant);
+  line-height: 1.625;
+}
+@media (min-width: 768px) {
+  .program-detail_text-3 {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
+.program-detail_section-1 > * + * {
+  margin-top: 1rem;
+}
+
+.program-detail_title-2 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.program-detail_text-4 {
+  color: var(--color-primary);
+}
+
+.program-detail_box-6 {
+  background-color: var(--color-surface-bright);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--color-outline-variant);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition-property: all;
+  transition-duration: 0.15s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.program-detail_box-6:hover {
+  border-color: var(--color-primary);
+}
+
+.program-detail_box-7 {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.program-detail_text-5 {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.program-detail_text-5--on {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+.program-detail_text-5--off {
+  background-color: var(--color-surface-container);
+}
+
+.program-detail_text-6 {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-primary);
+  display: block;
+}
+
+.program-detail_title-3 {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  margin-top: 0.125rem;
+}
+
+.program-detail_link-1:hover {
+  color: var(--color-primary);
+}
+
+.program-detail_text-7 {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--color-on-surface-variant);
+  margin-top: 0.25rem;
+}
+
+.program-detail_link-2 {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: underline;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.program-detail_text-8 {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}

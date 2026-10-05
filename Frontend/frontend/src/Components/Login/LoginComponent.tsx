@@ -3,52 +3,32 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import type { loginFormType } from "../../Types/LoginFormType";
 import type { SubmitStatus } from "../../Types/SubmitStatus";
-import { ROLES } from "./constants";
 import "./style.css";
 
 function LoginComponent({
-  role,
-  setRole,
   status,
   formData,
   handleChange,
   handleSubmit,
 }: {
-  role: string;
-  setRole: (role: string) => void;
   status: SubmitStatus;
   formData: loginFormType;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: FormEvent) => void;
 }) {
   const [showPassword, setShowPassword] = useState(false);
-  const current = ROLES.find((r) => r.key === role) ?? ROLES[0];
 
   return (
     <div className="login_form_component">
-      <h2>Welcome back</h2>
-      <div className="segmented login_roles" role="group" aria-label="Portal">
-        {ROLES.map((r) => (
-          <button
-            key={r.key}
-            type="button"
-            aria-pressed={r.key === role}
-            onClick={() => setRole(r.key)}
-          >
-            {r.label}
-          </button>
-        ))}
-      </div>
-
       <div className="login_intro">
-        <h3>{current.heading}</h3>
-        <p>{current.desc}</p>
+        <h2>Log in</h2>
+        <p>Sign in to your account</p>
       </div>
 
       {status === "loading" && (
         <div className="notice">
           <span className="spinner" />
-          Signing you in as {current.label.toLowerCase()}...
+          Signing you in...
         </div>
       )}
       {status === "success" && (
@@ -106,7 +86,7 @@ function LoginComponent({
         </div>
 
         <button className="btn" type="submit" disabled={status === "loading"}>
-          {current.button}
+          Log in
         </button>
       </form>
 

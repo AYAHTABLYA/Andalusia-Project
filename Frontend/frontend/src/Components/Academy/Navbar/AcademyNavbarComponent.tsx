@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
 import { NAV_LINKS, SUPPORT_PHONE } from "./constants";
+import logo from "../../../assets/andalusia-logo.png";
 import "./style.css";
 
 type Props = {
@@ -17,13 +18,11 @@ function AcademyNavbarComponent({ currentPath, menuOpen, onToggleMenu, onCloseMe
     <header className="academy-navbar">
       <div className="academy-navbar_inner">
         <Link to="/" className="academy-navbar_brand" onClick={onCloseMenu}>
-          <span className="academy-navbar_logo">
-            <span className="material-symbols-outlined">account_balance</span>
-          </span>
-          <span className="academy-navbar_brand-text">
-            <strong>Andalusia Academy</strong>
-            <small>Alexandria • Executive Campus</small>
-          </span>
+          <img
+            className="academy-navbar_logo-img"
+            src={logo}
+            alt="Andalusia Academy"
+          />
         </Link>
 
         <nav className="academy-navbar_links" aria-label="Main">

@@ -170,7 +170,7 @@
 }
 
 .course-card_details span:first-child {
-  color: #94a3b8;
+  color: #9aa6a9;
 }
 
 .course-card_value {
@@ -210,7 +210,7 @@
 
 .course-card_instructor-title {
   display: block;
-  color: #94a3b8;
+  color: #9aa6a9;
   font-size: 11px;
 }
 
@@ -227,7 +227,7 @@
   display: block;
   font-size: 10px;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: #9aa6a9;
   font-weight: 600;
 }
 

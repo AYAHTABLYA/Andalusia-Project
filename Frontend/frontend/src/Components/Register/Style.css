@@ -1,39 +1,42 @@
 .register_form_component {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 .register_head {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+  gap: 4px 16px;
 }
 .register_head h2 {
-  font-size: 28px;
+  font-size: 22px;
+  line-height: 1.2;
 }
 .register_head span {
-  font: 13px var(--arabic);
+  font: 600 15px/1.2 var(--arabic);
   color: var(--faint);
+  white-space: nowrap;
 }
 .register_sub {
-  margin-top: -8px;
-  font-size: 13px;
+  margin-top: -6px;
+  font-size: 12.5px;
   color: var(--muted);
 }
 .register_form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 .register_row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: 12px;
 }
 .register_phone {
   display: grid;
-  grid-template-columns: 140px 1fr;
+  grid-template-columns: 124px 1fr;
   gap: 8px;
 }
 .register_rules {
