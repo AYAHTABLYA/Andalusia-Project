@@ -1,0 +1,39 @@
+.login_form_component {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.login_intro h2 {
+  font-size: 24px;
+}
+.login_intro p {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.login_form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.login_password_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.login_password_row a,
+.login_footer a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-light);
+  text-decoration: none;
+}
+.login_password_row a:hover,
+.login_footer a:hover {
+  text-decoration: underline;
+}
+.login_footer {
+  font-size: 13px;
+  text-align: center;
+  color: var(--muted);
+}

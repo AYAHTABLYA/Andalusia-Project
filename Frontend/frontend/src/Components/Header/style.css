@@ -1,0 +1,86 @@
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px clamp(16px, 4vw, 40px);
+  margin: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #e5e7e7;
+}
+
+.header_brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header_logo {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  font:
+    700 20px "Cinzel",
+    Georgia,
+    serif;
+  color: #b07963;
+  background: #fff;
+  border: 1px solid #e5e7e7;
+  border-radius: 8px;
+}
+
+.header_brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.header_brand-text strong {
+  font-size: 15px;
+  color: #334246;
+}
+
+.header_brand-text small {
+  font-family: "Cairo", "Segoe UI", sans-serif;
+  font-size: 11px;
+  color: #c2907b;
+}
+
+.header_side {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header_side h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #334246;
+  margin: 0;
+}
+
+.header button {
+  height: 40px;
+  padding: 0 16px;
+  background-color: #b07963;
+  color: white;
+  border-width: 0px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.header button:hover {
+  background-color: #99634f;
+}
+/*
+.header_actions {
+  display: flex;
+  justify-content: center;
+
+} */
+
+.header_logo-img { display: block; height: 40px; width: auto; }

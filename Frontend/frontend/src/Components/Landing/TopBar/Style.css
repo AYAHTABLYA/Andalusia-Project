@@ -1,0 +1,51 @@
+.top-bar {
+  background-color: var(--color-slate-900);
+  border-bottom: 1px solid var(--color-slate-800);
+  color: #d3d8d9;
+  font-size: 12px;
+  padding: 8px 24px;
+}
+
+.top-bar_inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.top-bar_welcome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.top-bar_welcome-text {
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.top-bar_portals {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.top-bar_portals-label {
+  color: #9aa6a9;
+}
+
+.top-bar_portals a {
+  color: var(--color-primary-light);
+  transition: color 0.2s;
+}
+
+.top-bar_portals a:hover {
+  color: #fff;
+}
