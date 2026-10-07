@@ -12,6 +12,7 @@ public class User
     public string PasswordHash { get; set; } = "";
     public DateTime TermsAcceptedAt { get; set; }
     public bool IsActive { get; set; } = true;
+    public bool IsEmailVerified { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Instructor? Instructor { get; set; }
