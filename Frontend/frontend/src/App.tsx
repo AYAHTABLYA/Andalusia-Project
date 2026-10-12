@@ -10,6 +10,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import CareerPathDetailContainer from "./Components/Academy/CareerPathDetail/CareerPathDetailContainer";
 import ProgramDetailContainer from "./Components/Academy/ProgramDetail/ProgramDetailContainer";
 import CourseDetailContainer from "./Components/Academy/CourseDetail/CourseDetailContainer";
+import PortalLayout from "./Components/Portal/PortalLayout";
+import ProfileContainer from "./Components/Portal/Profile/ProfileContainer";
+import PaymentsContainer from "./Components/Portal/Payments/PaymentsContainer";
 
 function App() {
   return (
@@ -34,6 +37,11 @@ function App() {
             />
             <Route path="/courses" element={<CoursesContainer />} />
             <Route path="/courses/:slug" element={<CourseDetailContainer />} />
+          </Route>
+
+          <Route element={<PortalLayout />}>
+            <Route path="/profile" element={<ProfileContainer />} />
+            <Route path="/payments" element={<PaymentsContainer />} />
           </Route>
         </Routes>
       </Router>

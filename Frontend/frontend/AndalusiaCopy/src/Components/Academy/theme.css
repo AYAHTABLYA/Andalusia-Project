@@ -1,0 +1,299 @@
+.academy {
+  --color-primary: var(--brand-500);
+  --color-primary-container: var(--brand-400);
+  --color-primary-fixed-dim: var(--brand-300);
+  --color-surface: var(--canvas);
+  --color-surface-bright: var(--surface);
+  --color-surface-container-lowest: var(--surface);
+  --color-surface-container-low: var(--surface-low);
+  --color-surface-container: var(--surface-mid);
+  --color-surface-variant: var(--surface-mid);
+  --color-on-surface: var(--ink-800);
+  --color-on-surface-variant: var(--muted);
+  --color-inverse-surface: var(--ink-900);
+  --color-outline: var(--line);
+  --color-outline-variant: var(--line);
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --font-body: var(--font-body);
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: normal;
+  -webkit-font-smoothing: antialiased;
+}
+
+.academy_main {
+  flex-grow: 1;
+}
+
+/* Scoped reset (specificity 0 so component classes always win) */
+:where(.academy),
+:where(.academy) *,
+:where(.academy) *::before,
+:where(.academy) *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0 solid var(--color-outline);
+}
+:where(.academy) a {
+  color: inherit;
+  text-decoration: none;
+}
+:where(.academy) button {
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+:where(.academy) input,
+:where(.academy) select {
+  font: inherit;
+  color: inherit;
+}
+:where(.academy) img {
+  display: block;
+  max-width: 100%;
+}
+:where(.academy) .material-symbols-outlined {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+@keyframes academy-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ---------- Advanced polish (same language as Home / Auth) ---------- */
+.academy {
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(
+      900px 420px at 6% -10%,
+      rgba(176, 121, 99, 0.1),
+      transparent 70%
+    ),
+    radial-gradient(
+      760px 380px at 100% 0,
+      rgba(160, 104, 74, 0.07),
+      transparent 70%
+    );
+  background-attachment: fixed;
+}
+
+.academy_main > * {
+  animation: ds-rise 0.6s var(--ease) both;
+}
+.academy_main > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.academy_main > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.academy h1,
+.academy h2 {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+/* Hero panels: dark ink with glowing brand orbs, like the Enterprise section on Home */
+.academy div:has(> h1) {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-image:
+    radial-gradient(
+      520px 260px at 92% -10%,
+      rgba(194, 144, 123, 0.55),
+      transparent 70%
+    ),
+    radial-gradient(
+      420px 240px at -5% 120%,
+      rgba(160, 104, 74, 0.35),
+      transparent 70%
+    ),
+    var(--grad-ink);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  padding: 2.25rem;
+  box-shadow: var(--shadow-lg);
+  color: #fff;
+}
+.academy div:has(> h1)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 36px 36px;
+  -webkit-mask-image: radial-gradient(
+    ellipse at 80% 20%,
+    #000,
+    transparent 70%
+  );
+  mask-image: radial-gradient(ellipse at 80% 20%, #000, transparent 70%);
+}
+.academy div:has(> h1)::after {
+  content: "";
+  position: absolute;
+  right: -5rem;
+  top: -5rem;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(228, 201, 187, 0.35),
+    transparent 70%
+  );
+  filter: blur(6px);
+  animation: ds-float 11s ease-in-out infinite;
+  pointer-events: none;
+}
+.academy div:has(> h1) h1 {
+  color: #fff;
+}
+.academy div:has(> h1) p {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+.academy div:has(> h1) > span:first-child,
+.academy div:has(> h1) [class*="text-1"] {
+  color: var(--brand-300) !important;
+}
+/* "Enrolling" badge has a light background, so it needs dark text */
+.academy div:has(> h1) .program-detail_text-1 {
+  color: #5a3427 !important;
+}
+
+/* Stat boxes inside the dark hero: translucent glass so the white text is readable */
+.academy div:has(> h1) .stat-grid_box-1 {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.academy div:has(> h1) .stat-grid_box-2 {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.academy div:has(> h1) .stat-grid_text-1 {
+  color: var(--brand-300);
+}
+.academy div:has(> h1) .stat-grid_text-2 {
+  color: #fff;
+}
+
+/* Cards: white glass, gradient top bar, lift */
+[class*="programs_card-"],
+[class*="courses_card-"],
+[class*="career-paths_card-"] {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem !important;
+  background: var(--surface);
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.35s var(--ease),
+    box-shadow 0.35s var(--ease),
+    border-color 0.35s ease;
+}
+[class*="programs_card-"]::before,
+[class*="courses_card-"]::before,
+[class*="career-paths_card-"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background-image: var(--grad-brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--ease);
+}
+[class*="programs_card-"]:hover,
+[class*="courses_card-"]:hover,
+[class*="career-paths_card-"]:hover {
+  transform: translateY(-6px);
+  border-color: rgba(176, 121, 99, 0.45) !important;
+  box-shadow:
+    0 30px 50px -26px rgba(176, 121, 99, 0.45),
+    var(--shadow-md);
+}
+[class*="programs_card-"]:hover::before,
+[class*="courses_card-"]:hover::before,
+[class*="career-paths_card-"]:hover::before {
+  transform: scaleX(1);
+}
+
+/* Primary buttons: gradient + sweeping shine */
+.catalog-toolbar_btn-1--active,
+.enroll-card_btn-1 {
+  position: relative;
+  overflow: hidden;
+  background-image: var(--grad-brand) !important;
+}
+.catalog-toolbar_btn-1--active::after,
+.enroll-card_btn-1::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transform: skewX(-18deg);
+}
+.catalog-toolbar_btn-1--active:hover::after,
+.enroll-card_btn-1:hover::after {
+  animation: ds-shine 0.8s ease;
+}
+
+/* Toolbar + enroll card become frosted glass */
+.catalog-toolbar_box-1,
+.enroll-card_box-2 {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* Inputs + keyboard focus */
+.academy input:focus,
+.academy select:focus {
+  outline: none;
+  border-color: var(--brand-500);
+  box-shadow: var(--ring);
+}
+.academy a:focus-visible,
+.academy button:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+  border-radius: 0.4rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .academy_main > *,
+  .academy * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

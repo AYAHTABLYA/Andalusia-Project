@@ -1,12 +1,15 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LoginComponent from "./LoginComponent";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
 import type { loginFormType } from "../../Types/LoginFormType";
 import type { SubmitStatus } from "../../Types/SubmitStatus";
 import { login } from "../../apis/authApi";
+import { saveSession } from "../../utils/session";
+import type { AuthResponse } from "../../Types/Auth";
 function LoginContainer() {
+  const navigate = useNavigate();
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [formData, setFormData] = useState<loginFormType>({
     email: "",
@@ -24,17 +27,20 @@ function LoginContainer() {
     try {
       setStatus("loading");
 
-      await login({
+      const auth: AuthResponse = await login({
         email: formData.email,
         password: formData.password,
       });
 
+      saveSession(auth);
       setStatus("success");
+      navigate("/profile");
     } catch (error: any) {
       setStatus("idle");
 
       const message =
         error.response?.data?.message ||
+        error.response?.data?.detail ||
         error.response?.data?.title ||
         "Login failed. Please check your email and password.";
 

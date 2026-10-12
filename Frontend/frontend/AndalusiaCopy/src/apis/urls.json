@@ -1,0 +1,36 @@
+{
+  "auth": {
+    "register": "/api/auth/register",
+    "login": "/api/auth/login",
+    "confirmEmail": "/api/auth/confirm-email",
+    "resendConfirmation": "/api/auth/resend-confirmation",
+    "forgotPassword": "/api/auth/forgot-password",
+    "resetPassword": "/api/auth/reset-password",
+    "checkEmail": "/api/auth/check-email"
+  },
+  "campuses": {
+    "getAll": "/api/campuses"
+  },
+  "courses": {
+    "getAll": "/api/courses",
+    "categories": "/api/courses/categories",
+    "featured": "/api/courses/featured",
+    "getBySlug": "/api/courses/:slug",
+    "apply": "/api/courses/:slug/applications",
+    "syllabus": "/api/courses/:slug/syllabus"
+  },
+  "programs": {
+    "getAll": "/api/programs",
+    "categories": "/api/programs/categories",
+    "getBySlug": "/api/programs/:slug",
+    "apply": "/api/programs/:slug/applications",
+    "syllabus": "/api/programs/:slug/syllabus"
+  },
+  "careerPaths": {
+    "getAll": "/api/career-paths",
+    "statuses": "/api/career-paths/statuses",
+    "domains": "/api/career-paths/domains",
+    "getBySlug": "/api/career-paths/:slug",
+    "syllabus": "/api/career-paths/:slug/syllabus"
+  }
+}

@@ -13,4 +13,12 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-export { formatMoney, initials };
+// Exact amount with 2 decimals, e.g. 19000 -> "19,000.00" (used by invoices / receipts)
+function formatAmount(amount: number): string {
+  return amount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+export { formatMoney, formatAmount, initials };
