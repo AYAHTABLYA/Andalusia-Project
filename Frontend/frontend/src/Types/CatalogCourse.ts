@@ -1,5 +1,6 @@
 type CatalogCourse = {
   id: number;
+  slug: string;
   title: string;
   category: string;
   type: string;

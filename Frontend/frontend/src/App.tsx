@@ -6,10 +6,10 @@ import AcademyLayout from "./Components/Academy/AcademyLayout";
 import CareerPathsContainer from "./Components/Academy/CareerPaths/CareerPathsContainer";
 import ProgramsContainer from "./Components/Academy/Programs/ProgramsContainer";
 import CoursesContainer from "./Components/Academy/Courses/CoursesContainer";
-import CareerPathDetailComponent from "./Components/Academy/CareerPathDetail/CareerPathDetailComponent";
-import ProgramDetailComponent from "./Components/Academy/ProgramDetail/ProgramDetailComponent";
-import CourseDetailComponent from "./Components/Academy/CourseDetail/CourseDetailComponent";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import CareerPathDetailContainer from "./Components/Academy/CareerPathDetail/CareerPathDetailContainer";
+import ProgramDetailContainer from "./Components/Academy/ProgramDetail/ProgramDetailContainer";
+import CourseDetailContainer from "./Components/Academy/CourseDetail/CourseDetailContainer";
 
 function App() {
   return (
@@ -24,19 +24,16 @@ function App() {
           <Route element={<AcademyLayout />}>
             <Route path="/career-paths" element={<CareerPathsContainer />} />
             <Route
-              path="/career-paths/fintech-cloud"
-              element={<CareerPathDetailComponent />}
+              path="/career-paths/:slug"
+              element={<CareerPathDetailContainer />}
             />
             <Route path="/programs" element={<ProgramsContainer />} />
             <Route
-              path="/programs/digital-banking"
-              element={<ProgramDetailComponent />}
+              path="/programs/:slug"
+              element={<ProgramDetailContainer />}
             />
             <Route path="/courses" element={<CoursesContainer />} />
-            <Route
-              path="/courses/generative-ai-banking"
-              element={<CourseDetailComponent />}
-            />
+            <Route path="/courses/:slug" element={<CourseDetailContainer />} />
           </Route>
         </Routes>
       </Router>

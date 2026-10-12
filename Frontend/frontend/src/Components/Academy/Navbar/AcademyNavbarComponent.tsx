@@ -1,17 +1,19 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
-import { NAV_LINKS, SUPPORT_PHONE } from "./constants";
+import { SUPPORT_PHONE } from "./constants";
+import type { NavLinkItem } from "./constants";
 import logo from "../../../assets/andalusia-logo.png";
 import "./style.css";
 
 type Props = {
+  links: NavLinkItem[];
   currentPath: string;
   menuOpen: boolean;
   onToggleMenu: () => void;
   onCloseMenu: () => void;
 };
 
-function AcademyNavbarComponent({ currentPath, menuOpen, onToggleMenu, onCloseMenu }: Props) {
+function AcademyNavbarComponent({ links, currentPath, menuOpen, onToggleMenu, onCloseMenu }: Props) {
   const isActive = (match?: string) => !!match && currentPath.includes(match);
 
   return (
@@ -26,7 +28,7 @@ function AcademyNavbarComponent({ currentPath, menuOpen, onToggleMenu, onCloseMe
         </Link>
 
         <nav className="academy-navbar_links" aria-label="Main">
-          {NAV_LINKS.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -56,7 +58,7 @@ function AcademyNavbarComponent({ currentPath, menuOpen, onToggleMenu, onCloseMe
 
       {menuOpen && (
         <nav className="academy-navbar_drawer" aria-label="Mobile">
-          {NAV_LINKS.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.to}
               to={link.to}

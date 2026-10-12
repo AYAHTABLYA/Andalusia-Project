@@ -1,5 +1,6 @@
 type Course = {
   id: number;
+  slug: string;
   category: string;
   modeLabel: string;
   modeVariant: "offline" | "blended";
