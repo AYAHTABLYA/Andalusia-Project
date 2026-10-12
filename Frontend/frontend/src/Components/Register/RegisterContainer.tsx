@@ -1,13 +1,17 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import RegisterComponent from "./RegisterComponent";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
 import type { RegisterFormValues } from "../../Types/registerFormType";
 import type { SubmitStatus } from "../../Types/SubmitStatus";
-import { register } from "../../apis/authApi";
+import { register, confirmEmail, resendConfirmation } from "../../apis/authApi";
 function RegisterContainer() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [verificationPending, setVerificationPending] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [verified, setVerified] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<RegisterFormValues>({
     firstName: "",
     lastName: "",
@@ -55,9 +59,16 @@ function RegisterContainer() {
         email: formData.email,
         mobileNumber: `${formData.phoneCode}${formData.phone}`,
         password: formData.password,
+        campusId:
+          formData.campus === "alexandria-gleem"
+            ? 1
+            : formData.campus === "alexandria-smouha"
+              ? 2
+              : 3,
       });
 
       setStatus("success");
+      setVerificationPending(true);
     } catch (error: any) {
       setStatus("idle");
 
@@ -67,6 +78,36 @@ function RegisterContainer() {
         "Registration failed. Please try again.";
 
       alert(message);
+    }
+  };
+
+  const handleVerifyOtp = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      setStatus("loading");
+      await confirmEmail({ email: formData.email, token: otp });
+      setVerified(true);
+      setVerificationPending(false);
+      setStatus("success");
+    } catch (error: any) {
+      setStatus("idle");
+      alert(
+        error.response?.data?.detail ||
+          error.response?.data?.title ||
+          "The code is invalid or expired.",
+      );
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      setStatus("loading");
+      await resendConfirmation({ email: formData.email });
+      setStatus("idle");
+      alert("If the account can receive a code, a new code has been sent.");
+    } catch (error: any) {
+      setStatus("idle");
+      alert(error.response?.data?.detail || "Could not resend the code. Please try again.");
     }
   };
 
@@ -86,6 +127,13 @@ function RegisterContainer() {
     >
       <RegisterComponent
         status={status}
+        verificationPending={verificationPending}
+        verified={verified}
+        otp={otp}
+        setOtp={setOtp}
+        handleVerifyOtp={handleVerifyOtp}
+        handleResendOtp={handleResendOtp}
+        goToLogin={() => navigate("/login")}
         rules={rules}
         canSubmit={canSubmit}
         formData={formData}

@@ -5,7 +5,7 @@ import type { RegisterFormValues } from "../../Types/registerFormType";
 
 import type { SubmitStatus } from "../../Types/SubmitStatus";
 import { CAMPUSES, PHONE_CODES } from "./constants";
-import "./style.css";
+import "./Style.css";
 
 type ChangeHandler = (
   e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -13,6 +13,13 @@ type ChangeHandler = (
 
 function RegisterComponent({
   status,
+  verificationPending,
+  verified,
+  otp,
+  setOtp,
+  handleVerifyOtp,
+  handleResendOtp,
+  goToLogin,
   rules,
   canSubmit,
   formData,
@@ -20,6 +27,13 @@ function RegisterComponent({
   handleSubmit,
 }: {
   status: SubmitStatus;
+  verificationPending: boolean;
+  verified: boolean;
+  otp: string;
+  setOtp: (value: string) => void;
+  handleVerifyOtp: (e: FormEvent) => void;
+  handleResendOtp: () => void;
+  goToLogin: () => void;
   rules: { label: string; ok: boolean }[];
   canSubmit: boolean;
   formData: RegisterFormValues;
@@ -51,6 +65,24 @@ function RegisterComponent({
         </div>
       )}
 
+      {verificationPending ? (
+        <div className="register_form">
+          <p>We sent a 6-digit verification code to <strong>{formData.email}</strong>. Enter it below to verify your email.</p>
+          <form onSubmit={handleVerifyOtp}>
+            <div className="field">
+              <label htmlFor="emailOtp">Email verification code</label>
+              <input id="emailOtp" className="input" inputMode="numeric" autoComplete="one-time-code" maxLength={6} pattern="[0-9]{6}" required value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="123456" />
+            </div>
+            <button className="btn" type="submit" disabled={status === "loading" || otp.length !== 6}>{status === "loading" ? "Verifying..." : "Verify email"}</button>
+          </form>
+          <button className="btn btn_secondary" type="button" onClick={handleResendOtp} disabled={status === "loading"}>Resend code</button>
+        </div>
+      ) : verified ? (
+        <div className="register_form">
+          <div className="notice success">Email verified successfully. You can now sign in.</div>
+          <button className="btn" type="button" onClick={goToLogin}>Go to login</button>
+        </div>
+      ) : (
       <form className="register_form" onSubmit={handleSubmit}>
         <div className="register_row">
           <div className="field">
@@ -214,6 +246,7 @@ function RegisterComponent({
           Create account
         </button>
       </form>
+      )}
 
       <p className="register_footer">
         Already registered? <Link to="/login">Sign in</Link>

@@ -91,3 +91,10 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.btn_secondary {
+  margin-top: 12px;
+  background: transparent;
+  color: var(--primary, #176b63);
+  border: 1px solid currentColor;
+}

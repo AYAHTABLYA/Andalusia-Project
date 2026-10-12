@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { SUPPORT_PHONE } from "./constants";
 import type { NavLinkItem } from "./constants";
 import logo from "../../../assets/andalusia-logo.png";
+import { LanguageSwitcher } from "../../LanguageSwitcher";
 import "./style.css";
 
 type Props = {
@@ -42,6 +43,7 @@ function AcademyNavbarComponent({ links, currentPath, menuOpen, onToggleMenu, on
         </nav>
 
         <div className="academy-navbar_actions">
+          <LanguageSwitcher />
           <a href={`tel:${SUPPORT_PHONE.replace(/[^+\d]/g, "")}`} className="academy-navbar_phone">
             <span className="material-symbols-outlined">support_agent</span>
             <span>{SUPPORT_PHONE}</span>
