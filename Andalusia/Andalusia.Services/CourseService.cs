@@ -16,12 +16,12 @@ public class CourseService(IUnitOfWork uow) : ICourseService
         var pageSize = Math.Clamp(query.PageSize, 1, 50);
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        var repo = uow.GetRepository<Course>(); //[cite: 4]
+        var repo = uow.GetRepository<Course>(); 
         var spec = new CourseWithMentorAndCohortsSpecification(query);
         var countSpec = new CourseCountSpecification(query);
 
-        var courses = await repo.GetAllAsync(spec, trackChanges: false); //[cite: 2]
-        var totalCount = await repo.CountAsync(countSpec); //[cite: 2]
+        var courses = await repo.GetAllAsync(spec, trackChanges: false); 
+        var totalCount = await repo.CountAsync(countSpec); 
 
         var items = courses.Select(c =>
         {
@@ -50,8 +50,8 @@ public class CourseService(IUnitOfWork uow) : ICourseService
 
     public async Task<string[]> GetCategoriesAsync(CancellationToken ct = default)
     {
-        var repo = uow.GetRepository<Course>(); //[cite: 4]
-        var courses = await repo.GetAllAsync(trackChanges: false); //[cite: 2]
+        var repo = uow.GetRepository<Course>(); 
+        var courses = await repo.GetAllAsync(trackChanges: false); 
 
         return courses
             .Select(c => c.Category)
@@ -64,10 +64,10 @@ public class CourseService(IUnitOfWork uow) : ICourseService
     public async Task<List<FeaturedCourseDto>> GetFeaturedAsync(int take = 3, CancellationToken ct = default)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var repo = uow.GetRepository<Course>(); //[cite: 4]
+        var repo = uow.GetRepository<Course>(); 
         var spec = new FeaturedCoursesSpecification(take);
 
-        var courses = await repo.GetAllAsync(spec, trackChanges: false); //[cite: 2]
+        var courses = await repo.GetAllAsync(spec, trackChanges: false); 
 
         return courses.Select(c =>
         {
@@ -129,20 +129,20 @@ public class CourseService(IUnitOfWork uow) : ICourseService
 
     public async Task<long?> ApplyAsync(string slug, CreateApplicationDto dto, long? userId = null, CancellationToken ct = default)
     {
-        var courseRepo = uow.GetRepository<Course>(); //[cite: 4]
+        var courseRepo = uow.GetRepository<Course>(); 
         var spec = new CourseDetailsBySlugSpecification(slug);
-        var course = await courseRepo.GetAsync(spec, trackChanges: false); //[cite: 2]
+        var course = await courseRepo.GetAsync(spec, trackChanges: false); 
 
         if (course is null) return null;
 
-        var userRepo = uow.GetRepository<User>(); //[cite: 4]
+        var userRepo = uow.GetRepository<User>(); 
         var fullName = dto.FullName ?? string.Empty;
         var email = dto.Email ?? string.Empty;
         var phone = dto.Phone ?? string.Empty;
 
         if (userId.HasValue)
         {
-            var user = await userRepo.GetByIdAsync(userId.Value); //[cite: 2]
+            var user = await userRepo.GetByIdAsync(userId.Value); 
             if (user != null)
             {
                 fullName = string.IsNullOrWhiteSpace(fullName) ? $"{user.FirstName} {user.LastName}" : fullName;
@@ -163,18 +163,18 @@ public class CourseService(IUnitOfWork uow) : ICourseService
             CreatedAt = DateTime.UtcNow
         };
 
-        var appRepo = uow.GetRepository<CourseApplication>(); //[cite: 4]
-        await appRepo.AddAsync(app); //[cite: 2]
-        await uow.SaveChangesAsync(); //[cite: 4]
+        var appRepo = uow.GetRepository<CourseApplication>();
+        await appRepo.AddAsync(app); 
+        await uow.SaveChangesAsync(); 
 
         return app.Id;
     }
 
     public async Task<(byte[] Bytes, string ContentType, string FileName)?> GetSyllabusAsync(string slug, CancellationToken ct = default)
     {
-        var repo = uow.GetRepository<Course>(); //[cite: 4]
+        var repo = uow.GetRepository<Course>(); 
         var spec = new CourseDetailsBySlugSpecification(slug);
-        var course = await repo.GetAsync(spec, trackChanges: false); //[cite: 2]
+        var course = await repo.GetAsync(spec, trackChanges: false); 
 
         if (course is null || string.IsNullOrWhiteSpace(course.SyllabusPath) || !File.Exists(course.SyllabusPath))
             return null;

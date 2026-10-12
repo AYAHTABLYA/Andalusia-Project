@@ -7,7 +7,6 @@ public class CareerPathDomainsSpecification : BaseSpecification<CareerPath>
 {
     public CareerPathDomainsSpecification()
     {
-        AddInclude(cp => cp.Programs);
-        AddInclude(cp => cp.Programs.Select(p => p.Category));
+        AddInclude("Programs.Category");
     }
 }
