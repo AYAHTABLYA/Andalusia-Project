@@ -5,10 +5,12 @@ using Andalusia.ServicesAbstraction;
 using AndalusiaApp.Data;
 using AndalusiaApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
+using System.Threading.RateLimiting;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +44,25 @@ builder.Services.AddScoped<IDataInitializer, DataInitializer>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Brevo (transactional email / OTP)
+builder.Services.Configure<BrevoSettings>(builder.Configuration.GetSection("Brevo"));
+builder.Services.AddScoped<IEmailService, MailKitEmailService>();
+
+// Rate limiting for /api/auth (protects OTP endpoints from brute force)
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+});
 builder.Services.AddScoped<IProgramService, ProgramService>();
 builder.Services.AddScoped<ICareerPathService, CareerPathService>();
 
@@ -175,8 +196,8 @@ if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Swagger
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
+app.UseRateLimiter();
 
-// الترتيب إلزامي: Authentication أولاً ثم Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
