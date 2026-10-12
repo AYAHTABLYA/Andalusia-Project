@@ -5,7 +5,7 @@ import LoginComponent from "./LoginComponent";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
 import type { loginFormType } from "../../Types/LoginFormType";
 import type { SubmitStatus } from "../../Types/SubmitStatus";
-
+import { login } from "../../apis/authApi";
 function LoginContainer() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [formData, setFormData] = useState<loginFormType>({
@@ -18,13 +18,29 @@ function LoginContainer() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // UI only: no API call. Replace with useLoginUser(...) when the backend is ready.
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setStatus("loading");
-    setTimeout(() => setStatus("success"), 1000);
-  };
 
+    try {
+      setStatus("loading");
+
+      await login({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      setStatus("success");
+    } catch (error: any) {
+      setStatus("idle");
+
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.title ||
+        "Login failed. Please check your email and password.";
+
+      alert(message);
+    }
+  };
   return (
     <AuthLayoutComponent
       title="Excellence in clinical, digital, and leadership education"

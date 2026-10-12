@@ -5,7 +5,7 @@ import RegisterComponent from "./RegisterComponent";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
 import type { RegisterFormValues } from "../../Types/registerFormType";
 import type { SubmitStatus } from "../../Types/SubmitStatus";
-
+import { register } from "../../apis/authApi";
 function RegisterContainer() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [formData, setFormData] = useState<RegisterFormValues>({
@@ -41,13 +41,33 @@ function RegisterContainer() {
   ];
   const canSubmit = rules.every((r) => r.ok) && formData.agree;
 
-  // UI only: no API call. Later map to registerFormType
-  // ({ name: `${firstName} ${lastName}`, email, password }) and call useRegisterUser.
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
     if (!canSubmit) return;
-    setStatus("loading");
-    setTimeout(() => setStatus("success"), 1000);
+
+    try {
+      setStatus("loading");
+
+      await register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        mobileNumber: `${formData.phoneCode}${formData.phone}`,
+        password: formData.password,
+      });
+
+      setStatus("success");
+    } catch (error: any) {
+      setStatus("idle");
+
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.title ||
+        "Registration failed. Please try again.";
+
+      alert(message);
+    }
   };
 
   return (

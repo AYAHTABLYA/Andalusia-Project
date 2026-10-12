@@ -34,7 +34,7 @@ function LoginComponent({
       {status === "success" && (
         <div className="notice success">
           <span className="material-symbols-outlined">check_circle</span>
-          Signed in. Design preview only, no backend connected.
+          Signed in successfully.
         </div>
       )}
 

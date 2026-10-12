@@ -1,5 +1,5 @@
 import TopBarComponent from "./TopBar/Topbarcomponent";
-import NavbarComponent from "./Navbar/NavbarComponent";
+import NavbarContainer from "./Navbar/NavbarContainer";
 import HeroComponent from "./Hero/HeroComponent";
 import CareerPathContainer from "./CareerPath/CareerPathContainer";
 import FeaturedCoursesContainer from "./FeaturedCourses/FeaturedCoursesContainer";
@@ -14,7 +14,7 @@ function LandingPage() {
   return (
     <div className="landing-page">
       <TopBarComponent />
-      <NavbarComponent />
+      <NavbarContainer />
       <main>
         <HeroComponent />
         <CareerPathContainer />

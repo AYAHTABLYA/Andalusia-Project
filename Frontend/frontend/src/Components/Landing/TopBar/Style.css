@@ -49,3 +49,15 @@
 .top-bar_portals a:hover {
   color: #fff;
 }
+.top-bar_portals {
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+.top-bar_portals-label {
+  white-space: nowrap;
+}
+@media (max-width: 767px) {
+  .top-bar {
+    padding: 8px 16px;
+  }
+}

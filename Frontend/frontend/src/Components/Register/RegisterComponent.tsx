@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import type { RegisterFormValues } from "../../Types/registerFormType";
 
 import type { SubmitStatus } from "../../Types/SubmitStatus";
-import { CAMPUSES, PHONE_CODES} from "./constants";
+import { CAMPUSES, PHONE_CODES } from "./constants";
 import "./style.css";
 
 type ChangeHandler = (
@@ -47,7 +47,7 @@ function RegisterComponent({
       {status === "success" && (
         <div className="notice success">
           <span className="material-symbols-outlined">check_circle</span>
-          Account created. Design preview only, no backend connected.
+          Account created successfully.{" "}
         </div>
       )}
 
