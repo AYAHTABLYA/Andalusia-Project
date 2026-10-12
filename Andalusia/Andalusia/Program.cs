@@ -42,6 +42,8 @@ builder.Services.AddScoped<IDataInitializer, DataInitializer>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProgramService, ProgramService>();
+builder.Services.AddScoped<ICareerPathService, CareerPathService>();
 
 // ==========================================
 // 3. Authentication & JWT
