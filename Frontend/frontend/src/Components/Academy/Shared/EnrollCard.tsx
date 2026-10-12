@@ -5,33 +5,47 @@ type Props = {
   price: string;
   note: string;
   primaryText: string;
-  primaryMsg: string;
+  onPrimary: () => void;
   secondaryText: string;
-  secondaryMsg: string;
+  onSecondary: () => void;
+  secondaryBusy?: boolean;
+  feedback?: { kind: "success" | "error"; text: string } | null;
   bullets: string[];
 };
 
-function EnrollCard({ label, price, note, primaryText, primaryMsg, secondaryText, secondaryMsg, bullets }: Props) {
+function EnrollCard({
+  label, price, note, primaryText, onPrimary, secondaryText, onSecondary, secondaryBusy = false, feedback, bullets,
+}: Props) {
   return (
     <div className="enroll-card_box-1">
       <div className="enroll-card_box-2">
         <div>
           <span className="enroll-card_text-1">{label}</span>
           <div className="enroll-card_box-3">{price}</div>
-          <p className="enroll-card_text-2">{note}</p>
+          {note && <p className="enroll-card_text-2">{note}</p>}
         </div>
         <div className="enroll-card_box-4">
-          <button onClick={() => alert(primaryMsg)} className="enroll-card_btn-1">
+          <button type="button" onClick={onPrimary} className="enroll-card_btn-1">
             {primaryText}
           </button>
-          <button onClick={() => alert(secondaryMsg)} className="enroll-card_btn-2">
+          <button type="button" onClick={onSecondary} disabled={secondaryBusy} className="enroll-card_btn-2">
             <span className="enroll-card_text-3 material-symbols-outlined">download</span>
-            <span>{secondaryText}</span>
+            <span>{secondaryBusy ? "Preparing…" : secondaryText}</span>
           </button>
+          {feedback && (
+            <p
+              role={feedback.kind === "error" ? "alert" : "status"}
+              className={`enroll-card_feedback enroll-card_feedback--${feedback.kind}`}
+            >
+              {feedback.text}
+            </p>
+          )}
         </div>
-        <div className="enroll-card_box-5">
-          {bullets.map((b) => <div key={b}>• {b}</div>)}
-        </div>
+        {bullets.length > 0 && (
+          <div className="enroll-card_box-5">
+            {bullets.map((b) => <div key={b}>• {b}</div>)}
+          </div>
+        )}
       </div>
     </div>
   );

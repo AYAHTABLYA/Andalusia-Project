@@ -1,8 +1,16 @@
 import { memo } from "react";
+import { Link } from "react-router-dom";
 import type { Course } from "../../../Types/Course";
 import "./style.css";
 
-function FeaturedCoursesComponent({ courses }: { courses: Course[] }) {
+type Props = {
+  courses: Course[];
+  loading: boolean;
+  errorMessage?: string;
+  onRetry: () => void;
+};
+
+function FeaturedCoursesComponent({ courses, loading, errorMessage, onRetry }: Props) {
   return (
     <section className="featured-courses" data-purpose="course-offerings" id="featured-courses">
       <div className="section-wrap">
@@ -26,6 +34,16 @@ function FeaturedCoursesComponent({ courses }: { courses: Course[] }) {
           </div>
         </div>
 
+        {loading ? (
+          <p className="featured-courses_state" aria-busy="true">Loading featured courses…</p>
+        ) : errorMessage ? (
+          <p className="featured-courses_state" role="alert">
+            Could not load featured courses. {errorMessage}{" "}
+            <button type="button" className="featured-courses_retry" onClick={onRetry}>Retry</button>
+          </p>
+        ) : courses.length === 0 ? (
+          <p className="featured-courses_state">New cohorts will be announced soon.</p>
+        ) : (
         <div className="featured-courses_grid">
           {courses.map((course) => (
             <article key={course.id} className="course-card card" data-purpose="course-card">
@@ -75,18 +93,19 @@ function FeaturedCoursesComponent({ courses }: { courses: Course[] }) {
                   </span>
                   <span className="course-card_price">{course.price}</span>
                 </div>
-                <a className="btn btn-primary" href="#apply-now">
+                <Link className="btn btn-primary" to={`/courses/${course.slug}`}>
                   Apply / Syllabus
-                </a>
+                </Link>
               </div>
             </article>
           ))}
         </div>
+        )}
 
         <div className="featured-courses_view-all">
-          <a href="#programs-section">
-            Browse All 24+ Andalusian Diplomas &amp; Courses →
-          </a>
+          <Link to="/courses">
+            Browse All Andalusian Diplomas &amp; Courses →
+          </Link>
         </div>
       </div>
     </section>

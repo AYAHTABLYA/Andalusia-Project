@@ -2,16 +2,23 @@ import { memo } from "react";
 import { Link } from "react-router-dom";
 import type { CareerPath } from "../../../Types/CareerPath";
 import type { ApiState } from "../../../Types/ApiState";
-import { API_STATES, DOMAIN_OPTIONS, PROGRESSION_LEVELS } from "./constants";
+import { PROGRESSION_LEVELS } from "./constants";
 import Breadcrumb from "../Shared/Breadcrumb";
+import Pagination from "../Shared/Pagination";
 import "./style.css";
 
 type Props = {
   paths: CareerPath[];
   apiState: ApiState;
+  errorMessage?: string;
   searchQuery: string;
   selectedDomain: string;
-  onApiStateChange: (state: ApiState) => void;
+  domainOptions: { value: string; label: string }[];
+  page: number;
+  pageSize: number;
+  total: number;
+  onRetry: () => void;
+  onPageChange: (page: number) => void;
   onSearchChange: (value: string) => void;
   onDomainChange: (value: string) => void;
   onReset: () => void;
@@ -25,8 +32,9 @@ const STATS: { label: string; key: "duration" | "credits" | "diplomas" | "course
 ];
 
 function CareerPathsComponent({
-  paths, apiState, searchQuery, selectedDomain,
-  onApiStateChange, onSearchChange, onDomainChange, onReset,
+  paths, apiState, errorMessage, searchQuery, selectedDomain, domainOptions,
+  page, pageSize, total, onRetry, onPageChange,
+  onSearchChange, onDomainChange, onReset,
 }: Props) {
   return (
     <div className="career-paths_box-1">
@@ -37,18 +45,6 @@ function CareerPathsComponent({
             <span className="career-paths_text-2">Alexandria Executive Engine</span>
             <span>|</span>
             <code className="career-paths_code-1">/api/career-paths</code>
-          </div>
-          <div className="career-paths_box-4">
-            <span className="career-paths_text-3">Simulator:</span>
-            {API_STATES.map((st) => (
-              <button
-                key={st}
-                onClick={() => onApiStateChange(st)}
-                className={`career-paths_btn-1 ${apiState === st ? "career-paths_btn-1--on" : "career-paths_btn-1--off"}`.trim()}
-              >
-                {st}
-              </button>
-            ))}
           </div>
         </div>
       </section>
@@ -104,7 +100,7 @@ function CareerPathsComponent({
               onChange={(e) => onDomainChange(e.target.value)}
               className="career-paths_select-1"
             >
-              {DOMAIN_OPTIONS.map((o) => (
+              {domainOptions.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
@@ -117,22 +113,22 @@ function CareerPathsComponent({
             <div className="career-paths_box-16"></div>
             <div className="career-paths_box-16"></div>
           </div>
+        ) : apiState === "error" ? (
+          <div className="career-paths_box-18" role="alert">
+            <span className="career-paths_text-13 material-symbols-outlined">cloud_off</span>
+            <h3 className="career-paths_title-3">Alexandria Registry Gateway Error</h3>
+            <p className="career-paths_text-12">{errorMessage ?? "Unable to sync with institutional database. Try refreshing connection."}</p>
+            <button onClick={onRetry} className="career-paths_btn-3">
+              Retry Connection
+            </button>
+          </div>
         ) : apiState === "empty" || paths.length === 0 ? (
           <div className="career-paths_box-17">
             <span className="career-paths_text-11 material-symbols-outlined">filter_alt_off</span>
             <h3 className="career-paths_title-3">No Career Paths Found</h3>
             <p className="career-paths_text-12">Try resetting filters to show verified pathways.</p>
-            <button onClick={() => { onReset(); onApiStateChange("catalog"); }} className="career-paths_btn-3">
+            <button onClick={onReset} className="career-paths_btn-3">
               Clear Filters
-            </button>
-          </div>
-        ) : apiState === "error" ? (
-          <div className="career-paths_box-18">
-            <span className="career-paths_text-13 material-symbols-outlined">cloud_off</span>
-            <h3 className="career-paths_title-3">Alexandria Registry Gateway Error (500)</h3>
-            <p className="career-paths_text-12">Unable to sync with institutional database. Try refreshing connection.</p>
-            <button onClick={() => onApiStateChange("catalog")} className="career-paths_btn-3">
-              Retry Connection
             </button>
           </div>
         ) : (
@@ -152,7 +148,7 @@ function CareerPathsComponent({
                     <p className="career-paths_text-12"><strong className="career-paths_strong-1">Target Roles:</strong> {item.roles}</p>
                     <p className="career-paths_text-17">{item.summary}</p>
                     <div className="career-paths_box-22">
-                      {STATS.map((s) => (
+                      {STATS.filter((s) => item[s.key]).map((s) => (
                         <div key={s.key} className="career-paths_box-23">
                           <span className="career-paths_text-18">{s.label}</span>
                           <span className={`career-paths_text-19 ${s.accent ? "career-paths_text-19--on" : ""}`.trim()}>{item[s.key]}</span>
@@ -179,6 +175,10 @@ function CareerPathsComponent({
               </article>
             ))}
           </div>
+        )}
+
+        {apiState === "catalog" && (
+          <Pagination page={page} pageSize={pageSize} total={total} onPage={onPageChange} />
         )}
       </div>
     </div>
