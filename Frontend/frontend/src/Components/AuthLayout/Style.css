@@ -759,3 +759,39 @@
   font-size: 12px;
   padding: 7px 8px;
 }
+
+/* Inline feedback (replaces browser alert()) */
+.auth .notice.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+.auth .notice.info {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+.auth .notice.success {
+  border: 1px solid #bbf7d0;
+}
+.auth .notice .notice_text {
+  flex: 1;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+.auth .notice .notice_close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  opacity: 0.7;
+}
+.auth .notice .notice_close:hover {
+  opacity: 1;
+}
+.auth .notice .notice_close .material-symbols-outlined {
+  font-size: 16px;
+}

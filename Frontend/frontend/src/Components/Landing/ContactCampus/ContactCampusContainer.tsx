@@ -12,18 +12,20 @@ const INITIAL_FORM: ApplicationFormType = {
 
 function ContactCampusContainer() {
   const [formData, setFormData] = useState<ApplicationFormType>(INITIAL_FORM);
+  const [submitted, setSubmitted] = useState(false);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setSubmitted(false);
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log("Cohort application submitted:", formData);
-    alert("Application submitted! Our admissions director will contact you.");
+    setSubmitted(true);
     setFormData(INITIAL_FORM);
   }
 
@@ -32,6 +34,8 @@ function ContactCampusContainer() {
       formData={formData}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
+      submitted={submitted}
+      onDismissSubmitted={() => setSubmitted(false)}
     />
   );
 }

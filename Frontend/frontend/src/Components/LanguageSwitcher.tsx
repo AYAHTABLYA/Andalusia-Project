@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import "./language-switcher.css";
+import { extraTranslations, patternRules } from "./translations";
 
 export type SiteLanguage = "en" | "ar";
 
 const STORAGE_KEY = "andalusia-language";
 
-const translations: Record<string, string> = {
+const baseTranslations: Record<string, string> = {
   "Welcome to Andalusia Academy": "مرحبًا بكم في أكاديمية أندلسية",
   "Choose Your Portal:": "اختار البوابة:",
   "Choose Your Portal": "اختار البوابة",
@@ -116,14 +117,22 @@ const translations: Record<string, string> = {
   "Product Strategy": "استراتيجية المنتجات",
 };
 
+const translations: Record<string, string> = { ...baseTranslations, ...extraTranslations };
+
 const originalTextNodes = new WeakMap<Text, string>();
 
 function translateText(value: string, language: SiteLanguage): string {
   if (language === "en") return value;
   const trimmed = value.trim();
   const translated = translations[trimmed];
-  if (!translated) return value;
-  return value.replace(trimmed, translated);
+  if (translated) return value.replace(trimmed, translated);
+
+  // No exact match: try the number / date / amount rules.
+  let patterned = trimmed;
+  for (const [pattern, replacement] of patternRules) {
+    patterned = patterned.replace(pattern, replacement as string);
+  }
+  return patterned === trimmed ? value : value.replace(trimmed, patterned);
 }
 
 function applyLanguage(language: SiteLanguage) {
@@ -136,7 +145,7 @@ function applyLanguage(language: SiteLanguage) {
   let node: Node | null;
   while ((node = walker.nextNode())) {
     const parent = node.parentElement;
-    if (!parent || parent.closest("script, style, textarea, input, select, option[data-no-translate], [data-no-translate], .language-switcher")) continue;
+    if (!parent || parent.closest("script, style, textarea, input, option[data-no-translate], [data-no-translate], .language-switcher")) continue;
     const textNode = node as Text;
     const original = textNode.textContent ?? "";
     const english = originalTextNodes.get(textNode);

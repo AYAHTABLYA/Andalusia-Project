@@ -221,3 +221,57 @@
     gap: 24px;
   }
 }
+
+/* --- Language switcher fit: keep the logo from being squeezed out --- */
+.navbar_brand {
+  flex: 0 0 auto;
+  min-width: 96px;
+}
+.navbar_logo-img {
+  min-width: 96px;
+}
+.navbar_search {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.navbar_links {
+  min-width: 0;
+}
+/* Compact switcher (globe + chevron only) until there is plenty of room */
+@media (max-width: 1799px) {
+  .navbar_actions .language-switcher_trigger > span {
+    display: none;
+  }
+  .navbar_actions .language-switcher_trigger {
+    padding: 0 9px;
+    gap: 5px;
+  }
+}
+@media (min-width: 1100px) and (max-width: 1399px) {
+  .navbar_inner {
+    gap: 12px;
+  }
+  .navbar_links {
+    gap: 14px;
+    font-size: 12.5px;
+  }
+}
+@media (min-width: 1400px) {
+  .navbar_inner {
+    max-width: 1480px;
+  }
+}
+/* Search only when the bar can really fit it */
+@media (min-width: 1400px) and (max-width: 1799px) {
+  .navbar_search {
+    display: none;
+  }
+}
+@media (min-width: 1800px) {
+  .navbar_inner {
+    max-width: 1640px;
+  }
+  .navbar_search {
+    min-width: 220px;
+  }
+}

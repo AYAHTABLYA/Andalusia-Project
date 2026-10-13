@@ -3,11 +3,13 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import type { loginFormType } from "../../Types/LoginFormType";
 import type { SubmitStatus } from "../../Types/SubmitStatus";
+import AuthNotice from "../AuthLayout/AuthNotice";
+import type { Feedback } from "../../Types/Feedback";
 import "./Style.css";
 
 type LoginMode = "password" | "login-otp" | "forgot-request" | "forgot-reset";
-function LoginComponent({ status, mode, formData, handleChange, handleSubmit, otp, setOtp, newPassword, setNewPassword, confirmPassword, setConfirmPassword, switchMode }: {
-  status: SubmitStatus; mode: LoginMode; formData: loginFormType; handleChange: (e: ChangeEvent<HTMLInputElement>) => void; handleSubmit: (e: FormEvent) => void;
+function LoginComponent({ status, mode, feedback, onDismissFeedback, formData, handleChange, handleSubmit, otp, setOtp, newPassword, setNewPassword, confirmPassword, setConfirmPassword, switchMode }: {
+  status: SubmitStatus; mode: LoginMode; feedback: Feedback; onDismissFeedback: () => void; formData: loginFormType; handleChange: (e: ChangeEvent<HTMLInputElement>) => void; handleSubmit: (e: FormEvent) => void;
   otp: string; setOtp: (value: string) => void; newPassword: string; setNewPassword: (value: string) => void; confirmPassword: string; setConfirmPassword: (value: string) => void; switchMode: (mode: LoginMode) => void;
 }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +19,7 @@ function LoginComponent({ status, mode, formData, handleChange, handleSubmit, ot
     <div className="login_intro"><h2>{titles[mode]}</h2><p>{descriptions[mode]}</p></div>
     {status === "loading" && <div className="notice"><span className="spinner" />Processing...</div>}
     {status === "success" && <div className="notice success"><span className="material-symbols-outlined">check_circle</span>Signed in successfully.</div>}
+    <AuthNotice feedback={feedback} onDismiss={onDismissFeedback} />
     <form className="login_form" onSubmit={handleSubmit}>
       <div className="field"><label htmlFor="email">Email</label><div className="input_wrap"><span className="material-symbols-outlined">mail</span><input id="email" className="input" name="email" type="email" required placeholder="name@andalusia-academy.edu.eg" value={formData.email} onChange={handleChange} /></div></div>
       {mode === "password" && <div className="field"><div className="login_password_row"><label htmlFor="password">Password</label><button type="button" className="text_button" onClick={() => switchMode("forgot-request")}>Forgot password?</button></div><div className="input_wrap"><span className="material-symbols-outlined">lock</span><input id="password" className="input" name="password" type={showPassword ? "text" : "password"} required placeholder="Enter your password" value={formData.password} onChange={handleChange} /><button type="button" aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword((s) => !s)}><span className="material-symbols-outlined">{showPassword ? "visibility_off" : "visibility"}</span></button></div></div>}

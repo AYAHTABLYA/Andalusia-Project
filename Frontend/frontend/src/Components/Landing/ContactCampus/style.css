@@ -136,3 +136,40 @@
 .contact-campus_submit:hover {
   background-color: var(--color-primary-dark);
 }
+
+.contact-campus_notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 500;
+}
+.contact-campus_notice .material-symbols-outlined {
+  font-size: 18px;
+}
+.contact-campus_notice-text {
+  flex: 1;
+  line-height: 1.4;
+}
+.contact-campus_notice-close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  opacity: 0.7;
+}
+.contact-campus_notice-close:hover {
+  opacity: 1;
+}
+.contact-campus_notice-close .material-symbols-outlined {
+  font-size: 16px;
+}

@@ -338,3 +338,20 @@ body,
     height: 2.25rem;
   }
 }
+
+/* --- Language switcher fit: keep the logo from being squeezed out --- */
+.academy-navbar_brand {
+  flex-shrink: 0;
+}
+.academy-navbar_logo-img {
+  min-width: 90px;
+}
+@media (max-width: 1099px) {
+  .academy-navbar_actions .language-switcher_trigger > span {
+    display: none;
+  }
+  .academy-navbar_actions .language-switcher_trigger {
+    padding: 0 9px;
+    gap: 5px;
+  }
+}

@@ -6,12 +6,16 @@ function ContactCampusComponent({
   formData,
   handleChange,
   handleSubmit,
+  submitted,
+  onDismissSubmitted,
 }: {
   formData: ApplicationFormType;
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  submitted: boolean;
+  onDismissSubmitted: () => void;
 }) {
   return (
     <section className="contact-campus" data-purpose="alexandria-campus-info" id="contact-campus">
@@ -115,6 +119,24 @@ function ContactCampusComponent({
                 <option>8+ Years (Director / VP / Head)</option>
               </select>
             </div>
+
+            {submitted && (
+              <div className="contact-campus_notice" role="status">
+                <span className="material-symbols-outlined">check_circle</span>
+                <span className="contact-campus_notice-text">
+                  Application submitted! Our admissions director will contact
+                  you.
+                </span>
+                <button
+                  type="button"
+                  className="contact-campus_notice-close"
+                  aria-label="Dismiss message"
+                  onClick={onDismissSubmitted}
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            )}
 
             <button type="submit" className="contact-campus_submit">
               Submit Cohort Application

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { PILLARS } from "./constants";
 import "./Style.css";
 import logo from "../../assets/andalusia-logo.png";
+import { LanguageSwitcher } from "../LanguageSwitcher";
 
 function AuthLayoutComponent({
   title,
@@ -21,6 +22,7 @@ function AuthLayoutComponent({
           <img className="auth_logo-img" src={logo} alt="Andalusia Academy" />
         </div>
         <div className="auth_header_side">
+          <LanguageSwitcher />
           <span className="auth_phone">Support: +20 3 584-9020</span>
           {headerAction}
         </div>

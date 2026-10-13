@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import type { Feedback } from "../../Types/Feedback";
 import RegisterComponent from "./RegisterComponent";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
 import type { RegisterFormValues } from "../../Types/registerFormType";
@@ -9,6 +10,7 @@ import { register, confirmEmail, resendConfirmation } from "../../apis/authApi";
 function RegisterContainer() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [verificationPending, setVerificationPending] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback>(null);
   const [otp, setOtp] = useState("");
   const [verified, setVerified] = useState(false);
   const navigate = useNavigate();
@@ -49,6 +51,7 @@ function RegisterContainer() {
     e.preventDefault();
 
     if (!canSubmit) return;
+    setFeedback(null);
 
     try {
       setStatus("loading");
@@ -72,17 +75,26 @@ function RegisterContainer() {
     } catch (error: any) {
       setStatus("idle");
 
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.title ||
-        "Registration failed. Please try again.";
+      const data = error.response?.data;
+      const validationErrors = data?.errors
+        ? (Object.values(data.errors).flat() as string[]).join("\n")
+        : "";
+      const message = !error.response
+        ? "Cannot reach the server. Check that the API is running and allows this site (CORS)."
+        : validationErrors ||
+          data?.detail ||
+          data?.message ||
+          data?.title ||
+          "Registration failed. Please try again.";
 
-      alert(message);
+      console.error("Register failed:", error.response?.status, data ?? error);
+      setFeedback({ type: "error", text: message });
     }
   };
 
   const handleVerifyOtp = async (e: FormEvent) => {
     e.preventDefault();
+    setFeedback(null);
     try {
       setStatus("loading");
       await confirmEmail({ email: formData.email, token: otp });
@@ -91,11 +103,13 @@ function RegisterContainer() {
       setStatus("success");
     } catch (error: any) {
       setStatus("idle");
-      alert(
-        error.response?.data?.detail ||
+      setFeedback({
+        type: "error",
+        text:
+          error.response?.data?.detail ||
           error.response?.data?.title ||
           "The code is invalid or expired.",
-      );
+      });
     }
   };
 
@@ -104,10 +118,10 @@ function RegisterContainer() {
       setStatus("loading");
       await resendConfirmation({ email: formData.email });
       setStatus("idle");
-      alert("If the account can receive a code, a new code has been sent.");
+      setFeedback({ type: "info", text: "If the account can receive a code, a new code has been sent." });
     } catch (error: any) {
       setStatus("idle");
-      alert(error.response?.data?.detail || "Could not resend the code. Please try again.");
+      setFeedback({ type: "error", text: error.response?.data?.detail || "Could not resend the code. Please try again." });
     }
   };
 
@@ -127,6 +141,8 @@ function RegisterContainer() {
     >
       <RegisterComponent
         status={status}
+        feedback={feedback}
+        onDismissFeedback={() => setFeedback(null)}
         verificationPending={verificationPending}
         verified={verified}
         otp={otp}

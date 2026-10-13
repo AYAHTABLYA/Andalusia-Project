@@ -5,6 +5,8 @@ import type { RegisterFormValues } from "../../Types/registerFormType";
 
 import type { SubmitStatus } from "../../Types/SubmitStatus";
 import { CAMPUSES, PHONE_CODES } from "./constants";
+import AuthNotice from "../AuthLayout/AuthNotice";
+import type { Feedback } from "../../Types/Feedback";
 import "./Style.css";
 
 type ChangeHandler = (
@@ -13,6 +15,8 @@ type ChangeHandler = (
 
 function RegisterComponent({
   status,
+  feedback,
+  onDismissFeedback,
   verificationPending,
   verified,
   otp,
@@ -27,6 +31,8 @@ function RegisterComponent({
   handleSubmit,
 }: {
   status: SubmitStatus;
+  feedback: Feedback;
+  onDismissFeedback: () => void;
   verificationPending: boolean;
   verified: boolean;
   otp: string;
@@ -64,6 +70,8 @@ function RegisterComponent({
           Account created successfully.{" "}
         </div>
       )}
+
+      <AuthNotice feedback={feedback} onDismiss={onDismissFeedback} />
 
       {verificationPending ? (
         <div className="register_form">
