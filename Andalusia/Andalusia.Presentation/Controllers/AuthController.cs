@@ -3,10 +3,13 @@ using Andalusia.Shared.Dtos.AuthDtos;
 using AndalusiaApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+
 
 namespace AndalusiaApp.Controllers;
 
 [ApiController]
+[EnableRateLimiting("auth")]
 [Route("api/auth")]
 public class AuthController(IAuthService authService) : ControllerBase
 {
@@ -38,6 +41,24 @@ public class AuthController(IAuthService authService) : ControllerBase
         {
             return Unauthorized(new ProblemDetails { Title = "Authentication Failed", Detail = ex.Message });
         }
+    }
+
+    // POST /api/auth/request-login-otp
+    [HttpPost("request-login-otp")]
+    public async Task<IActionResult> RequestLoginOtp([FromBody] OtpRequestDto dto, CancellationToken ct)
+    {
+        await authService.RequestLoginOtpAsync(dto.Email, ct);
+        return Ok(new { message = "If the verified account exists, a sign-in code has been sent." });
+    }
+
+    // POST /api/auth/verify-login-otp
+    [HttpPost("verify-login-otp")]
+    public async Task<ActionResult<AuthResponseDto>> VerifyLoginOtp([FromBody] OtpVerifyDto dto, CancellationToken ct)
+    {
+        var result = await authService.VerifyLoginOtpAsync(dto.Email, dto.Code, ct);
+        return result is null
+            ? BadRequest(new ProblemDetails { Title = "Invalid code", Detail = "The code is invalid, expired, or already used." })
+            : Ok(result);
     }
 
     // POST /api/auth/confirm-email

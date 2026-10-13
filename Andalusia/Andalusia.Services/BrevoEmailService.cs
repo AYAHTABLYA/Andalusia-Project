@@ -26,7 +26,6 @@ public class BrevoEmailService(
 
         if (string.IsNullOrWhiteSpace(settings.ApiKey) || string.IsNullOrWhiteSpace(settings.SenderEmail))
             throw new InvalidOperationException("Brevo is not configured. Set Brevo:ApiKey and Brevo:SenderEmail.");
-
         var (subject, heading, intro, validity) = purpose switch
         {
             OtpPurpose.PasswordReset => (
@@ -34,11 +33,20 @@ public class BrevoEmailService(
                 "Password reset",
                 "Use the code below to reset your password.",
                 "10 minutes"),
-            _ => (
+
+            OtpPurpose.Login => (
+                "Your Andalusia login code",
+                "Login verification",
+                "Use the code below to sign in to your account.",
+                "5 minutes"),
+
+            OtpPurpose.EmailConfirmation => (
                 "Confirm your Andalusia email",
                 "Confirm your email",
                 "Use the code below to confirm your email address.",
-                "10 minutes")
+                "10 minutes"),
+
+            _ => throw new ArgumentOutOfRangeException(nameof(purpose), purpose, "Unsupported OTP purpose.")
         };
 
         var safeName = WebUtility.HtmlEncode(toName);
