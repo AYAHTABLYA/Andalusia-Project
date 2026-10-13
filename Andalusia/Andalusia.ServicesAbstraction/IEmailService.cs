@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+namespace Andalusia.ServicesAbstraction;
 
-namespace Andalusia.ServicesAbstraction
+public interface IEmailService
 {
-
-    public enum OtpPurpose
-    {
-        EmailVerification,
-        Login,
-        PasswordReset
-    }
-
-    public interface IEmailService
-    {
-        Task SendOtpAsync(string toEmail, string toName, string otp, OtpPurpose purpose, CancellationToken ct = default);
-    }
+    Task SendOtpAsync(
+        string toEmail,
+        string toName,
+        string otp,
+        OtpPurpose purpose,
+        CancellationToken ct = default);
 }

@@ -15,6 +15,7 @@ namespace Andalusia.Services.Specification
 
         public Expression<Func<TEntity, bool>>? Criteria { get; }
         public List<Expression<Func<TEntity, object>>> IncludeExpressions { get; } = [];
+        public List<string> IncludeStrings { get; } = [];
         public Expression<Func<TEntity, object>>? OrderBy { get; private set; }
         public Expression<Func<TEntity, object>>? OrderByDescending { get; private set; }
         public int Skip { get; private set; }
@@ -23,6 +24,10 @@ namespace Andalusia.Services.Specification
 
         protected void AddInclude(Expression<Func<TEntity, object>> includeExpression)
             => IncludeExpressions.Add(includeExpression);
+
+        // For nested includes (ThenInclude), e.g. AddInclude("Programs.Category")
+        protected void AddInclude(string includePath)
+            => IncludeStrings.Add(includePath);
 
         protected void AddOrderBy(Expression<Func<TEntity, object>> orderByExpression)
             => OrderBy = orderByExpression;

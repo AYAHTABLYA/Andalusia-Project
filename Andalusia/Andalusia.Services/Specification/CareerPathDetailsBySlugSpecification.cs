@@ -8,7 +8,6 @@ public class CareerPathDetailsBySlugSpecification : BaseSpecification<CareerPath
     public CareerPathDetailsBySlugSpecification(string slug)
         : base(cp => cp.Slug == slug)
     {
-        AddInclude(cp => cp.Programs);
-        AddInclude(cp => cp.Programs.Select(p => p.Category));
+        AddInclude("Programs.Category");
     }
 }

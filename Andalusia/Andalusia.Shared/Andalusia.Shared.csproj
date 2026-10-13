@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\CareerPathDtos\" />
-    <Folder Include="DTOs\ProgramDtos\" />
-  </ItemGroup>
-
 </Project>

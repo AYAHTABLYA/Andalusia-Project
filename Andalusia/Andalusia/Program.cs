@@ -47,7 +47,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Brevo (transactional email / OTP)
 builder.Services.Configure<BrevoSettings>(builder.Configuration.GetSection("Brevo"));
-builder.Services.AddScoped<IEmailService, MailKitEmailService>();
+builder.Services.AddHttpClient<IEmailService, BrevoEmailService>();
 
 // Rate limiting for /api/auth (protects OTP endpoints from brute force)
 builder.Services.AddRateLimiter(options =>

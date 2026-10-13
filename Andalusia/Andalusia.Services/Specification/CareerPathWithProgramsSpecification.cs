@@ -21,8 +21,7 @@ public class CareerPathWithProgramsSpecification : BaseSpecification<CareerPath>
                  p.Category.Name == query.Domain ||
                  p.Category.Slug == query.Domain)))
     {
-        AddInclude(cp => cp.Programs);
-        AddInclude(cp => cp.Programs.Select(p => p.Category));
+        AddInclude("Programs.Category");
         AddOrderBy(cp => cp.CareerPathId);
 
         var page = Math.Max(query.Page, 1);
