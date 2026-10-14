@@ -16,58 +16,44 @@ export interface RegisterRequest {
 export interface OtpRequest {
   email: string;
 }
+export interface ConfirmEmailRequest {
+  email: string;
+  otp: string;
+}
 export interface OtpVerifyRequest {
   email: string;
   code: string;
 }
 export interface ResetPasswordRequest {
   email: string;
-  token: string;
+  token: string; // the 6-digit code the user typed (sent to the API as `otp`)
   newPassword: string;
 }
 
-export const login = async (data: LoginRequest) =>
-  (await axiosInstance.post("/api/auth/login", data)).data;
-export const register = async (data: RegisterRequest) =>
-  (await axiosInstance.post("/api/auth/register", data)).data;
-export const confirmEmail = async (data: { email: string; otp: string }) =>
-  (await axiosInstance.post("/api/auth/confirm-email", data)).data;
-export const resendConfirmation = async (data: OtpRequest) =>
-  (await axiosInstance.post("/api/auth/resend-confirmation", data)).data;
-export const requestLoginOtp = async (data: OtpRequest) =>
-  (await axiosInstance.post("/api/auth/request-login-otp", data)).data;
-export const verifyLoginOtp = async (data: OtpVerifyRequest) =>
-  (await axiosInstance.post("/api/auth/verify-login-otp", data)).data;
-export const forgotPassword = async (data: OtpRequest) =>
-  (await axiosInstance.post("/api/auth/forgot-password", data)).data;
-export const resetPassword = async (data: ResetPasswordRequest) =>
-  (
-    await axiosInstance.post("/api/auth/reset-password", {
-      email: data.email,
-      otp: data.token,
-      newPassword: data.newPassword,
-    })
-  ).data;
+const post = async <T = any>(url: string, body: unknown): Promise<T> =>
+  (await axiosInstance.post<T>(url, body)).data;
 
-<<<<<<< HEAD
+export const login = (data: LoginRequest) => post("/api/auth/login", data);
+export const register = (data: RegisterRequest) =>
+  post("/api/auth/register", data);
+export const confirmEmail = (data: ConfirmEmailRequest) =>
+  post("/api/auth/confirm-email", data);
+export const resendConfirmation = (data: OtpRequest) =>
+  post("/api/auth/resend-confirmation", data);
+export const requestLoginOtp = (data: OtpRequest) =>
+  post("/api/auth/request-login-otp", data);
+export const verifyLoginOtp = (data: OtpVerifyRequest) =>
+  post("/api/auth/verify-login-otp", data);
+export const forgotPassword = (data: OtpRequest) =>
+  post("/api/auth/forgot-password", data);
+export const resetPassword = (data: ResetPasswordRequest) =>
+  post("/api/auth/reset-password", {
+    email: data.email,
+    otp: data.token,
+    newPassword: data.newPassword,
+  });
+
 // Stores { id, name, email, role } + the token, the shape utils/session.ts reads back.
-export const saveAuthenticatedSession = (response: any) => saveSession(response);
-=======
-export const saveAuthenticatedSession = (response: any) => {
-  // AuthResponseDto returns UserId, FullName, Email, Role, Token and ExpiresAt at the root.
-  // The shape saved here must match SessionUser in utils/session.ts ({ id, name, email, role }).
-  const token = response.token ?? response.Token;
-  if (!token) throw new Error("The API did not return an access token.");
-
-  const user = {
-    id: response.userId ?? response.UserId,
-    name: response.fullName ?? response.FullName,
-    email: response.email ?? response.Email,
-    role: response.role ?? response.Role,
-    expiresAt: response.expiresAt ?? response.ExpiresAt,
-  };
-
-  localStorage.setItem("user", JSON.stringify(user));
-  localStorage.setItem("access_token", token);
-};
->>>>>>> bd275f9a140e4655f316ed5e17a7ac76bea524ac
+// Accepts the AuthResponseDto in camelCase or PascalCase and throws if there's no token.
+export const saveAuthenticatedSession = (response: any) =>
+  saveSession(response);
