@@ -32,5 +32,14 @@
     "domains": "/api/career-paths/domains",
     "getBySlug": "/api/career-paths/:slug",
     "syllabus": "/api/career-paths/:slug/syllabus"
+  },
+  "enrollments": {
+    "getAll": "/api/enrollments",
+    "getById": "/api/enrollments/:id"
+  },
+  "applications": {
+    "getAll": "/api/applications",
+    "getById": "/api/applications/:id",
+    "cancel": "/api/applications/:id/cancel"
   }
 }

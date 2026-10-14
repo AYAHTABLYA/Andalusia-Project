@@ -10,13 +10,13 @@ function useProfile() {
     const user = getStoredUser();
     if (!user) return Promise.resolve(MOCK_PROFILE);
 
-    const [firstName = "", ...rest] = user.name.trim().split(/\s+/);
+    const [firstName = "", ...rest] = (user.name ?? "").trim().split(/\s+/);
     return Promise.resolve<ProfileData>({
       ...MOCK_PROFILE,
       firstName,
       lastName: rest.join(" "),
       email: user.email,
-      studentId: `#AA-${String(user.id).padStart(4, "0")}`,
+      studentId: `#AA-${String(user.id ?? 0).padStart(4, "0")}`,
     });
   }, []);
 }

@@ -37,12 +37,13 @@ function LoginContainer() {
   const showError = (error: any, fallback: string) =>
     setFeedback({
       type: "error",
-      text: !error.response && error.message === "Network Error"
-        ? "Cannot reach the server. Check that the API is running."
-        : error.response?.data?.detail ||
-          error.response?.data?.title ||
-          error.response?.data?.message ||
-          fallback,
+      text:
+        !error.response && error.message === "Network Error"
+          ? "Cannot reach the server. Check that the API is running."
+          : error.response?.data?.detail ||
+            error.response?.data?.title ||
+            error.response?.data?.message ||
+            fallback,
     });
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -53,7 +54,7 @@ function LoginContainer() {
         const response = await login(formData);
         saveAuthenticatedSession(response);
         setStatus("success");
-        navigate("/");
+        navigate("/profile");
       } else if (mode === "login-otp") {
         const response = await verifyLoginOtp({
           email: formData.email,
@@ -61,12 +62,15 @@ function LoginContainer() {
         });
         saveAuthenticatedSession(response);
         setStatus("success");
-        navigate("/");
+        navigate("/profile");
       } else if (mode === "forgot-request") {
         await forgotPassword({ email: formData.email });
         setMode("forgot-reset");
         setStatus("idle");
-        setFeedback({ type: "info", text: "If the email exists, a password reset code has been sent." });
+        setFeedback({
+          type: "info",
+          text: "If the email exists, a password reset code has been sent.",
+        });
       } else {
         if (newPassword !== confirmPassword)
           throw new Error("Passwords do not match.");
@@ -103,7 +107,10 @@ function LoginContainer() {
         await requestLoginOtp({ email: formData.email });
         setMode(nextMode);
         setStatus("idle");
-        setFeedback({ type: "info", text: "If the verified account exists, a sign-in code has been sent." });
+        setFeedback({
+          type: "info",
+          text: "If the verified account exists, a sign-in code has been sent.",
+        });
       } catch (error: any) {
         setStatus("idle");
         showError(error, "Could not request a sign-in code.");

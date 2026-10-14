@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 
 const rawBase =
   (import.meta.env.VITE_API_URL as string | undefined) ??
-  "http://localhost:5152";
+  "https://localhost:7001";
 
 export const API_BASE_URL = rawBase.replace(/\/+$/, "");
 export const ACCESS_TOKEN_KEY = "access_token";
