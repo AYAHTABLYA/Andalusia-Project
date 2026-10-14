@@ -13,7 +13,7 @@ namespace AndalusiaApp.Data.Configurations
             builder.ToTable("APPLICATIONS", t =>
             {
                 t.HasCheckConstraint("CK_Applications_CourseXorProgram", xor);
-                t.HasCheckConstraint("CK_Applications_Status", "[Status] IN ('Submitted','Under_Review','Approved','Rejected')");
+                t.HasCheckConstraint("CK_Applications_Status", "[Status] IN ('Submitted','Under_Review','Approved','Rejected','Cancelled')");
             });
 
             builder.HasKey(x => x.ApplicationId);

@@ -1,9 +1,11 @@
 ﻿using Andalusia.ServicesAbstraction;
 using Andalusia.Shared.Dtos.AuthDtos;
 using AndalusiaApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 
 
 namespace AndalusiaApp.Controllers;
@@ -41,24 +43,15 @@ public class AuthController(IAuthService authService) : ControllerBase
         {
             return Unauthorized(new ProblemDetails { Title = "Authentication Failed", Detail = ex.Message });
         }
-    }
-
-    // POST /api/auth/request-login-otp
-    [HttpPost("request-login-otp")]
-    public async Task<IActionResult> RequestLoginOtp([FromBody] OtpRequestDto dto, CancellationToken ct)
-    {
-        await authService.RequestLoginOtpAsync(dto.Email, ct);
-        return Ok(new { message = "If the verified account exists, a sign-in code has been sent." });
-    }
-
-    // POST /api/auth/verify-login-otp
-    [HttpPost("verify-login-otp")]
-    public async Task<ActionResult<AuthResponseDto>> VerifyLoginOtp([FromBody] OtpVerifyDto dto, CancellationToken ct)
-    {
-        var result = await authService.VerifyLoginOtpAsync(dto.Email, dto.Code, ct);
-        return result is null
-            ? BadRequest(new ProblemDetails { Title = "Invalid code", Detail = "The code is invalid, expired, or already used." })
-            : Ok(result);
+        catch (EmailNotConfirmedException ex)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails
+            {
+                Title = "Email not confirmed",
+                Detail = "Your email is not confirmed. We sent a confirmation code to your email, please confirm it to continue.",
+                Extensions = { ["code"] = "EMAIL_NOT_CONFIRMED", ["email"] = ex.Email }
+            });
+        }
     }
 
     // POST /api/auth/confirm-email
@@ -75,16 +68,24 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("resend-confirmation")]
     public async Task<IActionResult> ResendConfirmation([FromBody] ResendConfirmationDto dto, CancellationToken ct)
     {
-        await authService.ResendConfirmationEmailAsync(dto, ct);
-        return Ok(new { message = "If the email is eligible, a confirmation link has been resent." });
+        try
+        {
+            await authService.ResendConfirmationEmailAsync(dto, ct);
+            return Ok(new { message = "If the email is eligible, a confirmation code has been resent." });
+        }
+        catch (OtpCooldownException ex) { return Cooldown(ex); }
     }
 
     // POST /api/auth/forgot-password
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto, CancellationToken ct)
     {
-        await authService.ForgotPasswordAsync(dto, ct);
-        return Ok(new { message = "If the email exists, a password reset link has been dispatched." });
+        try
+        {
+            await authService.ForgotPasswordAsync(dto, ct);
+            return Ok(new { message = "If the email exists, a password reset code has been sent." });
+        }
+        catch (OtpCooldownException ex) { return Cooldown(ex); }
     }
 
     // POST /api/auth/reset-password
@@ -104,5 +105,43 @@ public class AuthController(IAuthService authService) : ControllerBase
         if (string.IsNullOrWhiteSpace(email)) return BadRequest("Email is required.");
         var isAvailable = await authService.IsEmailAvailableAsync(email, ct);
         return Ok(new { email, isAvailable });
+    }
+
+    // GET /api/auth/me
+    [Authorize]
+    [DisableRateLimiting]
+    [HttpGet("me")]
+    public async Task<ActionResult<CurrentUserDto>> Me(CancellationToken ct)
+    {
+        var claim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        if (!long.TryParse(claim, out var userId)) return Unauthorized();
+
+        var me = await authService.GetCurrentUserAsync(userId, ct);
+        return me is null ? Unauthorized() : Ok(me);
+    }
+
+    // POST /api/auth/logout
+    [Authorize]
+    [DisableRateLimiting]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(CancellationToken ct)
+    {
+        var header = Request.Headers.Authorization.ToString();
+        const string prefix = "Bearer ";
+        if (header.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            await authService.LogoutAsync(header[prefix.Length..].Trim(), ct);
+
+        return Ok(new { message = "Logged out successfully." });
+    }
+
+    private ObjectResult Cooldown(OtpCooldownException ex)
+    {
+        Response.Headers.RetryAfter = ex.SecondsLeft.ToString();
+        return StatusCode(StatusCodes.Status429TooManyRequests, new ProblemDetails
+        {
+            Title = "Too many requests",
+            Detail = ex.Message,
+            Extensions = { ["secondsLeft"] = ex.SecondsLeft }
+        });
     }
 }

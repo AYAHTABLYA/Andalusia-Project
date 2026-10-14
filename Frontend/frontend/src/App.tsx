@@ -13,6 +13,11 @@ import CourseDetailContainer from "./Components/Academy/CourseDetail/CourseDetai
 import PortalLayout from "./Components/Portal/PortalLayout";
 import ProfileContainer from "./Components/Portal/Profile/ProfileContainer";
 import PaymentsContainer from "./Components/Portal/Payments/PaymentsContainer";
+import ApplicationsContainer from "./Components/Portal/Applications/ApplicationsContainer";
+import ApplicationDetailContainer from "./Components/Portal/Applications/ApplicationDetailContainer";
+import EnrollmentContainer from "./Components/Portal/Enrollment/EnrollmentContainer";
+import EnrollmentsContainer from "./Components/Portal/Enrollments/EnrollmentsContainer";
+import EnrollmentDetailContainer from "./Components/Portal/Enrollments/EnrollmentDetailContainer";
 
 function App() {
   return (
@@ -42,6 +47,11 @@ function App() {
           <Route element={<PortalLayout />}>
             <Route path="/profile" element={<ProfileContainer />} />
             <Route path="/payments" element={<PaymentsContainer />} />
+            <Route path="/applications" element={<ApplicationsContainer />} />
+            <Route path="/applications/:id" element={<ApplicationDetailContainer />} />
+            <Route path="/enrollments" element={<EnrollmentsContainer />} />
+            <Route path="/enrollments/:id" element={<EnrollmentDetailContainer />} />
+            <Route path="/enrollments/new" element={<EnrollmentContainer />} />
           </Route>
         </Routes>
       </Router>

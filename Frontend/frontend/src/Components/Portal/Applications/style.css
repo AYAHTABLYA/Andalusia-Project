@@ -1,0 +1,520 @@
+.portal-workspace {
+  width: 100%;
+}
+.portal-crumb {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 1.2rem;
+  font-size: 0.75rem;
+  color: var(--color-on-surface-variant);
+}
+.portal-crumb a {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+.portal-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.portal-page-heading h1 {
+  margin: 0.2rem 0 0.35rem;
+  font-size: clamp(1.7rem, 3vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+.portal-page-heading p {
+  color: var(--color-on-surface-variant);
+  font-size: 0.875rem;
+}
+.portal-eyebrow {
+  color: var(--color-primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+.portal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition:
+    transform 0.2s,
+    background 0.2s;
+  white-space: nowrap;
+}
+.portal-btn:hover {
+  transform: translateY(-1px);
+}
+.portal-btn-primary {
+  color: white !important;
+  background: var(--color-primary) !important;
+  box-shadow: 0 5px 14px rgba(120, 75, 55, 0.15);
+}
+.portal-btn-primary:hover {
+  background: var(--color-primary-dark) !important;
+}
+.portal-btn-secondary {
+  border: 1px solid var(--color-outline) !important;
+  background: var(--color-surface-bright) !important;
+  color: var(--color-on-surface) !important;
+}
+.portal-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.portal-stat,
+.portal-card {
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 5px 20px rgba(52, 37, 28, 0.035);
+}
+.portal-stat {
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.portal-stat > span {
+  color: var(--color-on-surface-variant);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.portal-stat strong {
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+.portal-stat small {
+  color: var(--color-on-surface-variant);
+  font-size: 0.7rem;
+}
+.application-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+}
+.application-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.portal-filter {
+  padding: 0.55rem 0.8rem;
+  border-radius: 0.55rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.75rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.portal-filter.is-active {
+  background: var(--color-primary) !important;
+  color: white !important;
+}
+.portal-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: min(100%, 18rem);
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-outline);
+  border-radius: 0.6rem;
+  background: var(--color-surface);
+}
+.portal-search .material-symbols-outlined {
+  color: var(--color-on-surface-variant);
+  font-size: 1.1rem;
+}
+.portal-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0 !important;
+  outline: 0;
+  background: transparent !important;
+  font-size: 0.78rem;
+  box-shadow: none !important;
+}
+.application-list {
+  display: grid;
+  gap: 1rem;
+}
+.application-card {
+  padding: 1.25rem 1.4rem;
+}
+.application-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.application-card-top > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+.application-id {
+  font-family: ui-monospace, monospace;
+  font-size: 0.7rem;
+  color: var(--color-on-surface-variant);
+}
+.portal-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.67rem;
+  line-height: 1.35;
+  font-weight: 750;
+}
+.status-accepted {
+  color: #166534;
+  background: #e8f5ec;
+  border-color: #c7e7d0;
+}
+.status-approved {
+  color: #166534;
+  background: #e8f5ec;
+  border-color: #c7e7d0;
+}
+.status-rejected {
+  color: #991b1b;
+  background: #fdeaea;
+  border-color: #f4c7c7;
+}
+.status-cancelled,
+.status-submitted {
+  color: #57534e;
+  background: #f4f2ef;
+  border-color: #e2ded8;
+}
+.status-under_review,
+.status-review {
+  color: #92400e;
+  background: #fdf3dc;
+  border-color: #f4d99d;
+}
+.status-draft {
+  color: #57534e;
+  background: #f4f2ef;
+  border-color: #e2ded8;
+}
+.application-date {
+  color: var(--color-on-surface-variant);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+.application-card h2 {
+  margin: 0.8rem 0 0.25rem;
+  font-size: 1.05rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+.application-track {
+  color: var(--color-primary);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+.application-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 1.4rem;
+  margin-top: 1rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.74rem;
+}
+.application-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.application-meta .material-symbols-outlined {
+  font-size: 1rem;
+}
+.application-progress {
+  max-width: 24rem;
+  margin-top: 1rem;
+}
+.application-progress > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  font-size: 0.72rem;
+}
+.progress-track {
+  height: 0.4rem;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--color-surface-container);
+}
+.progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--color-primary);
+}
+.application-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-outline-variant);
+}
+.application-card-bottom p {
+  color: var(--color-on-surface-variant);
+  font-size: 0.76rem;
+}
+.application-card-bottom p strong {
+  color: var(--color-on-surface);
+}
+.application-empty {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+.application-empty > .material-symbols-outlined {
+  color: var(--color-primary);
+  font-size: 2rem;
+}
+.application-empty h2 {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+.application-empty p {
+  margin-bottom: 1rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.8rem;
+}
+/* Enrollment form */
+.enrollment-notice {
+  display: flex;
+  gap: 1rem;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  background: var(--color-surface-container-low);
+}
+.enrollment-notice > .material-symbols-outlined {
+  color: var(--color-primary);
+  font-size: 1.6rem;
+}
+.enrollment-notice strong {
+  font-size: 0.85rem;
+}
+.enrollment-notice p {
+  margin-top: 0.25rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.76rem;
+}
+.enrollment-form {
+  padding: 1.4rem;
+}
+.enrollment-section {
+  padding: 0 0 1.5rem;
+}
+.enrollment-section + .enrollment-section {
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--color-outline-variant);
+}
+.enrollment-section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 1.1rem;
+}
+.enrollment-section-heading > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.6rem;
+  background: var(--color-surface-container-low);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.enrollment-section-heading h2 {
+  font-size: 1rem;
+  font-weight: 750;
+}
+.enrollment-section-heading p {
+  margin-top: 0.2rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.75rem;
+}
+.enrollment-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.enrollment-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.enrollment-fields input,
+.enrollment-fields select,
+.enrollment-fields textarea {
+  width: 100%;
+  min-height: 2.65rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-outline) !important;
+  border-radius: 0.6rem;
+  background: var(--color-surface) !important;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+.enrollment-fields textarea {
+  resize: vertical;
+}
+.enrollment-fields .field-full {
+  grid-column: 1/-1;
+}
+.enrollment-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-outline-variant);
+}
+.portal-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(28, 24, 21, 0.5);
+  backdrop-filter: blur(4px);
+}
+.portal-modal {
+  width: min(100%, 30rem);
+  padding: 1.5rem;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 1rem;
+  background: var(--color-surface-bright);
+  box-shadow: 0 25px 80px #0003;
+}
+.portal-modal .modal-icon {
+  display: grid;
+  place-items: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  margin-bottom: 0.8rem;
+  border-radius: 0.7rem;
+  background: var(--color-surface-container-low);
+  color: var(--color-primary);
+  font-size: 1.5rem;
+}
+.portal-modal h2 {
+  margin-bottom: 0.6rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+.portal-modal p {
+  margin-bottom: 0.7rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.8rem;
+}
+.portal-modal .modal-note {
+  padding: 0.7rem;
+  border-radius: 0.55rem;
+  background: var(--color-surface-container-low);
+}
+.portal-modal .enrollment-actions {
+  margin-top: 1rem;
+}
+.portal-inline-toast {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  max-width: min(34rem, calc(100vw - 2rem));
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 0.75rem;
+  background: var(--color-surface-bright);
+  box-shadow: 0 12px 35px #0002;
+  font-size: 0.78rem;
+}
+.portal-inline-toast > .material-symbols-outlined {
+  color: var(--color-primary);
+}
+.portal-inline-toast button {
+  margin-left: auto;
+  font-size: 1.25rem;
+}
+@media (max-width: 800px) {
+  .portal-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .application-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .portal-search {
+    width: 100%;
+  }
+}
+@media (max-width: 560px) {
+  .portal-page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .portal-stat-grid {
+    gap: 0.65rem;
+  }
+  .portal-stat {
+    padding: 0.9rem;
+  }
+  .application-card {
+    padding: 1rem;
+  }
+  .application-card-top {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .application-card-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .enrollment-fields {
+    grid-template-columns: 1fr;
+  }
+  .enrollment-fields .field-full {
+    grid-column: auto;
+  }
+  .enrollment-form {
+    padding: 1rem;
+  }
+}
+html[dir="rtl"] .application-id {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+html[dir="rtl"] .application-date,
+html[dir="rtl"] .application-track,
+html[dir="rtl"] .application-meta span {
+  unicode-bidi: plaintext;
+}

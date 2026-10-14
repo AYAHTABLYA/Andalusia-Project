@@ -28,7 +28,10 @@ public class DataInitializer : IDataInitializer
         // Demo accounts only in Development (never ship default passwords to production)
         var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         if (string.Equals(env, "Development", StringComparison.OrdinalIgnoreCase))
+        {
             await SeedDemoUsersAsync();
+            await SeedDemoPortalRecordsAsync();
+        }
     }
 
     // =====================================================================
@@ -510,6 +513,108 @@ public class DataInitializer : IDataInitializer
 
             _db.Users.Add(user);
         }
+
+        await _db.SaveChangesAsync();
+    }
+
+    // =====================================================================
+    // 3b) Demo applications + enrollments for the demo learner (Development only)
+    // =====================================================================
+    private async Task SeedDemoPortalRecordsAsync()
+    {
+        var learner = await _db.Users.FirstOrDefaultAsync(u => u.Email == "learner@andalusia.local");
+        if (learner is null) return;
+
+        // Idempotent: do nothing if this learner already has portal records.
+        if (await _db.Applications.AnyAsync(a => a.UserId == learner.UserId)
+            || await _db.Enrollments.AnyAsync(e => e.UserId == learner.UserId))
+            return;
+
+        var courses = await _db.Courses.OrderBy(c => c.CourseId).Take(4).ToListAsync();
+        var programs = await _db.Set<ProgramEntity>().OrderBy(p => p.ProgramId).Take(2).ToListAsync();
+        if (courses.Count < 3 || programs.Count < 1) return;
+
+        var now = DateTime.UtcNow;
+
+        // Programs have scheduled batches; use one for the approved program application.
+        var schedule = await _db.Schedules
+            .Where(s => s.ProgramId == programs[0].ProgramId)
+            .OrderBy(s => s.StartDate)
+            .FirstOrDefaultAsync();
+
+        // --- Applications: one per status (course XOR program, as the DB check constraint requires) ---
+        var approvedProgramApp = new Application
+        {
+            UserId = learner.UserId,
+            ProgramId = programs[0].ProgramId,
+            ScheduleId = schedule?.ScheduleId,
+            Status = ApplicationStatus.Approved,
+            SubmissionDate = now.AddDays(-30)
+        };
+        var approvedCourseApp = new Application
+        {
+            UserId = learner.UserId,
+            CourseId = courses[0].CourseId,
+            Status = ApplicationStatus.Approved,
+            SubmissionDate = now.AddDays(-60)
+        };
+        var underReviewCourseApp = new Application
+        {
+            UserId = learner.UserId,
+            CourseId = courses[1].CourseId,
+            Status = ApplicationStatus.Under_Review,
+            SubmissionDate = now.AddDays(-5)
+        };
+        var submittedCourseApp = new Application
+        {
+            UserId = learner.UserId,
+            CourseId = courses[2].CourseId,
+            Status = ApplicationStatus.Submitted,
+            SubmissionDate = now.AddDays(-1)
+        };
+        var rejectedApp = new Application
+        {
+            UserId = learner.UserId,
+            CourseId = courses.Count > 3 ? courses[3].CourseId : courses[2].CourseId,
+            Status = ApplicationStatus.Rejected,
+            SubmissionDate = now.AddDays(-45)
+        };
+
+        _db.Applications.AddRange(approvedProgramApp, approvedCourseApp, underReviewCourseApp,
+            submittedCourseApp, rejectedApp);
+
+        if (programs.Count > 1)
+        {
+            _db.Applications.Add(new Application
+            {
+                UserId = learner.UserId,
+                ProgramId = programs[1].ProgramId,
+                Status = ApplicationStatus.Cancelled,
+                SubmissionDate = now.AddDays(-20)
+            });
+        }
+
+        await _db.SaveChangesAsync(); // generates ApplicationId values used below
+
+        // --- Enrollments created from the approved applications (ApplicationId is unique per enrollment) ---
+        _db.Enrollments.AddRange(
+            new Enrollment
+            {
+                UserId = learner.UserId,
+                ProgramId = programs[0].ProgramId,
+                ScheduleId = schedule?.ScheduleId,
+                ApplicationId = approvedProgramApp.ApplicationId,
+                Status = EnrollmentStatus.Active,
+                EnrolledAt = now.AddDays(-28)
+            },
+            new Enrollment
+            {
+                UserId = learner.UserId,
+                CourseId = courses[0].CourseId,
+                ApplicationId = approvedCourseApp.ApplicationId,
+                Status = EnrollmentStatus.Completed,
+                EnrolledAt = now.AddDays(-58)
+            });
 
         await _db.SaveChangesAsync();
     }

@@ -1,6 +1,7 @@
 using Andalusia.Domain.Contracts;
 using Andalusia.Persistance.Data.DataSeed;
 using Andalusia.Persistance.Repositories;
+using Andalusia.Services;
 using Andalusia.ServicesAbstraction;
 using AndalusiaApp.Data;
 using AndalusiaApp.Services;
@@ -10,8 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
-using System.Threading.RateLimiting;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,7 +46,7 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// Brevo (transactional email / OTP)
+// Email / OTP via Brevo SMTP (MailKit) - reads Brevo:Host/Port/UserName/Password/SenderEmail
 builder.Services.AddScoped<IEmailService, MailKitEmailService>();
 
 // Rate limiting for /api/auth (protects OTP endpoints from brute force)
@@ -64,6 +65,13 @@ builder.Services.AddRateLimiter(options =>
 });
 builder.Services.AddScoped<IProgramService, ProgramService>();
 builder.Services.AddScoped<ICareerPathService, CareerPathService>();
+builder.Services.AddScoped<
+    IPortalRecordsService,
+    PortalRecordsService>();
+builder.Services.AddSingleton<ITokenBlacklist, InMemoryTokenBlacklist>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ILearnerDashboardService, LearnerDashboardService>();
 
 // ==========================================
 // 3. Authentication & JWT
@@ -90,6 +98,20 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtAudience,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
+    };
+
+    // Logout support: reject tokens whose jti was revoked.
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            var blacklist = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklist>();
+            var jti = context.SecurityToken?.Id;
+            if (!string.IsNullOrEmpty(jti) && blacklist.IsRevoked(jti))
+                context.Fail("This token has been revoked (logged out).");
+
+            return Task.CompletedTask;
+        }
     };
 });
 

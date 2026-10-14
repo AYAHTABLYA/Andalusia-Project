@@ -97,7 +97,7 @@ function RegisterContainer() {
     setFeedback(null);
     try {
       setStatus("loading");
-      await confirmEmail({ email: formData.email, token: otp });
+      await confirmEmail({ email: formData.email, otp });
       setVerified(true);
       setVerificationPending(false);
       setStatus("success");
@@ -118,10 +118,18 @@ function RegisterContainer() {
       setStatus("loading");
       await resendConfirmation({ email: formData.email });
       setStatus("idle");
-      setFeedback({ type: "info", text: "If the account can receive a code, a new code has been sent." });
+      setFeedback({
+        type: "info",
+        text: "If the account can receive a code, a new code has been sent.",
+      });
     } catch (error: any) {
       setStatus("idle");
-      setFeedback({ type: "error", text: error.response?.data?.detail || "Could not resend the code. Please try again." });
+      setFeedback({
+        type: "error",
+        text:
+          error.response?.data?.detail ||
+          "Could not resend the code. Please try again.",
+      });
     }
   };
 

@@ -12,7 +12,7 @@ namespace Andalusia.ServicesAbstraction
         Task<bool> ResetPasswordAsync(ResetPasswordDto dto, CancellationToken ct = default);
         Task<bool> IsEmailAvailableAsync(string email, CancellationToken ct = default);
         Task<IReadOnlyList<CampusDto>> GetCampusesAsync(CancellationToken ct = default);
-        Task<bool> RequestLoginOtpAsync(string email, CancellationToken ct = default);
-        Task<AuthResponseDto?> VerifyLoginOtpAsync(string email, string code, CancellationToken ct = default);
+        Task<CurrentUserDto?> GetCurrentUserAsync(long userId, CancellationToken ct = default);
+        Task LogoutAsync(string accessToken, CancellationToken ct = default);
     }
 }

@@ -215,7 +215,7 @@ namespace Andalusia.Persistance.Migrations
                         {
                             t.HasCheckConstraint("CK_Applications_CourseXorProgram", "([CourseId] IS NOT NULL AND [ProgramId] IS NULL) OR ([CourseId] IS NULL AND [ProgramId] IS NOT NULL)");
 
-                            t.HasCheckConstraint("CK_Applications_Status", "[Status] IN ('Submitted','Under_Review','Approved','Rejected')");
+                            t.HasCheckConstraint("CK_Applications_Status", "[Status] IN ('Submitted','Under_Review','Approved','Rejected','Cancelled')");
                         });
                 });
 

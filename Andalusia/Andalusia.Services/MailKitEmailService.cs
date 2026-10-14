@@ -54,7 +54,7 @@ public class MailKitEmailService(
 
         message.Body = bodyBuilder.ToMessageBody();
 
-        using var client = new SmtpClient();
+        using var client = new SmtpClient { Timeout = 10_000 };
         try
         {
             // الاتصال بسيرفر SMTP مع تفعيل تشفير StartTLS

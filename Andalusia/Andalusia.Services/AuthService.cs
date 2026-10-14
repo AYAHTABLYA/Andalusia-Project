@@ -1,4 +1,5 @@
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
 using Andalusia.Domain.Contracts;
@@ -14,11 +15,11 @@ public class AuthService(
     IUnitOfWork uow,
     ITokenService tokenService,
     IEmailService emailService,
-    ILogger<AuthService> logger) : IAuthService
+    ILogger<AuthService> logger,
+    ITokenBlacklist blacklist) : IAuthService
 {
     private static readonly TimeSpan OtpLifetime = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan ResendCooldown = TimeSpan.FromSeconds(60);
-    private static readonly TimeSpan LoginOtpLifetime = TimeSpan.FromMinutes(5);
 
     // Register: create an unverified account and send an email confirmation OTP.
     public async Task<RegisterResponseDto> RegisterAsync(
@@ -87,7 +88,13 @@ public class AuthService(
             throw new UnauthorizedAccessException("This account is disabled.");
 
         if (!user.IsEmailVerified)
+        {
+            // Send a fresh confirmation code so the user can confirm right away.
+            try { await IssueEmailOtpAsync(user, ct); }
+            catch (OtpCooldownException) { /* a code was sent recently, reuse it */ }
+
             throw new EmailNotConfirmedException(user.Email);
+        }
 
         var roleName = await GetUserRoleNameAsync(user.UserId);
         var (token, expires) = tokenService.GenerateToken(user, roleName);
@@ -206,104 +213,6 @@ public class AuthService(
 
         await uow.SaveChangesAsync();
         return true;
-    }
-
-    // Request a separate OTP for passwordless login.
-    public async Task<bool> RequestLoginOtpAsync(
-        string email,
-        CancellationToken ct = default)
-    {
-        var normalizedEmail = Normalize(email);
-
-        var user = await uow.GetRepository<User>()
-            .GetAsync(new UserByEmailSpecification(normalizedEmail));
-
-        if (user is null || !user.IsEmailVerified || !user.IsActive)
-            return false;
-
-        var loginTokenRepo = uow.GetRepository<PasswordResetToken>();
-
-        var existingTokens = await loginTokenRepo.GetAllAsync(
-            trackChanges: true);
-
-        foreach (var oldToken in existingTokens.Where(t =>
-                     t.UserId == user.UserId &&
-                     t.Token.StartsWith("LOGIN:", StringComparison.Ordinal) &&
-                     t.UsedAt == null))
-        {
-            oldToken.UsedAt = DateTime.UtcNow;
-        }
-
-        var code = GenerateOtp();
-
-        await loginTokenRepo.AddAsync(new PasswordResetToken
-        {
-            UserId = user.UserId,
-            Token = "LOGIN:" + HashOtp(
-                OtpPurpose.Login,
-                user.UserId,
-                code),
-            ExpiresAt = DateTime.UtcNow.Add(LoginOtpLifetime),
-            CreatedAt = DateTime.UtcNow
-        });
-
-        await uow.SaveChangesAsync();
-
-        await SendSafelyAsync(user, code, OtpPurpose.Login, ct);
-
-        return true;
-    }
-
-    // Verify login OTP and issue a JWT.
-    public async Task<AuthResponseDto?> VerifyLoginOtpAsync(
-        string email,
-        string code,
-        CancellationToken ct = default)
-    {
-        if (string.IsNullOrWhiteSpace(code))
-            return null;
-
-        code = code.Trim();
-
-        if (code.Length != 6 || !code.All(char.IsDigit))
-            return null;
-
-        var user = await uow.GetRepository<User>()
-            .GetAsync(new UserByEmailSpecification(Normalize(email)));
-
-        if (user is null || !user.IsEmailVerified || !user.IsActive)
-            return null;
-
-        var hash = "LOGIN:" + HashOtp(
-            OtpPurpose.Login,
-            user.UserId,
-            code);
-
-        var tokens = await uow.GetRepository<PasswordResetToken>()
-            .GetAllAsync(trackChanges: true);
-
-        var validToken = tokens.FirstOrDefault(t =>
-            t.UserId == user.UserId &&
-            t.Token == hash &&
-            t.UsedAt == null &&
-            t.ExpiresAt > DateTime.UtcNow);
-
-        if (validToken is null)
-            return null;
-
-        validToken.UsedAt = DateTime.UtcNow;
-        await uow.SaveChangesAsync();
-
-        var roleName = await GetUserRoleNameAsync(user.UserId);
-        var (jwt, expires) = tokenService.GenerateToken(user, roleName);
-
-        return new AuthResponseDto(
-            user.UserId,
-            $"{user.FirstName} {user.LastName}".Trim(),
-            user.Email,
-            roleName,
-            jwt,
-            expires);
     }
 
     public async Task<bool> IsEmailAvailableAsync(
@@ -467,6 +376,40 @@ public class AuthService(
             .GetByIdAsync(roleId.Value);
 
         return role?.Name ?? "Learner";
+    }
+
+    // GET /api/auth/me
+    public async Task<CurrentUserDto?> GetCurrentUserAsync(long userId, CancellationToken ct = default)
+    {
+        var user = await uow.GetRepository<User>().GetByIdAsync(userId);
+        if (user is null || !user.IsActive)
+            return null;
+
+        var roleName = await GetUserRoleNameAsync(userId);
+
+        return new CurrentUserDto(
+            user.UserId,
+            $"{user.FirstName} {user.LastName}".Trim(),
+            user.Email,
+            roleName,
+            user.IsEmailVerified);
+    }
+
+    // POST /api/auth/logout: revokes the token id (jti) until the token expires.
+    public Task LogoutAsync(string accessToken, CancellationToken ct = default)
+    {
+        try
+        {
+            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+            if (!string.IsNullOrEmpty(jwt.Id))
+                blacklist.Revoke(jwt.Id, jwt.ValidTo);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Logout received an unreadable token.");
+        }
+
+        return Task.CompletedTask;
     }
 
     private static string Normalize(string email) =>
