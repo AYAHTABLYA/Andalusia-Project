@@ -35,7 +35,6 @@
     "getBySlug": "/api/career-paths/:slug",
     "syllabus": "/api/career-paths/:slug/syllabus"
   },
-<<<<<<< HEAD
   "profile": {
     "get": "/api/profile",
     "update": "/api/profile",
@@ -49,7 +48,7 @@
   },
   "learner": {
     "dashboard": "/api/learner/dashboard"
-=======
+  },
   "enrollments": {
     "getAll": "/api/enrollments",
     "getById": "/api/enrollments/:id"
@@ -58,6 +57,5 @@
     "getAll": "/api/applications",
     "getById": "/api/applications/:id",
     "cancel": "/api/applications/:id/cancel"
->>>>>>> bd275f9a140e4655f316ed5e17a7ac76bea524ac
   }
 }
