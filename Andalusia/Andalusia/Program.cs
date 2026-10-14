@@ -45,7 +45,7 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// Brevo (transactional email / OTP)
+// Email / OTP via Brevo SMTP (MailKit) - reads Brevo:Host/Port/UserName/Password/SenderEmail
 builder.Services.AddScoped<IEmailService, MailKitEmailService>();
 
 // Rate limiting for /api/auth (protects OTP endpoints from brute force)
