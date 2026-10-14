@@ -25,7 +25,7 @@ type PaymentsState = {
   loading: boolean;
   errorMessage?: string;
   reload: () => void;
-  payNow: (id: string) => void;
+  payNow: (id: string) => Promise<void>;
 };
 
 export type {

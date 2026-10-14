@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import PortalHeaderContainer from "./Header/PortalHeaderContainer";
 import WorkspaceNavContainer from "./WorkspaceNav/WorkspaceNavContainer";
 import AcademyFooterComponent from "../Academy/Footer/AcademyFooterComponent";
@@ -32,7 +32,12 @@ function PortalShell() {
 
 // Both portal pages need a logged-in learner; everyone else goes to /login.
 function PortalLayout() {
-  return isLoggedIn() ? <PortalShell /> : <Navigate to="/login" replace />;
+  const location = useLocation();
+  return isLoggedIn() ? (
+    <PortalShell />
+  ) : (
+    <Navigate to="/login" replace state={{ from: location.pathname }} />
+  );
 }
 
 export default PortalLayout;

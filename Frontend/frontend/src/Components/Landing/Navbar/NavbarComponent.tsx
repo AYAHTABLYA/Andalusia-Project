@@ -4,12 +4,13 @@ import { LanguageSwitcher } from "../../LanguageSwitcher";
 import "./style.css";
 
 type Props = {
+  signedIn: boolean;
   menuOpen: boolean;
   onToggleMenu: () => void;
   onCloseMenu: () => void;
 };
 
-function NavbarComponent({ menuOpen, onToggleMenu, onCloseMenu }: Props) {
+function NavbarComponent({ signedIn, menuOpen, onToggleMenu, onCloseMenu }: Props) {
   return (
     <header className="navbar" data-purpose="site-navigation">
       <div className="navbar_inner">
@@ -48,8 +49,8 @@ function NavbarComponent({ menuOpen, onToggleMenu, onCloseMenu }: Props) {
 
         <div className="navbar_actions">
           <LanguageSwitcher />
-          <Link className="btn btn-outline navbar_signin" to="/login">
-            Sign In / Portal
+          <Link className="btn btn-outline navbar_signin" to={signedIn ? "/profile" : "/login"}>
+            {signedIn ? "My Portal" : "Sign In / Portal"}
           </Link>
           <Link className="btn btn-primary navbar_apply" to="/register">
             Apply Now
@@ -109,8 +110,8 @@ function NavbarComponent({ menuOpen, onToggleMenu, onCloseMenu }: Props) {
             Campus Portals
           </a>
           <div className="navbar_drawer-cta">
-            <Link className="btn btn-outline" to="/login" onClick={onCloseMenu}>
-              Sign In / Portal
+            <Link className="btn btn-outline" to={signedIn ? "/profile" : "/login"} onClick={onCloseMenu}>
+              {signedIn ? "My Portal" : "Sign In / Portal"}
             </Link>
             <Link
               className="btn btn-primary"

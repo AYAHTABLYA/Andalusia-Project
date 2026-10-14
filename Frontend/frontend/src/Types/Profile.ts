@@ -5,6 +5,7 @@ type ProfileData = {
   email: string;
   phone: string;
   campus: string;
+  campusId: number | null;
   studentId: string;
   memberSince: string;
 };
@@ -12,8 +13,15 @@ type ProfileData = {
 // The fields the learner is allowed to edit.
 type EditableProfile = Pick<
   ProfileData,
-  "firstName" | "lastName" | "title" | "phone" | "campus"
+  "firstName" | "lastName" | "title" | "phone" | "campusId"
 >;
+
+type CampusOption = { id: number; name: string };
+
+type ChangePasswordValues = {
+  currentPassword: string;
+  newPassword: string;
+};
 
 type ProfileMetric = {
   id: string;
@@ -39,4 +47,11 @@ type EnrollmentSummary = {
   deliverableDue: string;
 };
 
-export type { ProfileData, EditableProfile, ProfileMetric, EnrollmentSummary };
+export type {
+  ProfileData,
+  EditableProfile,
+  CampusOption,
+  ChangePasswordValues,
+  ProfileMetric,
+  EnrollmentSummary,
+};

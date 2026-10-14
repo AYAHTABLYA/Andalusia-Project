@@ -3,20 +3,33 @@ import { Link } from "react-router-dom";
 import Breadcrumb from "../../Academy/Shared/Breadcrumb";
 import CatalogState from "../../Academy/Shared/CatalogState";
 import EditProfileDialog from "./EditProfileDialog";
-import { CURRENT_ENROLLMENT, NOTIFICATION_OPTIONS, PROFILE_METRICS } from "./constants";
+import ChangePasswordDialog from "./ChangePasswordDialog";
+import { NOTIFICATION_OPTIONS } from "./constants";
 import { initials } from "../../../utils/format";
-import type { EditableProfile, ProfileData } from "../../../Types/Profile";
+import type {
+  ChangePasswordValues,
+  EditableProfile,
+  EnrollmentSummary,
+  ProfileData,
+  ProfileMetric,
+} from "../../../Types/Profile";
 import "../Shared/style.css";
 import "./style.css";
 
 type Props = {
   profile: ProfileData | null;
+  metrics: ProfileMetric[];
+  enrollment: EnrollmentSummary | null;
   loading: boolean;
   errorMessage?: string;
   editing: boolean;
+  changingPassword: boolean;
   onEdit: () => void;
   onCloseEdit: () => void;
-  onSave: (values: EditableProfile) => void;
+  onSave: (values: EditableProfile) => Promise<void>;
+  onChangePassword: () => void;
+  onClosePassword: () => void;
+  onSubmitPassword: (values: ChangePasswordValues) => Promise<void>;
   onRetry: () => void;
   onNotify: (message: string) => void;
 };
@@ -36,11 +49,10 @@ function ProfileSkeleton() {
 }
 
 function ProfileComponent({
-  profile, loading, errorMessage, editing,
-  onEdit, onCloseEdit, onSave, onRetry, onNotify,
+  profile, metrics, enrollment, loading, errorMessage, editing, changingPassword,
+  onEdit, onCloseEdit, onSave, onChangePassword, onClosePassword, onSubmitPassword,
+  onRetry, onNotify,
 }: Props) {
-  const enrollment = CURRENT_ENROLLMENT;
-
   return (
     <div className="profile">
       <Breadcrumb items={[{ label: "Student Workspace" }, { label: "Profile & Account Settings" }]} />
@@ -114,8 +126,9 @@ function ProfileComponent({
           </section>
 
           {/* 2. Metrics */}
+          {metrics.length > 0 && (
           <section className="profile_metrics" aria-label="Learning overview">
-            {PROFILE_METRICS.map((m) => (
+            {metrics.map((m) => (
               <article key={m.id} className="portal-ui_card profile_metric">
                 <div className="profile_metric-top">
                   <span className="profile_metric-label">{m.label}</span>
@@ -142,6 +155,7 @@ function ProfileComponent({
               </article>
             ))}
           </section>
+          )}
 
           {/* 3. Personal info + enrollment */}
           <div className="profile_columns">
@@ -179,6 +193,7 @@ function ProfileComponent({
               </button>
             </section>
 
+            {enrollment ? (
             <section className="portal-ui_card profile_panel profile_panel--enroll" aria-label="Current enrollment">
               <div className="profile_panel-head">
                 <div className="profile_panel-title">
@@ -236,6 +251,23 @@ function ProfileComponent({
                 </button>
               </div>
             </section>
+            ) : (
+            <section className="portal-ui_card profile_panel profile_panel--enroll" aria-label="Current enrollment">
+              <div className="profile_panel-head">
+                <div className="profile_panel-title">
+                  <span className="material-symbols-outlined">school</span>
+                  <h2>Current Enrolled Program</h2>
+                </div>
+              </div>
+              <p>You are not enrolled in a program yet.</p>
+              <div className="profile_enroll-actions">
+                <Link to="/programs" className="portal-ui_btn portal-ui_btn--primary">
+                  <span className="material-symbols-outlined">search</span>
+                  Browse Programs
+                </Link>
+              </div>
+            </section>
+            )}
           </div>
 
           {/* 4. Security & notifications */}
@@ -260,7 +292,7 @@ function ProfileComponent({
                   <button
                     type="button"
                     className="portal-ui_btn portal-ui_btn--outline portal-ui_btn--sm"
-                    onClick={() => onNotify("Password reset code requested.")}
+                    onClick={onChangePassword}
                   >
                     Change Password
                   </button>
@@ -304,6 +336,9 @@ function ProfileComponent({
 
       {editing && profile && (
         <EditProfileDialog profile={profile} onClose={onCloseEdit} onSave={onSave} />
+      )}
+      {changingPassword && (
+        <ChangePasswordDialog onClose={onClosePassword} onSubmit={onSubmitPassword} />
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import Dialog from "../Shared/Dialog";
-import { CAMPUS_OPTIONS } from "./constants";
+import useCampuses from "../../../hooks/portalHooks/useCampuses";
 import type { EditableProfile, ProfileData } from "../../../Types/Profile";
 import "../Shared/style.css";
 import "./style.css";
@@ -9,7 +9,7 @@ import "./style.css";
 type Props = {
   profile: ProfileData;
   onClose: () => void;
-  onSave: (values: EditableProfile) => void;
+  onSave: (values: EditableProfile) => Promise<void>;
 };
 
 function EditProfileDialog({ profile, onClose, onSave }: Props) {
@@ -18,23 +18,36 @@ function EditProfileDialog({ profile, onClose, onSave }: Props) {
     lastName: profile.lastName,
     title: profile.title,
     phone: profile.phone,
-    campus: profile.campus,
+    campusId: profile.campusId,
   });
+  const { data: campuses } = useCampuses();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setValues((prev) => ({ ...prev, [name]: value }));
+    setValues((prev) => ({
+      ...prev,
+      [name]: name === "campusId" ? (value === "" ? null : Number(value)) : value,
+    }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    onSave({
-      ...values,
-      firstName: values.firstName.trim(),
-      lastName: values.lastName.trim(),
-      title: values.title.trim(),
-      phone: values.phone.trim(),
-    });
+    setError("");
+    setSaving(true);
+    try {
+      await onSave({
+        ...values,
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
+        title: values.title.trim(),
+        phone: values.phone.trim(),
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save your changes.");
+      setSaving(false);
+    }
   };
 
   return (
@@ -69,10 +82,11 @@ function EditProfileDialog({ profile, onClose, onSave }: Props) {
         </div>
 
         <div className="portal-ui_field">
-          <label htmlFor="campus">Primary Campus</label>
-          <select id="campus" className="portal-ui_input" name="campus" value={values.campus} onChange={handleChange}>
-            {CAMPUS_OPTIONS.map((c) => (
-              <option key={c} value={c}>{c}</option>
+          <label htmlFor="campusId">Primary Campus</label>
+          <select id="campusId" className="portal-ui_input" name="campusId" value={values.campusId ?? ""} onChange={handleChange}>
+            {values.campusId === null && <option value="">{profile.campus}</option>}
+            {(campuses ?? []).map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
         </div>
@@ -82,9 +96,18 @@ function EditProfileDialog({ profile, onClose, onSave }: Props) {
           <span>Updating your legal identity documents requires in-person submission at the campus registrar.</span>
         </div>
 
+        {error && (
+          <div className="profile_form-note" role="alert">
+            <span className="material-symbols-outlined">error</span>
+            <span>{error}</span>
+          </div>
+        )}
+
         <div className="profile_form-actions">
           <button type="button" className="portal-ui_btn portal-ui_btn--outline" onClick={onClose}>Cancel</button>
-          <button type="submit" className="portal-ui_btn portal-ui_btn--primary">Save Changes</button>
+          <button type="submit" className="portal-ui_btn portal-ui_btn--primary" disabled={saving}>
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
         </div>
       </form>
     </Dialog>

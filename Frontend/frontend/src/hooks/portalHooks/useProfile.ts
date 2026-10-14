@@ -1,24 +1,11 @@
-import { getStoredUser } from "../../utils/session";
-import type { ProfileData } from "../../Types/Profile";
 import useApi from "../academyHooks/useApi";
-import { MOCK_PROFILE } from "./mockData";
+import { getProfile } from "../../apis/portalApi";
+import { toProfile } from "../../apis/portalMappers";
+import type { ProfileData } from "../../Types/Profile";
 
-// Name / email / id come from the logged-in session; the rest is sample data.
-// TODO: replace the body with  apiGet<ProfileData>("/api/profile", undefined, signal)
+// GET /api/profile
 function useProfile() {
-  return useApi<ProfileData>(() => {
-    const user = getStoredUser();
-    if (!user) return Promise.resolve(MOCK_PROFILE);
-
-    const [firstName = "", ...rest] = user.name.trim().split(/\s+/);
-    return Promise.resolve<ProfileData>({
-      ...MOCK_PROFILE,
-      firstName,
-      lastName: rest.join(" "),
-      email: user.email,
-      studentId: `#AA-${String(user.id).padStart(4, "0")}`,
-    });
-  }, []);
+  return useApi<ProfileData>(async (signal) => toProfile(await getProfile(signal)), []);
 }
 
 export default useProfile;

@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 
 const rawBase =
   (import.meta.env.VITE_API_URL as string | undefined) ??
-  "http://localhost:5152";
+  "https://localhost:7001";
 
 export const API_BASE_URL = rawBase.replace(/\/+$/, "");
 export const ACCESS_TOKEN_KEY = "access_token";
@@ -64,6 +64,20 @@ apiClient.interceptors.response.use(
     }
 
     const res = error.response;
+
+    // Expired / invalid token on a logged-in session -> back to the login page.
+    if (res.status === 401 && getAccessToken()) {
+      try {
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem("user");
+      } catch {
+        /* ignore */
+      }
+      if (!window.location.pathname.startsWith("/login")) {
+        window.location.assign("/login");
+      }
+    }
+
     let message = `Request failed (${res.status})`;
 
     if (res.data) {
@@ -110,6 +124,16 @@ export async function apiPost<T>(
   const response = await apiClient.post<T>(path, body ?? {}, {
     signal,
   });
+  return response.data;
+}
+
+// PUT Request
+export async function apiPut<T>(
+  path: string,
+  body: unknown,
+  signal?: AbortSignal,
+): Promise<T> {
+  const response = await apiClient.put<T>(path, body ?? {}, { signal });
   return response.data;
 }
 

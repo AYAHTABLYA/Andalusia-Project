@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import { saveSession } from "../utils/session";
 
 export interface LoginRequest { email: string; password: string; }
 export interface RegisterRequest {
@@ -24,17 +25,5 @@ export const forgotPassword = async (data: OtpRequest) =>
 export const resetPassword = async (data: ResetPasswordRequest) =>
   (await axiosInstance.post("/api/auth/reset-password", data)).data;
 
-export const saveAuthenticatedSession = (response: any) => {
-  // AuthResponseDto returns UserId, FullName, Email, Role, Token and ExpiresAt at the root.
-  const user = {
-    userId: response.userId ?? response.UserId,
-    fullName: response.fullName ?? response.FullName,
-    email: response.email ?? response.Email,
-    role: response.role ?? response.Role,
-    expiresAt: response.expiresAt ?? response.ExpiresAt,
-  };
-  const token = response.token ?? response.Token;
-  if (!token) throw new Error("The API did not return an access token.");
-  localStorage.setItem("user", JSON.stringify(user));
-  localStorage.setItem("access_token", token);
-};
+// Stores { id, name, email, role } + the token, the shape utils/session.ts reads back.
+export const saveAuthenticatedSession = (response: any) => saveSession(response);

@@ -1,5 +1,4 @@
 import { ACCESS_TOKEN_KEY } from "../apis/academyApi";
-import type { AuthResponse } from "../Types/Auth";
 
 const USER_KEY = "user";
 
@@ -19,16 +18,26 @@ function getStoredUser(): SessionUser | null {
   }
 }
 
-// Called after a successful /api/auth/login
-function saveSession(auth: AuthResponse): void {
-  const user: SessionUser = {
-    id: auth.userId,
-    name: auth.fullName,
-    email: auth.email,
-    role: auth.role,
+// Accepts the AuthResponseDto (login) or the /api/auth/me payload, in camelCase or PascalCase.
+function toSessionUser(raw: any): SessionUser {
+  return {
+    id: raw.userId ?? raw.UserId ?? raw.id ?? raw.Id,
+    name: raw.fullName ?? raw.FullName ?? raw.name ?? raw.Name ?? "",
+    email: raw.email ?? raw.Email ?? "",
+    role: raw.role ?? raw.Role ?? "Learner",
   };
+}
+
+function updateStoredUser(user: SessionUser): void {
   localStorage.setItem(USER_KEY, JSON.stringify(user));
-  localStorage.setItem(ACCESS_TOKEN_KEY, auth.token);
+}
+
+// Called after a successful login / verify-login-otp.
+function saveSession(response: any): void {
+  const token = response.token ?? response.Token;
+  if (!token) throw new Error("The API did not return an access token.");
+  updateStoredUser(toSessionUser(response));
+  localStorage.setItem(ACCESS_TOKEN_KEY, token);
 }
 
 function clearSession(): void {
@@ -36,5 +45,17 @@ function clearSession(): void {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
 }
 
+// Where a signed-in user lands. Only the learner portal exists today.
+function homeRouteForRole(_role?: string): string {
+  return "/profile";
+}
+
 export type { SessionUser };
-export { getStoredUser, saveSession, clearSession };
+export {
+  getStoredUser,
+  saveSession,
+  updateStoredUser,
+  toSessionUser,
+  clearSession,
+  homeRouteForRole,
+};

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import PaymentsComponent from "./PaymentsComponent";
 import { CSV_HEADER } from "./constants";
 import usePortalContext from "../../../hooks/portalHooks/usePortalContext";
@@ -53,12 +53,20 @@ function PaymentsContainer() {
   // Derived from the live list so the dialog flips to "Settled" right after paying.
   const selected = transactions.find((t) => t.id === selectedId) ?? null;
 
-  // TODO: redirect to the payment gateway instead of settling locally.
-  function handlePay(id: string) {
+  // POST /api/payments/{id}/confirm (simulated gateway callback), then reload the list.
+  const paying = useRef(new Set<string>());
+  async function handlePay(id: string) {
     const txn = transactions.find((t) => t.id === id);
-    if (!txn) return;
-    payNow(id);
-    showToast(`Payment of ${txn.currency} ${formatAmount(txn.amount)} processed for ${id}.`);
+    if (!txn || paying.current.has(id)) return;
+    paying.current.add(id);
+    try {
+      await payNow(id);
+      showToast(`Payment of ${txn.currency} ${formatAmount(txn.amount)} processed for ${id}.`);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Payment failed. Please try again.");
+    } finally {
+      paying.current.delete(id);
+    }
   }
 
   function handleExport() {

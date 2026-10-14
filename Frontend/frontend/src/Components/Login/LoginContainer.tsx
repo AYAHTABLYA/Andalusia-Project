@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import LoginComponent from "./LoginComponent";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
 import type { loginFormType } from "../../Types/LoginFormType";
@@ -14,10 +14,19 @@ import {
   resetPassword,
   saveAuthenticatedSession,
 } from "../../apis/authApi";
+import { isLoggedIn } from "../../apis/academyApi";
+import { getStoredUser, homeRouteForRole } from "../../utils/session";
 
 type LoginMode = "password" | "login-otp" | "forgot-request" | "forgot-reset";
 function LoginContainer() {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Page the user tried to open before being sent to /login (set by PortalLayout).
+  const from = (location.state as { from?: string } | null)?.from;
+  const goAfterLogin = () =>
+    navigate(from && from !== "/login" ? from : homeRouteForRole(getStoredUser()?.role), {
+      replace: true,
+    });
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [mode, setMode] = useState<LoginMode>("password");
   const [formData, setFormData] = useState<loginFormType>({
@@ -53,7 +62,7 @@ function LoginContainer() {
         const response = await login(formData);
         saveAuthenticatedSession(response);
         setStatus("success");
-        navigate("/");
+        goAfterLogin();
       } else if (mode === "login-otp") {
         const response = await verifyLoginOtp({
           email: formData.email,
@@ -61,7 +70,7 @@ function LoginContainer() {
         });
         saveAuthenticatedSession(response);
         setStatus("success");
-        navigate("/");
+        goAfterLogin();
       } else if (mode === "forgot-request") {
         await forgotPassword({ email: formData.email });
         setMode("forgot-reset");
@@ -112,6 +121,9 @@ function LoginContainer() {
     }
     setMode(nextMode);
   };
+  if (isLoggedIn() && status !== "success") {
+    return <Navigate to={from ?? homeRouteForRole(getStoredUser()?.role)} replace />;
+  }
   return (
     <AuthLayoutComponent
       title="Excellence in clinical, digital, and leadership education"
