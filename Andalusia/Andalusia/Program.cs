@@ -1,6 +1,7 @@
 using Andalusia.Domain.Contracts;
 using Andalusia.Persistance.Data.DataSeed;
 using Andalusia.Persistance.Repositories;
+using Andalusia.Services;
 using Andalusia.ServicesAbstraction;
 using AndalusiaApp.Data;
 using AndalusiaApp.Services;
@@ -10,8 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
-using System.Threading.RateLimiting;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,9 @@ builder.Services.AddRateLimiter(options =>
 });
 builder.Services.AddScoped<IProgramService, ProgramService>();
 builder.Services.AddScoped<ICareerPathService, CareerPathService>();
+builder.Services.AddScoped<
+    IPortalRecordsService,
+    PortalRecordsService>();
 
 // ==========================================
 // 3. Authentication & JWT

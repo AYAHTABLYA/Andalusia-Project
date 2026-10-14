@@ -9,6 +9,7 @@ namespace Andalusia.Domain.Enums
         Submitted,
         Under_Review,
         Approved,
-        Rejected
+        Rejected,
+        Cancelled
     }
 }
