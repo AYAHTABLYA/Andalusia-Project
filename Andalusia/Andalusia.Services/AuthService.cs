@@ -1,4 +1,5 @@
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
 using Andalusia.Domain.Contracts;
@@ -14,7 +15,8 @@ public class AuthService(
     IUnitOfWork uow,
     ITokenService tokenService,
     IEmailService emailService,
-    ILogger<AuthService> logger) : IAuthService
+    ILogger<AuthService> logger,
+    ITokenBlacklist blacklist) : IAuthService
 {
     private static readonly TimeSpan OtpLifetime = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan ResendCooldown = TimeSpan.FromSeconds(60);
@@ -374,6 +376,40 @@ public class AuthService(
             .GetByIdAsync(roleId.Value);
 
         return role?.Name ?? "Learner";
+    }
+
+    // GET /api/auth/me
+    public async Task<CurrentUserDto?> GetCurrentUserAsync(long userId, CancellationToken ct = default)
+    {
+        var user = await uow.GetRepository<User>().GetByIdAsync(userId);
+        if (user is null || !user.IsActive)
+            return null;
+
+        var roleName = await GetUserRoleNameAsync(userId);
+
+        return new CurrentUserDto(
+            user.UserId,
+            $"{user.FirstName} {user.LastName}".Trim(),
+            user.Email,
+            roleName,
+            user.IsEmailVerified);
+    }
+
+    // POST /api/auth/logout: revokes the token id (jti) until the token expires.
+    public Task LogoutAsync(string accessToken, CancellationToken ct = default)
+    {
+        try
+        {
+            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+            if (!string.IsNullOrEmpty(jwt.Id))
+                blacklist.Revoke(jwt.Id, jwt.ValidTo);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Logout received an unreadable token.");
+        }
+
+        return Task.CompletedTask;
     }
 
     private static string Normalize(string email) =>

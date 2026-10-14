@@ -68,6 +68,10 @@ builder.Services.AddScoped<ICareerPathService, CareerPathService>();
 builder.Services.AddScoped<
     IPortalRecordsService,
     PortalRecordsService>();
+builder.Services.AddSingleton<ITokenBlacklist, InMemoryTokenBlacklist>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ILearnerDashboardService, LearnerDashboardService>();
 
 // ==========================================
 // 3. Authentication & JWT
@@ -94,6 +98,20 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtAudience,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
+    };
+
+    // Logout support: reject tokens whose jti was revoked.
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            var blacklist = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklist>();
+            var jti = context.SecurityToken?.Id;
+            if (!string.IsNullOrEmpty(jti) && blacklist.IsRevoked(jti))
+                context.Fail("This token has been revoked (logged out).");
+
+            return Task.CompletedTask;
+        }
     };
 });
 

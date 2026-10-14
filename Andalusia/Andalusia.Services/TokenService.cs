@@ -11,15 +11,16 @@ public class TokenService(IConfiguration config) : ITokenService
 {
     public (string Token, DateTime ExpiresAt) GenerateToken(User user, string roleName)
     {
-        var secretKey = config["Jwt:Key"] ?? "AndalusiaSuperSecretKey2026!MustBeLongEnough";
+        var secretKey = config["Jwt:Key"] ?? "AndalusiaSuperSecretKey2026SecureKeyWith32CharsMinimum!";
         var issuer = config["Jwt:Issuer"] ?? "AndalusiaApp";
-        var audience = config["Jwt:Audience"] ?? "AndalusiaAppFrontend";
+        var audience = config["Jwt:Audience"] ?? "AndalusiaClients";
         var expiresAt = DateTime.UtcNow.AddDays(7);
 
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
             new("sub", user.UserId.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}".Trim()),
             new(ClaimTypes.Role, roleName)

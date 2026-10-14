@@ -1,9 +1,11 @@
 ﻿using Andalusia.ServicesAbstraction;
 using Andalusia.Shared.Dtos.AuthDtos;
 using AndalusiaApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 
 
 namespace AndalusiaApp.Controllers;
@@ -103,6 +105,33 @@ public class AuthController(IAuthService authService) : ControllerBase
         if (string.IsNullOrWhiteSpace(email)) return BadRequest("Email is required.");
         var isAvailable = await authService.IsEmailAvailableAsync(email, ct);
         return Ok(new { email, isAvailable });
+    }
+
+    // GET /api/auth/me
+    [Authorize]
+    [DisableRateLimiting]
+    [HttpGet("me")]
+    public async Task<ActionResult<CurrentUserDto>> Me(CancellationToken ct)
+    {
+        var claim = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        if (!long.TryParse(claim, out var userId)) return Unauthorized();
+
+        var me = await authService.GetCurrentUserAsync(userId, ct);
+        return me is null ? Unauthorized() : Ok(me);
+    }
+
+    // POST /api/auth/logout
+    [Authorize]
+    [DisableRateLimiting]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(CancellationToken ct)
+    {
+        var header = Request.Headers.Authorization.ToString();
+        const string prefix = "Bearer ";
+        if (header.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            await authService.LogoutAsync(header[prefix.Length..].Trim(), ct);
+
+        return Ok(new { message = "Logged out successfully." });
     }
 
     private ObjectResult Cooldown(OtpCooldownException ex)
