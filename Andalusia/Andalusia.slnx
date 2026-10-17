@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/ApplicationCoreLayer/">
+    <Project Path="Andalusia.Domain/Andalusia.Domain.csproj" />
+    <Project Path="Andalusia.Services/Andalusia.Services.csproj" />
+    <Project Path="Andalusia.ServicesAbstraction/Andalusia.ServicesAbstraction.csproj" />
+  </Folder>
+  <Folder Name="/InfrastructureLayer/">
+    <Project Path="Andalusia.Persistance/Andalusia.Persistance.csproj" />
+  </Folder>
+  <Folder Name="/PresentationLayer/">
+    <Project Path="Andalusia.Presentation/Andalusia.Presentation.csproj" />
+    <Project Path="Andalusia/Andalusia.csproj" />
+  </Folder>
+  <Project Path="Andalusia.Shared/Andalusia.Shared.csproj" />
+</Solution>

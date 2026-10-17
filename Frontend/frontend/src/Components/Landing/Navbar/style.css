@@ -1,0 +1,277 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&display=swap");
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background-color: rgba(255, 255, 255, 0.97);
+  border-bottom: 1px solid var(--color-warm-border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.navbar_inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
+.navbar_brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+.navbar_logo-img {
+  display: block;
+  height: 46px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* Search: only on very wide screens */
+.navbar_search {
+  display: none;
+  align-items: center;
+  flex: 1;
+  max-width: 340px;
+  background-color: var(--color-surface-low);
+  border: 1px solid var(--color-warm-border);
+  border-radius: 8px;
+}
+.navbar_search-select {
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-slate-700);
+  border: none;
+  border-right: 1px solid var(--color-warm-border);
+  padding: 8px 10px;
+}
+.navbar_search-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  padding: 8px 10px;
+  color: var(--color-slate-800);
+}
+.navbar_search-input:focus,
+.navbar_search-select:focus {
+  outline: none;
+}
+
+/* Links */
+.navbar_links {
+  display: none;
+  align-items: center;
+  gap: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-slate-800);
+}
+.navbar_links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.navbar_links a:hover {
+  color: var(--color-primary);
+}
+.navbar_pill {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  text-transform: uppercase;
+  font-weight: 700;
+  white-space: nowrap;
+  background-color: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+/* Actions */
+.navbar_actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.landing-page .navbar_signin {
+  display: none; /* يكسب على .landing-page .btn */
+}
+.landing-page .navbar_apply {
+  padding: 10px 14px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.navbar_menu-btn {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--color-warm-border);
+  background: #fff;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Drawer */
+.navbar_drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--color-warm-border);
+  background: #fff;
+  max-height: calc(100dvh - 80px);
+  overflow-y: auto;
+}
+.navbar_drawer > a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-slate-800);
+}
+.navbar_drawer > a:hover {
+  background: var(--color-surface-low);
+  color: var(--color-primary);
+}
+.navbar_drawer-search {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--color-warm-border);
+  border-radius: 8px;
+  background: var(--color-surface-low);
+}
+.navbar_drawer-cta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+.landing-page .navbar_drawer-cta .btn {
+  padding: 12px 8px;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Mobile */
+@media (max-width: 1099px) {
+  .navbar_inner {
+    height: 68px;
+    padding: 0 16px;
+  }
+  .navbar_logo-img {
+    height: 38px;
+  }
+  .navbar_drawer {
+    max-height: calc(100dvh - 68px);
+  }
+}
+
+/* Very small phones: Apply Now moves into the drawer only */
+@media (max-width: 359px) {
+  .landing-page .navbar_apply {
+    display: none;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1100px) {
+  .navbar_links {
+    display: flex;
+  }
+  .landing-page .navbar_signin {
+    display: inline-flex;
+  }
+  .landing-page .navbar_apply {
+    padding: 12px 20px;
+    font-size: 13px;
+  }
+  .navbar_menu-btn,
+  .navbar_drawer {
+    display: none;
+  }
+}
+
+@media (min-width: 1400px) {
+  .navbar_search {
+    display: flex;
+  }
+  .navbar_links {
+    gap: 24px;
+  }
+}
+
+/* --- Language switcher fit: keep the logo from being squeezed out --- */
+.navbar_brand {
+  flex: 0 0 auto;
+  min-width: 96px;
+}
+.navbar_logo-img {
+  min-width: 96px;
+}
+.navbar_search {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.navbar_links {
+  min-width: 0;
+}
+/* Compact switcher (globe + chevron only) until there is plenty of room */
+@media (max-width: 1799px) {
+  .navbar_actions .language-switcher_trigger > span {
+    display: none;
+  }
+  .navbar_actions .language-switcher_trigger {
+    padding: 0 9px;
+    gap: 5px;
+  }
+}
+@media (min-width: 1100px) and (max-width: 1399px) {
+  .navbar_inner {
+    gap: 12px;
+  }
+  .navbar_links {
+    gap: 14px;
+    font-size: 12.5px;
+  }
+}
+@media (min-width: 1400px) {
+  .navbar_inner {
+    max-width: 1480px;
+  }
+}
+/* Search only when the bar can really fit it */
+@media (min-width: 1400px) and (max-width: 1799px) {
+  .navbar_search {
+    display: none;
+  }
+}
+@media (min-width: 1800px) {
+  .navbar_inner {
+    max-width: 1640px;
+  }
+  .navbar_search {
+    min-width: 220px;
+  }
+}
