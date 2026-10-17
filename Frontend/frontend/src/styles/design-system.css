@@ -25,11 +25,11 @@
   --faint: #9aa6a9;
 
   /* Surfaces */
-  --canvas: #f9f9f7;
-  --surface-low: #f4f4f2;
-  --surface-mid: #ecece8;
-  --surface: #ffffff;
-  --line: #e5e7e7;
+  --canvas: #f9f4ee;
+  --surface-low: #f4ece3;
+  --surface-mid: #ece2d6;
+  --surface: #fdfaf6;
+  --line: #e8ddd1;
 
   /* Gradients */
   --grad-brand: linear-gradient(135deg, var(--brand-400), var(--brand-500) 55%, var(--brand-700));

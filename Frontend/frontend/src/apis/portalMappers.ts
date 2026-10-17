@@ -66,6 +66,7 @@ function toProfile(raw: unknown): ProfileData {
     studentId:
       id === undefined ? "—" : typeof id === "number" ? `#AA-${String(id).padStart(4, "0")}` : String(id),
     memberSince,
+    photoUrl: pick<string>(dto, "profileImageUrl", "photoUrl", "avatarUrl", "imageUrl", "profilePicture") ?? null,
   };
 }
 

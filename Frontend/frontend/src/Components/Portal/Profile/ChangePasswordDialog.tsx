@@ -10,6 +10,33 @@ type Props = {
   onSubmit: (values: ChangePasswordValues) => Promise<void>;
 };
 
+type PasswordFieldProps = {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  autoComplete: string;
+  minLength?: number;
+  hint?: string;
+};
+
+// Password input with a show / hide toggle.
+function PasswordField({ id, label, value, onChange, autoComplete, minLength, hint }: PasswordFieldProps) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="portal-ui_field">
+      <label htmlFor={id}>{label}</label>
+      <div className="profile_pw-wrap">
+        <input id={id} className="portal-ui_input" type={visible ? "text" : "password"} autoComplete={autoComplete} minLength={minLength} required value={value} onChange={(e) => onChange(e.target.value)} />
+        <button type="button" className="profile_pw-toggle" aria-label={visible ? "Hide password" : "Show password"} onClick={() => setVisible((v) => !v)}>
+          <span className="material-symbols-outlined">{visible ? "visibility_off" : "visibility"}</span>
+        </button>
+      </div>
+      {hint && <span className="portal-ui_hint">{hint}</span>}
+    </div>
+  );
+}
+
 function ChangePasswordDialog({ onClose, onSubmit }: Props) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -36,19 +63,9 @@ function ChangePasswordDialog({ onClose, onSubmit }: Props) {
   return (
     <Dialog icon="lock_reset" title="Change Password" onClose={onClose}>
       <form className="profile_form" onSubmit={handleSubmit}>
-        <div className="portal-ui_field">
-          <label htmlFor="currentPassword">Current Password</label>
-          <input id="currentPassword" className="portal-ui_input" type="password" autoComplete="current-password" required value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
-        </div>
-        <div className="portal-ui_field">
-          <label htmlFor="newPassword">New Password</label>
-          <input id="newPassword" className="portal-ui_input" type="password" autoComplete="new-password" minLength={8} required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-          <span className="portal-ui_hint">At least 8 characters, with an uppercase letter and a number.</span>
-        </div>
-        <div className="portal-ui_field">
-          <label htmlFor="confirmPassword">Confirm New Password</label>
-          <input id="confirmPassword" className="portal-ui_input" type="password" autoComplete="new-password" minLength={8} required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
-        </div>
+        <PasswordField id="currentPassword" label="Current Password" autoComplete="current-password" value={currentPassword} onChange={setCurrentPassword} />
+        <PasswordField id="newPassword" label="New Password" autoComplete="new-password" minLength={8} value={newPassword} onChange={setNewPassword} hint="At least 8 characters, with an uppercase letter and a number." />
+        <PasswordField id="confirmPassword" label="Confirm New Password" autoComplete="new-password" minLength={8} value={confirm} onChange={setConfirm} />
 
         {error && (
           <div className="profile_form-note" role="alert">

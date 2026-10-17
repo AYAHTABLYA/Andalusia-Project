@@ -1,3 +1,12 @@
+import { API_BASE_URL } from "../apis/academyApi";
+
+// Backend may return a relative path ("/uploads/..."): make it absolute.
+function resolveAssetUrl(url?: string | null): string | null {
+  if (!url) return null;
+  if (/^(https?:|data:|blob:)/i.test(url)) return url;
+  return `${API_BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
 function formatMoney(amount: number, currency = "EGP"): string {
   if (!amount || amount <= 0) return "To be announced";
   return `${currency} ${amount.toLocaleString("en-US")}`;
@@ -21,4 +30,4 @@ function formatAmount(amount: number): string {
   });
 }
 
-export { formatMoney, formatAmount, initials };
+export { formatMoney, formatAmount, initials, resolveAssetUrl };

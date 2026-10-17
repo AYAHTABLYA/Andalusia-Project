@@ -137,6 +137,19 @@ export async function apiPut<T>(
   return response.data;
 }
 
+// Multipart upload (profile photo)
+export async function apiUpload<T>(
+  path: string,
+  formData: FormData,
+  signal?: AbortSignal,
+): Promise<T> {
+  const response = await apiClient.post<T>(path, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    signal,
+  });
+  return response.data;
+}
+
 // File Download (Syllabus)
 export async function downloadFile(
   path: string,

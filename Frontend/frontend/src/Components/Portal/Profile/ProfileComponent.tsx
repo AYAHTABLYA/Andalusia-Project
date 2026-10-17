@@ -5,7 +5,7 @@ import CatalogState from "../../Academy/Shared/CatalogState";
 import EditProfileDialog from "./EditProfileDialog";
 import ChangePasswordDialog from "./ChangePasswordDialog";
 import { NOTIFICATION_OPTIONS } from "./constants";
-import { initials } from "../../../utils/format";
+import { initials, resolveAssetUrl } from "../../../utils/format";
 import type {
   ChangePasswordValues,
   EditableProfile,
@@ -26,7 +26,7 @@ type Props = {
   changingPassword: boolean;
   onEdit: () => void;
   onCloseEdit: () => void;
-  onSave: (values: EditableProfile) => Promise<void>;
+  onSave: (values: EditableProfile, photo: File | null) => Promise<void>;
   onChangePassword: () => void;
   onClosePassword: () => void;
   onSubmitPassword: (values: ChangePasswordValues) => Promise<void>;
@@ -75,7 +75,11 @@ function ProfileComponent({
             <div className="profile_hero-inner">
               <div className="profile_hero-id">
                 <button type="button" className="profile_avatar" onClick={onEdit} aria-label="Edit profile">
-                  <span className="profile_avatar-text">{initials(`${profile.firstName} ${profile.lastName}`)}</span>
+                  {profile.photoUrl ? (
+                    <img className="profile_avatar-img" src={resolveAssetUrl(profile.photoUrl) ?? ""} alt="" />
+                  ) : (
+                    <span className="profile_avatar-text">{initials(`${profile.firstName} ${profile.lastName}`)}</span>
+                  )}
                   <span className="profile_avatar-overlay">
                     <span className="material-symbols-outlined">edit</span>
                     Edit

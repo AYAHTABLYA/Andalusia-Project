@@ -127,8 +127,14 @@ const translations: Record<string, string> = {
   ...extraTranslations,
 };
 
-const originalTextNodes = new WeakMap<Text, string>();
-const originalAttributes = new WeakMap<Element, Map<string, string>>();
+// For every text node / attribute we remember the English text we first saw
+// ("original") AND the text we last wrote ("applied"). If the current value is
+// not what we last wrote, React changed it (a counter, a toggled icon name, a
+// new status...) so that value becomes the new original instead of being
+// overwritten with the stale one.
+type Tracked = { original: string; applied: string };
+const trackedTextNodes = new WeakMap<Text, Tracked>();
+const trackedAttributes = new WeakMap<Element, Map<string, Tracked>>();
 const TRANSLATABLE_ATTRIBUTES = ["placeholder", "aria-label", "title"] as const;
 const SKIP_SELECTOR =
   "script, style, textarea, input, [data-no-translate], .language-switcher";
@@ -148,20 +154,6 @@ function translateText(value: string, language: SiteLanguage): string {
   return translated === trimmed ? value : value.replace(trimmed, translated);
 }
 
-function getOriginalAttribute(
-  element: Element,
-  attribute: string,
-  current: string,
-) {
-  let attributes = originalAttributes.get(element);
-  if (!attributes) {
-    attributes = new Map<string, string>();
-    originalAttributes.set(element, attributes);
-  }
-  if (!attributes.has(attribute)) attributes.set(attribute, current);
-  return attributes.get(attribute) ?? current;
-}
-
 function applyLanguage(language: SiteLanguage): void {
   if (typeof document === "undefined" || !document.body) return;
 
@@ -179,14 +171,18 @@ function applyLanguage(language: SiteLanguage): void {
     if (!parent || parent.closest(SKIP_SELECTOR)) continue;
 
     const currentText = textNode.textContent ?? "";
-    if (!originalTextNodes.has(textNode)) {
-      originalTextNodes.set(textNode, currentText);
+    let tracked = trackedTextNodes.get(textNode);
+    if (!tracked || tracked.applied !== currentText) {
+      tracked = { original: currentText, applied: currentText };
     }
-    const originalText = originalTextNodes.get(textNode) ?? currentText;
     const nextText =
-      language === "en" ? originalText : translateText(originalText, language);
+      language === "en"
+        ? tracked.original
+        : translateText(tracked.original, language);
 
     if (currentText !== nextText) textNode.textContent = nextText;
+    tracked.applied = nextText;
+    trackedTextNodes.set(textNode, tracked);
   }
 
   document
@@ -198,18 +194,24 @@ function applyLanguage(language: SiteLanguage): void {
         const currentValue = element.getAttribute(attribute);
         if (currentValue === null) continue;
 
-        const originalValue = getOriginalAttribute(
-          element,
-          attribute,
-          currentValue,
-        );
+        let attrs = trackedAttributes.get(element);
+        if (!attrs) {
+          attrs = new Map<string, Tracked>();
+          trackedAttributes.set(element, attrs);
+        }
+        let tracked = attrs.get(attribute);
+        if (!tracked || tracked.applied !== currentValue) {
+          tracked = { original: currentValue, applied: currentValue };
+        }
         const nextValue =
           language === "en"
-            ? originalValue
-            : translateText(originalValue, language);
+            ? tracked.original
+            : translateText(tracked.original, language);
 
         if (currentValue !== nextValue)
           element.setAttribute(attribute, nextValue);
+        tracked.applied = nextValue;
+        attrs.set(attribute, tracked);
       }
     });
 }

@@ -13,6 +13,7 @@ const MOCK_PROFILE: ProfileData = {
   campus: "Alexandria: Gleem Campus",
   studentId: "#AA-0000",
   memberSince: "October 2024 (Cohort 03)",
+  photoUrl: null,
 };
 
 const MOCK_TRANSACTIONS: Transaction[] = [

@@ -13,7 +13,7 @@
 
   --color-warm-canvas: var(--canvas);
   --color-surface-low: var(--surface-low);
-  --color-surface-lowest: #ffffff;
+  --color-surface-lowest: var(--surface);
   --color-amber-accent: var(--amber);
   --color-warm-border: var(--line);
 

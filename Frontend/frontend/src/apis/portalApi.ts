@@ -1,6 +1,6 @@
 // Auth / Profile / Payments / Dashboard endpoints (all need the JWT, which the
 // apiClient interceptor in academyApi.ts attaches automatically).
-import { apiGet, apiPost, apiPut } from "./academyApi";
+import { apiGet, apiPost, apiPut, apiUpload } from "./academyApi";
 import urls from "./urls.json";
 
 const withId = (path: string, id: string | number) =>
@@ -32,6 +32,14 @@ type ChangePasswordBody = {
 const changePassword = (body: ChangePasswordBody) =>
   apiPut<unknown>(urls.profile.changePassword, body);
 
+// POST /api/profile/photo  (multipart/form-data, field name: "file")
+// Returns the new photo url, e.g. { "profileImageUrl": "/uploads/profiles/xx.jpg" }
+const uploadProfilePhoto = (file: File) => {
+  const body = new FormData();
+  body.append("file", file);
+  return apiUpload<unknown>(urls.profile.photo, body);
+};
+
 // ---- Payments ----
 const getPayments = (signal?: AbortSignal) =>
   apiGet<unknown>(urls.payments.getAll, undefined, signal);
@@ -58,6 +66,7 @@ export {
   getProfile,
   updateProfile,
   changePassword,
+  uploadProfilePhoto,
   getPayments,
   getPayment,
   initiatePayment,

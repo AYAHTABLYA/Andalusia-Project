@@ -8,6 +8,7 @@ type ProfileData = {
   campusId: number | null;
   studentId: string;
   memberSince: string;
+  photoUrl: string | null;
 };
 
 // The fields the learner is allowed to edit.

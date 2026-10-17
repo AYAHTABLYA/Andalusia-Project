@@ -12,6 +12,7 @@
 
 .profile_avatar { position: relative; flex-shrink: 0; display: grid; place-items: center; width: 6.5rem; height: 6.5rem; border-radius: 1.25rem; overflow: hidden; color: #fff; background-image: var(--grad-brand); box-shadow: var(--shadow-brand); }
 .profile_avatar-text { font-family: var(--font-display); font-size: 2rem; font-weight: 700; letter-spacing: 0.04em; }
+.profile_avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .profile_avatar-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; font-size: 0.75rem; font-weight: 600; background-color: rgba(20, 27, 29, 0.6); opacity: 0; transition: opacity 0.2s ease; }
 .profile_avatar:hover .profile_avatar-overlay,
 .profile_avatar:focus-visible .profile_avatar-overlay { opacity: 1; }
@@ -123,3 +124,16 @@
 .profile_skeleton-hero { height: 12rem; border-radius: 1.25rem; }
 .profile_skeleton-metric { height: 9rem; }
 .profile_skeleton-panel { height: 20rem; border-radius: 1.25rem; }
+
+.profile_photo { display: flex; align-items: center; gap: 1rem; padding-bottom: 0.25rem; }
+.profile_photo-preview { flex-shrink: 0; display: grid; place-items: center; width: 4.5rem; height: 4.5rem; border-radius: 9999px; overflow: hidden; color: #fff; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; background-image: var(--grad-brand); box-shadow: 0 0 0 2px rgba(176, 121, 99, 0.3); }
+.profile_photo-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.profile_photo-actions { display: flex; flex-direction: column; gap: 0.375rem; align-items: flex-start; }
+.profile_photo-actions strong { font-size: 0.8125rem; }
+.profile_photo-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.profile_pw-wrap { position: relative; display: flex; align-items: center; }
+.profile_pw-wrap .portal-ui_input { padding-right: 2.5rem; }
+.profile_pw-toggle { position: absolute; right: 0.5rem; display: flex; padding: 0.25rem; color: var(--faint); }
+.profile_pw-toggle:hover { color: var(--muted); }
+.profile_pw-toggle .material-symbols-outlined { font-size: 1.125rem; }

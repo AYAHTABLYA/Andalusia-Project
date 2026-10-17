@@ -38,7 +38,8 @@
   "profile": {
     "get": "/api/profile",
     "update": "/api/profile",
-    "changePassword": "/api/profile/change-password"
+    "changePassword": "/api/profile/change-password",
+    "photo": "/api/profile/photo"
   },
   "payments": {
     "initiate": "/api/payments",

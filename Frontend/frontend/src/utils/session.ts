@@ -1,12 +1,14 @@
 import { ACCESS_TOKEN_KEY } from "../apis/academyApi";
 
 const USER_KEY = "user";
+const USER_UPDATED_EVENT = "andalusia-user-updated";
 
 type SessionUser = {
   id: number;
   name: string;
   email: string;
   role: string;
+  photoUrl?: string | null;
 };
 
 function getStoredUser(): SessionUser | null {
@@ -25,11 +27,15 @@ function toSessionUser(raw: any): SessionUser {
     name: raw.fullName ?? raw.FullName ?? raw.name ?? raw.Name ?? "",
     email: raw.email ?? raw.Email ?? "",
     role: raw.role ?? raw.Role ?? "Learner",
+    photoUrl:
+      raw.profileImageUrl ?? raw.ProfileImageUrl ?? raw.photoUrl ?? raw.PhotoUrl ?? raw.avatarUrl ?? null,
   };
 }
 
 function updateStoredUser(user: SessionUser): void {
   localStorage.setItem(USER_KEY, JSON.stringify(user));
+  // lets the header (and anything else showing the user) refresh immediately
+  window.dispatchEvent(new Event(USER_UPDATED_EVENT));
 }
 
 // Called after a successful login / verify-login-otp.
@@ -52,6 +58,7 @@ function homeRouteForRole(_role?: string): string {
 
 export type { SessionUser };
 export {
+  USER_UPDATED_EVENT,
   getStoredUser,
   saveSession,
   updateStoredUser,

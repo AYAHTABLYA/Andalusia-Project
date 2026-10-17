@@ -3,13 +3,13 @@
   --primary-hover: var(--brand-600);
   --primary-dark: var(--brand-700);
   --primary-light: var(--brand-400);
-  --card: #ffffff;
-  --border: #e5e7e7;
+  --card: var(--surface);
+  --border: var(--line);
   --muted: #6c7b7f;
   --faint: #9aa6a9;
   --ok: #16a34a;
-  --header-bg: rgba(255, 255, 255, 0.7);
-  --header-border: #e5e7e7;
+  --header-bg: rgba(249, 244, 238, 0.75);
+  --header-border: var(--line);
   --header-text: #334246;
   --header-muted: #6c7b7f;
   --serif: var(--font-display);
@@ -22,7 +22,7 @@
   font-family: var(--sans);
   position: relative;
   isolation: isolate;
-  background-color: #f1f1f1;
+  background-color: var(--canvas);
   color: var(--header-text);
   -webkit-font-smoothing: antialiased;
 }
@@ -148,7 +148,7 @@
     border-color 0.2s;
 }
 .auth_header_pill-btn:hover {
-  background: #f4f4f2;
+  background: var(--surface-low);
   border-color: var(--primary);
 }
 .auth_header_pill-btn .material-symbols-outlined {
@@ -400,7 +400,7 @@
   border-right: none;
 }
 .auth .segmented button:hover {
-  background: #f4f4f2;
+  background: var(--surface-low);
 }
 .auth .segmented button[aria-pressed="true"] {
   background: var(--primary);

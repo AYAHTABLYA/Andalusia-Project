@@ -3,6 +3,7 @@ import PortalHeaderComponent from "./PortalHeaderComponent";
 import { HEADER_LINKS } from "./constants";
 import { clearSession } from "../../../utils/session";
 import { logoutRequest } from "../../../apis/portalApi";
+import { resolveAssetUrl } from "../../../utils/format";
 import useSessionUser from "../../../hooks/portalHooks/useSessionUser";
 
 function PortalHeaderContainer() {
@@ -26,6 +27,7 @@ function PortalHeaderContainer() {
       links={HEADER_LINKS}
       name={user?.name || "Learner"}
       role={user?.role ?? "Learner"}
+      photoUrl={resolveAssetUrl(user?.photoUrl)}
       onLogout={logout}
     />
   );

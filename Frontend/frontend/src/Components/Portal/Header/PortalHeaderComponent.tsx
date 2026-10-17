@@ -11,10 +11,11 @@ type Props = {
   links: HeaderLink[];
   name: string;
   role: string;
+  photoUrl?: string | null;
   onLogout: () => void;
 };
 
-function PortalHeaderComponent({ links, name, role, onLogout }: Props) {
+function PortalHeaderComponent({ links, name, role, photoUrl, onLogout }: Props) {
   return (
     <header className="portal-header">
       <div className="portal-header_inner">
@@ -41,7 +42,9 @@ function PortalHeaderComponent({ links, name, role, onLogout }: Props) {
             <span>Log out</span>
           </button>
           <Link to="/profile" className="portal-header_user">
-            <span className="portal-header_avatar">{initials(name)}</span>
+            <span className="portal-header_avatar">
+              {photoUrl ? <img src={photoUrl} alt="" /> : initials(name)}
+            </span>
             <span className="portal-header_user-text">
               <strong>{name}</strong>
               <small>{role}</small>
