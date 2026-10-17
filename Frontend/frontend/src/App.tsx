@@ -18,6 +18,7 @@ import ApplicationDetailContainer from "./Components/Portal/Applications/Applica
 import EnrollmentContainer from "./Components/Portal/Enrollment/EnrollmentContainer";
 import EnrollmentsContainer from "./Components/Portal/Enrollments/EnrollmentsContainer";
 import EnrollmentDetailContainer from "./Components/Portal/Enrollments/EnrollmentDetailContainer";
+import CheckoutContainer from "./Components/Portal/Checkout/CheckoutContainer";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
           <Route element={<PortalLayout />}>
             <Route path="/profile" element={<ProfileContainer />} />
             <Route path="/payments" element={<PaymentsContainer />} />
+            <Route path="/checkout" element={<CheckoutContainer />} />
             <Route path="/applications" element={<ApplicationsContainer />} />
             <Route path="/applications/:id" element={<ApplicationDetailContainer />} />
             <Route path="/enrollments" element={<EnrollmentsContainer />} />
