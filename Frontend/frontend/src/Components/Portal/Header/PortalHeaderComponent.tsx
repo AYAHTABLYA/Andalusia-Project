@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import type { HeaderLink } from "./constants";
 import { SUPPORT_PHONE } from "../../Academy/Navbar/constants";
 import { initials } from "../../../utils/format";
+import { homeForRole } from "../../../utils/roles";
 import logo from "../../../assets/andalusia-logo.png";
 import { LanguageSwitcher } from "../../LanguageSwitcher";
 import "./style.css";
@@ -19,7 +20,7 @@ function PortalHeaderComponent({ links, name, role, photoUrl, onLogout }: Props)
   return (
     <header className="portal-header">
       <div className="portal-header_inner">
-        <Link to="/profile" className="portal-header_brand">
+        <Link to={homeForRole(role)} className="portal-header_brand">
           <img className="portal-header_logo" src={logo} alt="Andalusia Academy" />
         </Link>
 

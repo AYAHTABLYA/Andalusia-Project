@@ -1,4 +1,5 @@
 import { ACCESS_TOKEN_KEY } from "../apis/academyApi";
+import { homeForRole } from "./roles";
 
 const USER_KEY = "user";
 const USER_UPDATED_EVENT = "andalusia-user-updated";
@@ -8,6 +9,7 @@ type SessionUser = {
   name: string;
   email: string;
   role: string;
+  permissions: string[];
   photoUrl?: string | null;
 };
 
@@ -27,6 +29,7 @@ function toSessionUser(raw: any): SessionUser {
     name: raw.fullName ?? raw.FullName ?? raw.name ?? raw.Name ?? "",
     email: raw.email ?? raw.Email ?? "",
     role: raw.role ?? raw.Role ?? "Learner",
+    permissions: raw.permissions ?? raw.Permissions ?? [],
     photoUrl:
       raw.profileImageUrl ?? raw.ProfileImageUrl ?? raw.photoUrl ?? raw.PhotoUrl ?? raw.avatarUrl ?? null,
   };
@@ -51,9 +54,14 @@ function clearSession(): void {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
 }
 
-// Where a signed-in user lands. Only the learner portal exists today.
-function homeRouteForRole(_role?: string): string {
-  return "/profile";
+// Where a signed-in user lands: each role has its own workspace (see utils/roles.ts).
+function homeRouteForRole(role?: string): string {
+  return homeForRole(role);
+}
+
+// UI-only convenience (hide buttons/links). The API still enforces every permission.
+function hasPermission(permission: string): boolean {
+  return (getStoredUser()?.permissions ?? []).includes(permission);
 }
 
 export type { SessionUser };
@@ -65,4 +73,5 @@ export {
   toSessionUser,
   clearSession,
   homeRouteForRole,
+  hasPermission,
 };

@@ -16,6 +16,7 @@ import {
 } from "../../apis/authApi";
 import { isLoggedIn } from "../../apis/academyApi";
 import { getStoredUser, homeRouteForRole } from "../../utils/session";
+import { canOpenPath } from "../../utils/roles";
 
 type LoginMode = "password" | "login-otp" | "forgot-request" | "forgot-reset";
 
@@ -25,8 +26,12 @@ function LoginContainer() {
 
   // Page the user tried to open before being sent to /login (set by PortalLayout).
   const from = (location.state as { from?: string } | null)?.from;
-  const afterLoginRoute = () =>
-    from && from !== "/login" ? from : homeRouteForRole(getStoredUser()?.role);
+  const afterLoginRoute = () => {
+    const role = getStoredUser()?.role;
+    return from && from !== "/login" && canOpenPath(role, from)
+      ? from
+      : homeRouteForRole(role);
+  };
 
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [mode, setMode] = useState<LoginMode>("password");

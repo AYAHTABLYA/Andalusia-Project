@@ -58,5 +58,11 @@
     "getAll": "/api/applications",
     "getById": "/api/applications/:id",
     "cancel": "/api/applications/:id/cancel"
+  },
+  "admin": {
+    "users": "/api/admin/users",
+    "userRole": "/api/admin/users/:id/role",
+    "userStatus": "/api/admin/users/:id/status",
+    "roles": "/api/admin/roles"
   }
 }
