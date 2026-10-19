@@ -5,6 +5,7 @@ using System.Text;
 using Andalusia.Domain.Contracts;
 using Andalusia.Services.Specification;
 using Andalusia.ServicesAbstraction;
+using Andalusia.Shared.Authorization;
 using Andalusia.Shared.Dtos.AuthDtos;
 using AndalusiaApp.Models;
 using Microsoft.Extensions.Logging;
@@ -32,6 +33,12 @@ public class AuthService(
         if (await userRepo.GetAsync(new UserByEmailSpecification(email)) is not null)
             throw new InvalidOperationException("Email is already registered.");
 
+        // Public registration can only ever create a Learner. Resolve it first so a
+        // missing role never leaves an orphan account (and never falls back to another role).
+        var learnerRole = (await uow.GetRepository<Role>().GetAllAsync(trackChanges: false))
+            .FirstOrDefault(r => r.Name == AppRoles.Learner)
+            ?? throw new InvalidOperationException("The Learner role is not configured.");
+
         var newUser = new User
         {
             FirstName = dto.FirstName.Trim(),
@@ -42,23 +49,9 @@ public class AuthService(
             IsEmailVerified = false,
             CreatedAt = DateTime.UtcNow
         };
+        newUser.UserRoles.Add(new UserRole { RoleId = learnerRole.RoleId });
 
         await userRepo.AddAsync(newUser);
-        await uow.SaveChangesAsync();
-
-        var roles = await uow.GetRepository<Role>()
-            .GetAllAsync(trackChanges: false);
-
-        var learnerRole = roles.FirstOrDefault(r => r.Name == "Learner")
-            ?? roles.FirstOrDefault()
-            ?? throw new InvalidOperationException("No roles are configured.");
-
-        await uow.GetRepository<UserRole>().AddAsync(new UserRole
-        {
-            UserId = newUser.UserId,
-            RoleId = learnerRole.RoleId
-        });
-
         await uow.SaveChangesAsync();
 
         await IssueEmailOtpAsync(newUser, ct);
@@ -96,8 +89,8 @@ public class AuthService(
             throw new EmailNotConfirmedException(user.Email);
         }
 
-        var roleName = await GetUserRoleNameAsync(user.UserId);
-        var (token, expires) = tokenService.GenerateToken(user, roleName);
+        var (roleName, permissions) = await GetRoleAccessAsync(user.UserId);
+        var (token, expires) = tokenService.GenerateToken(user, roleName, permissions);
 
         return new AuthResponseDto(
             user.UserId,
@@ -105,7 +98,8 @@ public class AuthService(
             user.Email,
             roleName,
             token,
-            expires);
+            expires,
+            permissions);
     }
 
     // Confirm email using the purpose-bound OTP hash.
@@ -361,21 +355,22 @@ public class AuthService(
         }
     }
 
-    private async Task<string> GetUserRoleNameAsync(long userId)
+    // The user's role name plus the permissions that role grants (read fresh from the DB).
+    private async Task<(string Role, IReadOnlyList<string> Permissions)> GetRoleAccessAsync(long userId)
     {
-        var userRoles = await uow.GetRepository<UserRole>()
-            .GetAllAsync(trackChanges: false);
+        var userRole = (await uow.GetRepository<UserRole>()
+            .GetAllAsync(new UserRolesByUsersSpecification([userId])))
+            .FirstOrDefault();
 
-        var roleId = userRoles
-            .FirstOrDefault(ur => ur.UserId == userId)?.RoleId;
+        var roleName = userRole?.Role.Name ?? AppRoles.Learner;
 
-        if (!roleId.HasValue)
-            return "Learner";
+        var permissions = (await uow.GetRepository<RolePermission>()
+            .GetAllAsync(new RolePermissionsByRoleNameSpecification(roleName)))
+            .Select(rp => rp.Permission.Code)
+            .OrderBy(code => code)
+            .ToList();
 
-        var role = await uow.GetRepository<Role>()
-            .GetByIdAsync(roleId.Value);
-
-        return role?.Name ?? "Learner";
+        return (roleName, permissions);
     }
 
     // GET /api/auth/me
@@ -385,14 +380,15 @@ public class AuthService(
         if (user is null || !user.IsActive)
             return null;
 
-        var roleName = await GetUserRoleNameAsync(userId);
+        var (roleName, permissions) = await GetRoleAccessAsync(userId);
 
         return new CurrentUserDto(
             user.UserId,
             $"{user.FirstName} {user.LastName}".Trim(),
             user.Email,
             roleName,
-            user.IsEmailVerified);
+            user.IsEmailVerified,
+            permissions);
     }
 
     // POST /api/auth/logout: revokes the token id (jti) until the token expires.

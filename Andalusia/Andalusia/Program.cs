@@ -1,8 +1,10 @@
+
+using Andalusia.Services;
+using Andalusia.ServicesAbstraction;
 using Andalusia.Domain.Contracts;
 using Andalusia.Persistance.Data.DataSeed;
 using Andalusia.Persistance.Repositories;
-using Andalusia.Services;
-using Andalusia.ServicesAbstraction;
+using Andalusia.Shared.Authorization;
 using AndalusiaApp.Data;
 using AndalusiaApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
@@ -45,6 +48,7 @@ builder.Services.AddScoped<IDataInitializer, DataInitializer>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserAdminService, UserAdminService>();
 
 // Email / OTP via Brevo SMTP (MailKit) - reads Brevo:Host/Port/UserName/Password/SenderEmail
 builder.Services.AddScoped<IEmailService, MailKitEmailService>();
@@ -73,6 +77,8 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ILearnerDashboardService, LearnerDashboardService>();
 
+builder.Services.AddScoped<IStaffWorkspaceService, StaffWorkspaceService>();
+
 // ==========================================
 // 3. Authentication & JWT
 // ==========================================
@@ -100,22 +106,50 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 
-    // Logout support: reject tokens whose jti was revoked.
     options.Events = new JwtBearerEvents
     {
-        OnTokenValidated = context =>
+        OnTokenValidated = async context =>
         {
+            // 1) Logout support: reject tokens whose jti was revoked.
             var blacklist = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklist>();
             var jti = context.SecurityToken?.Id;
             if (!string.IsNullOrEmpty(jti) && blacklist.IsRevoked(jti))
+            {
                 context.Fail("This token has been revoked (logged out).");
+                return;
+            }
 
-            return Task.CompletedTask;
+            // 2) Re-check the account against the DB on every request, so deactivating a user or
+            //    changing their role takes effect immediately instead of when the 7-day token expires.
+            var subject = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier)
+                          ?? context.Principal?.FindFirstValue("sub");
+            if (!long.TryParse(subject, out var userId))
+            {
+                context.Fail("Invalid token subject.");
+                return;
+            }
+
+            var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+            var current = await db.UserRoles
+                .AsNoTracking()
+                .Where(ur => ur.UserId == userId)
+                .Select(ur => new { ur.User.IsActive, RoleName = ur.Role.Name })
+                .FirstOrDefaultAsync();
+
+            var tokenRole = context.Principal?.FindFirstValue(ClaimTypes.Role);
+            if (current is null || !current.IsActive || current.RoleName != tokenRole)
+                context.Fail("Your account or role has changed. Please sign in again.");
         }
     };
 });
 
-builder.Services.AddAuthorization();
+// One policy per permission code: [Authorize(Policy = AppPermissions.AttendanceManage)].
+// Permissions travel in the JWT as "permission" claims (see TokenService).
+builder.Services.AddAuthorization(options =>
+{
+    foreach (var code in AppPermissions.All)
+        options.AddPolicy(code, policy => policy.RequireClaim(AppClaimTypes.Permission, code));
+});
 
 // ==========================================
 // 4. Controllers & JSON

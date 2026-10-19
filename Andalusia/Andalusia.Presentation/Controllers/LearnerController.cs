@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace AndalusiaApp.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Learner")]
+[Authorize(Roles = Andalusia.Shared.Authorization.AppRoles.Learner)]
 [Route("api/learner")]
 public class LearnerController(ILearnerDashboardService svc) : ControllerBase
 {

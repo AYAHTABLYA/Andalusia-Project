@@ -1,6 +1,7 @@
 ﻿using Andalusia.Domain.Contracts;
 using Andalusia.Domain.Enums;
 using Andalusia.Domain.Models;
+using Andalusia.Shared.Authorization;
 using AndalusiaApp.Data;
 using AndalusiaApp.Models;
 using Microsoft.EntityFrameworkCore;
@@ -39,45 +40,44 @@ public class DataInitializer : IDataInitializer
     // =====================================================================
     private async Task SeedPermissionsAsync()
     {
-        if (await _db.Permissions.AnyAsync()) return;
+        // Idempotent: adds permissions / role links that are missing, never removes existing ones,
+        // so new permissions reach databases that were seeded in an earlier sprint.
+        var permissions = await _db.Permissions.ToDictionaryAsync(p => p.Code);
 
-        var perms = new[]
+        foreach (var (code, description) in AppPermissions.Catalog)
         {
-            ("courses.manage", "Create, edit and archive courses"),
-            ("programs.manage", "Create, edit and archive programs"),
-            ("careerpaths.manage", "Create and edit career paths"),
-            ("applications.review", "Review and decide on applications"),
-            ("enrollments.view", "View enrollments and attendance"),
-            ("content.manage", "Edit FAQs, testimonials and content pages"),
-            ("users.manage", "Manage users and roles"),
-            ("payments.view", "View payments and payouts"),
-        }
-        .Select(p => new Permission { Code = p.Item1, Description = p.Item2 })
-        .ToList();
+            if (permissions.ContainsKey(code)) continue;
 
-        _db.Permissions.AddRange(perms);
+            var permission = new Permission { Code = code, Description = description };
+            _db.Permissions.Add(permission);
+            permissions[code] = permission;
+        }
         await _db.SaveChangesAsync();
 
         var roles = await _db.Roles.ToDictionaryAsync(r => r.Name);
+        var existingLinks = (await _db.RolePermissions
+                .Select(rp => new { rp.RoleId, rp.PermissionId })
+                .ToListAsync())
+            .Select(l => (l.RoleId, l.PermissionId))
+            .ToHashSet();
 
-        void Grant(string role, params string[] codes)
+        foreach (var (roleName, codes) in AppPermissions.RoleGrants)
         {
-            if (!roles.TryGetValue(role, out var r)) return;
+            if (!roles.TryGetValue(roleName, out var role)) continue;
+
             foreach (var code in codes)
             {
-                _db.RolePermissions.Add(new RolePermission
+                var permissionId = permissions[code].PermissionId;
+                if (existingLinks.Add((role.RoleId, permissionId)))
                 {
-                    RoleId = r.RoleId,
-                    PermissionId = perms.First(p => p.Code == code).PermissionId
-                });
+                    _db.RolePermissions.Add(new RolePermission
+                    {
+                        RoleId = role.RoleId,
+                        PermissionId = permissionId
+                    });
+                }
             }
         }
-
-        Grant("Admin", perms.Select(p => p.Code).ToArray());
-        Grant("Manager", "courses.manage", "programs.manage", "careerpaths.manage",
-              "applications.review", "enrollments.view", "payments.view");
-        Grant("Content_Manager", "content.manage", "courses.manage", "programs.manage", "careerpaths.manage");
-        Grant("Instructor", "enrollments.view");
 
         await _db.SaveChangesAsync();
     }

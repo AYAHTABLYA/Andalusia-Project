@@ -10,6 +10,7 @@ namespace Andalusia.Shared.Dtos.AuthDtos
      string Email,
      string Role,
      string Token,
-     DateTime ExpiresAt
+     DateTime ExpiresAt,
+     IReadOnlyList<string> Permissions
  );
 }

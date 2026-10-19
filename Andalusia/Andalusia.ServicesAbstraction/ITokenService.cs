@@ -1,8 +1,8 @@
-﻿using AndalusiaApp.Models;
+using AndalusiaApp.Models;
 
 namespace AndalusiaApp.Services;
 
 public interface ITokenService
 {
-    (string Token, DateTime ExpiresAt) GenerateToken(User user, string roleName);
+    (string Token, DateTime ExpiresAt) GenerateToken(User user, string roleName, IEnumerable<string> permissions);
 }

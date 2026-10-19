@@ -1,6 +1,7 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Andalusia.Shared.Authorization;
 using AndalusiaApp.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +10,7 @@ namespace AndalusiaApp.Services;
 
 public class TokenService(IConfiguration config) : ITokenService
 {
-    public (string Token, DateTime ExpiresAt) GenerateToken(User user, string roleName)
+    public (string Token, DateTime ExpiresAt) GenerateToken(User user, string roleName, IEnumerable<string> permissions)
     {
         var secretKey = config["Jwt:Key"] ?? "AndalusiaSuperSecretKey2026SecureKeyWith32CharsMinimum!";
         var issuer = config["Jwt:Issuer"] ?? "AndalusiaApp";
@@ -25,6 +26,11 @@ public class TokenService(IConfiguration config) : ITokenService
             new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}".Trim()),
             new(ClaimTypes.Role, roleName)
         };
+
+        // One claim per permission: policies use RequireClaim("permission", code).
+        claims.AddRange(permissions
+            .Distinct()
+            .Select(p => new Claim(AppClaimTypes.Permission, p)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
