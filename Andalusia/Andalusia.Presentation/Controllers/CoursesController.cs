@@ -1,6 +1,7 @@
 ﻿using Andalusia.Shared;
 using Andalusia.Shared.Dtos.CourseDtos;
 using AndalusiaApp.Services;
+using Andalusia.ServicesAbstraction;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 

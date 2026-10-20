@@ -12,6 +12,12 @@ namespace AndalusiaApp.Models
         public AssignmentSubmissionStatus Status { get; set; } = AssignmentSubmissionStatus.Submitted;
         public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
 
+        // Grading (set by staff via PUT /api/staff/submissions/{id}/grade). Score == null means not graded yet.
+        public int? Score { get; set; }
+        public string? Feedback { get; set; }
+        public DateTime? GradedAt { get; set; }
+        public long? GradedBy { get; set; }
+
         public Assignment Assignment { get; set; } = null!;
         public User Learner { get; set; } = null!;
     }

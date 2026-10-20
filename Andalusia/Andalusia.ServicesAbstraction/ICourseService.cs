@@ -1,7 +1,7 @@
-﻿using Andalusia.Shared;
+using Andalusia.Shared;
 using Andalusia.Shared.Dtos.CourseDtos;
 
-namespace AndalusiaApp.Services;
+namespace Andalusia.ServicesAbstraction;
 
 public interface ICourseService
 {
@@ -11,4 +11,10 @@ public interface ICourseService
     Task<CourseDetailDto?> GetBySlugAsync(string slug, CancellationToken ct = default);
     Task<long?> ApplyAsync(string slug, CreateApplicationDto dto, long? userId = null, CancellationToken ct = default);
     Task<(byte[] Bytes, string ContentType, string FileName)?> GetSyllabusAsync(string slug, CancellationToken ct = default);
+    Task<IReadOnlyList<AdminCourseDto>> GetAdminCoursesAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<AdminCourseMentorDto>> GetAdminCourseMentorsAsync(CancellationToken ct = default);
+    Task<AdminCourseDto?> GetAdminCourseAsync(long id, CancellationToken ct = default);
+    Task<AdminCourseDto?> CreateAdminCourseAsync(CreateAdminCourseDto dto, CancellationToken ct = default);
+    Task<AdminCourseDto?> UpdateAdminCourseAsync(long id, UpdateAdminCourseDto dto, CancellationToken ct = default);
+    Task<bool?> DeleteAdminCourseAsync(long id, CancellationToken ct = default);
 }

@@ -30,6 +30,9 @@ public class Error
     public static Error Forbidden(string code = "General.Forbidden", string description = "You do not have permission to do this.")
         => new(code, description, ErrorType.Forbidden);
 
+    public static Error Conflict(string code = "General.Conflict", string description = "The request conflicts with the current state of the resource.")
+        => new(code, description, ErrorType.Conflict);
+
     public static Error InvalidCredentials(string code = "General.InvalidCredentials", string description = "Invalid credentials.")
         => new(code, description, ErrorType.InvalidCredentials);
 }

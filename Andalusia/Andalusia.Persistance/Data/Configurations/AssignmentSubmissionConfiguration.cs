@@ -14,6 +14,7 @@ namespace AndalusiaApp.Data.Configurations
             builder.HasKey(x => x.SubmissionId);
             builder.Property(x => x.AttemptNumber).HasDefaultValue(1);
             builder.Property(x => x.FileUrl).HasMaxLength(500);
+            builder.Property(x => x.Feedback).HasMaxLength(2000);
             builder.Property(x => x.Status)
                    .HasConversion<string>()
                    .HasMaxLength(50);
@@ -22,6 +23,7 @@ namespace AndalusiaApp.Data.Configurations
 
             builder.HasOne(x => x.Assignment).WithMany().HasForeignKey(x => x.AssignmentId);
             builder.HasOne(x => x.Learner).WithMany().HasForeignKey(x => x.LearnerId);
+            builder.HasOne<User>().WithMany().HasForeignKey(x => x.GradedBy).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

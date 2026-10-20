@@ -62,7 +62,7 @@ public sealed class StaffWorkspaceService(IUnitOfWork uow) : IStaffWorkspaceServ
         if (!isAdmin && !(await uow.GetRepository<ScheduleInstructor>().GetAllAsync()).Any(l => l.ScheduleId == assignment.ScheduleId && l.InstructorId == instructorId)) return Array.Empty<StaffSubmissionDto>();
         var users = (await uow.GetRepository<User>().GetAllAsync()).ToDictionary(u => u.UserId);
         var submissions = (await uow.GetRepository<AssignmentSubmission>().GetAllAsync()).Where(s => s.AssignmentId == assignmentId).OrderByDescending(s => s.SubmittedAt);
-        return submissions.Where(s => users.ContainsKey(s.LearnerId)).Select(s => { var u = users[s.LearnerId]; return new StaffSubmissionDto(s.SubmissionId, s.LearnerId, $"{u.FirstName} {u.LastName}".Trim(), u.Email, s.FileUrl, s.Status.ToString(), s.SubmittedAt, s.AttemptNumber); }).ToList();
+        return submissions.Where(s => users.ContainsKey(s.LearnerId)).Select(s => { var u = users[s.LearnerId]; return new StaffSubmissionDto(s.SubmissionId, s.LearnerId, $"{u.FirstName} {u.LastName}".Trim(), u.Email, s.FileUrl, s.Status.ToString(), s.SubmittedAt, s.AttemptNumber, s.Score, s.Feedback, s.GradedAt); }).ToList();
     }
 
     public async Task<IReadOnlyList<StaffStudentDto>> GetStudentsAsync(long? instructorId, bool isAdmin, string? search, CancellationToken ct = default)

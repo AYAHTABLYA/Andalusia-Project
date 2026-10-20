@@ -44,6 +44,10 @@ public class DataInitializer : IDataInitializer
         // so new permissions reach databases that were seeded in an earlier sprint.
         var permissions = await _db.Permissions.ToDictionaryAsync(p => p.Code);
 
+        // Default grants are applied ONLY to permissions created in this run. Re-adding grants for existing
+        // permissions on every startup would silently undo changes made through PUT /api/admin/roles/{id}/permissions.
+        var newlyCreated = new HashSet<string>();
+
         foreach (var (code, description) in AppPermissions.Catalog)
         {
             if (permissions.ContainsKey(code)) continue;
@@ -51,6 +55,7 @@ public class DataInitializer : IDataInitializer
             var permission = new Permission { Code = code, Description = description };
             _db.Permissions.Add(permission);
             permissions[code] = permission;
+            newlyCreated.Add(code);
         }
         await _db.SaveChangesAsync();
 
@@ -67,6 +72,8 @@ public class DataInitializer : IDataInitializer
 
             foreach (var code in codes)
             {
+                if (!newlyCreated.Contains(code)) continue;
+
                 var permissionId = permissions[code].PermissionId;
                 if (existingLinks.Add((role.RoleId, permissionId)))
                 {

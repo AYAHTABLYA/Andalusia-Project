@@ -78,6 +78,13 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ILearnerDashboardService, LearnerDashboardService>();
 
 builder.Services.AddScoped<IStaffWorkspaceService, StaffWorkspaceService>();
+builder.Services.AddScoped<IStaffSessionService, StaffSessionService>();
+builder.Services.AddScoped<IStaffContentService, StaffContentService>();
+builder.Services.AddScoped<IStaffStudentService, StaffStudentService>();
+builder.Services.AddScoped<IInstructorAdminService, InstructorAdminService>();
+builder.Services.AddScoped<IScheduleAdminService, ScheduleAdminService>();
+builder.Services.AddScoped<IPaymentAdminService, PaymentAdminService>();
+builder.Services.AddScoped<IRolePermissionAdminService, RolePermissionAdminService>();
 
 // ==========================================
 // 3. Authentication & JWT

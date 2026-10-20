@@ -81,6 +81,7 @@ public static class AppPermissions
             [AppRoles.Instructor] =
             [
                 StudentsView, EnrollmentsView, SessionsManage, AttendanceManage, AssignmentsManage,
+                PaymentsView, // own payouts only: /api/staff/payouts scopes instructors to their own rows
             ],
 
             [AppRoles.Learner] = [LearningAccess],

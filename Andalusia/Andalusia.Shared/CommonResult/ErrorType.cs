@@ -11,6 +11,7 @@ namespace Andalusia.Shared.CommonResult
         NotFound,
         Unauthorized,
         Forbidden,
-        InvalidCredentials
+        InvalidCredentials,
+        Conflict
     }
 }

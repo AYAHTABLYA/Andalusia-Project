@@ -268,13 +268,26 @@ namespace Andalusia.Persistance.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
+                    b.Property<string>("Feedback")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<string>("FileUrl")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<DateTime?>("GradedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("GradedBy")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("LearnerId")
                         .HasColumnType("bigint");
+
+                    b.Property<int?>("Score")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -285,6 +298,8 @@ namespace Andalusia.Persistance.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("SubmissionId");
+
+                    b.HasIndex("GradedBy");
 
                     b.HasIndex("LearnerId");
 
@@ -1614,6 +1629,11 @@ namespace Andalusia.Persistance.Migrations
                         .HasForeignKey("AssignmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("AndalusiaApp.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("GradedBy")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AndalusiaApp.Models.User", "Learner")
                         .WithMany()
