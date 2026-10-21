@@ -84,6 +84,7 @@ builder.Services.AddScoped<IStaffStudentService, StaffStudentService>();
 builder.Services.AddScoped<IInstructorAdminService, InstructorAdminService>();
 builder.Services.AddScoped<IScheduleAdminService, ScheduleAdminService>();
 builder.Services.AddScoped<IPaymentAdminService, PaymentAdminService>();
+builder.Services.AddScoped<IAdminReportsService, AdminReportsService>();
 builder.Services.AddScoped<IRolePermissionAdminService, RolePermissionAdminService>();
 
 // ==========================================
