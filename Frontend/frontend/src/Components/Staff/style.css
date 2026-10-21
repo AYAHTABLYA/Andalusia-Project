@@ -219,3 +219,22 @@ a.staff-quick-action:hover { border-color: var(--brand-400); background: var(--b
 
 /* Admin course CRUD */
 .staff-course-form-card{padding:1.3rem}.staff-course-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.staff-course-form>label{display:flex;flex-direction:column;gap:.4rem;color:var(--ink-800);font-size:.78rem;font-weight:650}.staff-course-form input:not([type=checkbox]),.staff-course-form select,.staff-course-form textarea{width:100%;min-width:0;padding:.7rem .75rem;border:1px solid var(--line);border-radius:.65rem;background:#fff;color:var(--ink-800);font:inherit;font-weight:400}.staff-course-form textarea{resize:vertical}.staff-course-form-wide{grid-column:1/-1}.staff-course-featured{display:flex!important;flex-direction:row!important;align-items:center}.staff-course-featured input{accent-color:#344c45}.staff-course-form-actions{grid-column:1/-1;display:flex;gap:.65rem;justify-content:flex-end}.staff-course-help{margin:0;color:#805f42;font-size:.78rem}.staff-course-slug{display:block;margin-top:.2rem;color:var(--muted);font-size:.7rem}.admin-courses-manager .staff-workspace-table-card{padding:1.3rem}@media(max-width:720px){.staff-course-form{grid-template-columns:1fr}.staff-course-form-wide,.staff-course-form-actions{grid-column:auto}.admin-courses-manager .staff-page_head{align-items:flex-start;flex-direction:column}}
+
+/* ---------- Instructor overview (AHA report layout) ---------- */
+.instructor-greeting{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap}
+.instructor-greeting h1{font-size:clamp(1.7rem,3vw,2.3rem);line-height:1.12;letter-spacing:-.04em;font-weight:750;margin:.2rem 0 .4rem;color:#29312f}
+.instructor-greeting p{margin:0;color:#68706c;font-size:.9rem}
+.instructor-metric_bar{display:block;width:100%;height:.22rem;margin-top:.7rem;border-radius:99px;background:#f0e9e3;overflow:hidden}
+.instructor-metric_bar i{display:block;height:100%;border-radius:99px;background:#b07963;transition:width .5s ease}
+.instructor-session{display:flex;align-items:center;gap:.85rem;padding:.9rem 0;border-bottom:1px solid #f0efeb}
+.instructor-session:last-child{border-bottom:0;padding-bottom:.1rem}
+.instructor-session.is-done{opacity:.55}
+.instructor-session_time{display:flex;flex-direction:column;min-width:2.8rem}
+.instructor-session_time strong{font-size:.85rem;color:#29312f}.instructor-session_time small{font-size:.68rem;color:#929791}
+.instructor-session_bar{align-self:stretch;width:.18rem;border-radius:99px;background:#b07963}
+.instructor-session_status{font-size:.72rem;color:#858b86}
+.instructor-join{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .8rem;border-radius:.6rem;background:#344c45;color:#fff;font-size:.74rem;font-weight:650;text-decoration:none}
+.instructor-join .material-symbols-outlined{font-size:1rem}.instructor-join:hover{background:#263c35}
+.instructor-activity_time{color:#a1a7a1;font-size:.68rem;white-space:nowrap}
+.instructor-see-all{display:flex;justify-content:center;align-items:center;gap:.25rem;margin-top:.8rem;padding-top:.8rem;border-top:1px solid #f0efeb;color:#567568;font-size:.74rem;font-weight:700;text-decoration:none}
+.instructor-see-all .material-symbols-outlined{font-size:.95rem}.instructor-see-all:hover{color:#a77958}

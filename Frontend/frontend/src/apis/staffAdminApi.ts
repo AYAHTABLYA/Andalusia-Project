@@ -213,3 +213,12 @@ export const createAdminCourse = (body: AdminCourseBody) =>
 export const updateAdminCourse = (id: number, body: AdminCourseBody) =>
   apiPut<AdminCourseDto>(`/api/admin/courses/${id}`, body);
 export const deleteAdminCourse = (id: number) => apiDelete(`/api/admin/courses/${id}`);
+
+// ============================ Reports & analytics (/api/admin/reports) ============================
+export type AdminReportRecord = { report: string; period: string; updated: string; status: string };
+export type AdminReportsDto = {
+  studentGrowth: number; sessionsDelivered: number; revenue: string; successfulTransactions: number;
+  from: string; to: string; updatedAt: string; records: AdminReportRecord[];
+};
+export const getAdminReports = (params: { from?: string; to?: string; search?: string } = {}, signal?: AbortSignal) =>
+  apiGet<AdminReportsDto>("/api/admin/reports", q(params), signal);

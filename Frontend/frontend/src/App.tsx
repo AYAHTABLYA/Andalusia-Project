@@ -91,6 +91,9 @@ function App() {
           <Route element={<RequireRole allow={[ROLES.instructor]} />}>
             <Route element={<StaffLayout />}>
               <Route path="/instructor" element={<InstructorHome />} />
+              <Route path="/instructor/courses" element={<StaffWorkspacePage />} />
+              <Route path="/instructor/students" element={<StaffWorkspacePage />} />
+              <Route path="/instructor/attendance" element={<StaffWorkspacePage />} />
               <Route path="/instructor/schedule" element={<StaffWorkspacePage />} />
               <Route path="/instructor/assignments" element={<StaffWorkspacePage />} />
               <Route path="/instructor/messages" element={<StaffWorkspacePage />} />
