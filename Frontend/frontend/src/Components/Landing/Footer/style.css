@@ -98,3 +98,53 @@
 .landing-footer_bottom-links a:hover {
   color: #d3d8d9;
 }
+
+/* Brand logo: the rose-bronze PNG recoloured to white, like the footer text */
+.landing-footer_logo {
+  display: block;
+  height: 44px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  align-self: flex-start;
+  filter: brightness(0) invert(1);
+}
+
+/* Keep In Touch */
+.landing-footer_touch {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.landing-footer_touch h4 {
+  margin-bottom: 0;
+}
+
+.landing-footer_social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  align-self: flex-start;
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.landing-footer_social--linkedin {
+  background-color: #0a66c2;
+}
+
+.landing-footer_grid .landing-footer_social:hover {
+  color: #fff;
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+}
+
+.landing-footer_social:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}

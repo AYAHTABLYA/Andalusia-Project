@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "../style.css";
-import { apiGet } from "../../../apis/academyApi";
 import { getRoles, getUsers } from "../../../apis/adminApi";
 import type { AdminRole, AdminUser } from "../../../Types/Admin";
-import type { Paginated } from "../../../Types/Paginated";
-import type { CourseListItemDto } from "../../../Types/AcademyApi";
-import { getStaffSchedule, getStaffAssignments, getStaffPayouts, getStaffStudents } from "../../../apis/staffApi";
+import { getStaffDashboard, getStaffSchedule, getStaffAssignments, getStaffPayouts, getStaffStudents, updateStaffPayoutStatus } from "../../../apis/staffApi";
+import type { StaffPayoutDto, StaffAssignmentDto } from "../../../apis/staffApi";
+import { getAdminInstructors, getAdminSchedules } from "../../../apis/staffAdminApi";
+import type { AdminScheduleDto } from "../../../apis/staffAdminApi";
+import { AddPersonDialog, ScheduleSessionDialog, ReviewRolesDialog, CreateAssignmentDialog, ReviewSubmissionsDialog } from "./StaffActionDialogs";
+import { downloadCsv } from "../../../utils/csv";
+import AdminCoursesManager from "../Admin/Courses/AdminCoursesManager";
 
 type PageConfig = { eyebrow: string; title: string; subtitle: string; icon: string; stats: {label:string;value:string;icon:string}[]; columns:string[]; rows:string[][]; actions:string[]; note:string };
 const configs: Record<string, PageConfig> = {
@@ -14,60 +17,104 @@ const configs: Record<string, PageConfig> = {
   "/admin/students": { eyebrow:"ACADEMY OPERATIONS", title:"Student management", subtitle:"Review student accounts, enrollments, learning progress and account status.", icon:"groups", stats:[{label:"Students",value:"—",icon:"groups"},{label:"Active enrollments",value:"—",icon:"school"},{label:"Needs attention",value:"—",icon:"flag"}], columns:["Student","Course","Progress","Last activity","Status"], rows:[], actions:["Add student","Export list"], note:"Student records and progress will appear when the relevant APIs are connected." },
   "/admin/courses": { eyebrow:"ACADEMY OPERATIONS", title:"Course management", subtitle:"Manage the course register, instructors, enrollment capacity, pricing and status.", icon:"menu_book", stats:[{label:"Courses",value:"—",icon:"menu_book"},{label:"Running",value:"—",icon:"play_circle"},{label:"Enrollments",value:"—",icon:"groups"}], columns:["Course","Code","Instructor","Capacity","Price","Status"], rows:[], actions:["Create course","Export list"], note:"Course records will appear when the course-management API is connected." },
   "/admin/schedule": { eyebrow:"ACADEMY OPERATIONS", title:"Academy schedule", subtitle:"Coordinate sessions across courses, instructors and students. Check times and classroom access in one place.", icon:"calendar_month", stats:[{label:"Sessions today",value:"—",icon:"today"},{label:"Upcoming",value:"—",icon:"event_upcoming"},{label:"Live now",value:"—",icon:"videocam"}], columns:["Session","Course","Instructor","Date & time","Students","Status"], rows:[], actions:["Schedule session","Calendar view"], note:"The calendar will show authoritative session data, timezone and Zoom links when the schedule API is connected." },
-  "/admin/compensation": { eyebrow:"FINANCE", title:"Instructor compensation", subtitle:"Review pending instructor payouts and approved financial transactions before payout.", icon:"payments", stats:[{label:"Pending payout",value:"—",icon:"pending_actions"},{label:"Approved this month",value:"—",icon:"task_alt"},{label:"Recent transactions",value:"—",icon:"receipt_long"}], columns:["Instructor","Period","Sessions","Amount","Approval status"], rows:[], actions:["Review pending","Export transactions"], note:"Compensation data is intentionally separate from student payments and academy revenue." },
+  "/admin/compensation": { eyebrow:"FINANCE", title:"Instructor compensation", subtitle:"Review pending instructor payouts and approved financial transactions before payout.", icon:"payments", stats:[{label:"Pending payout",value:"—",icon:"pending_actions"},{label:"Paid this month",value:"—",icon:"task_alt"},{label:"Recent transactions",value:"—",icon:"receipt_long"}], columns:["Instructor","Period","Sessions","Amount","Approval status"], rows:[], actions:["Review pending","Export transactions"], note:"Compensation data is intentionally separate from student payments and academy revenue." },
   "/admin/reports": { eyebrow:"INSIGHTS", title:"Reports & analytics", subtitle:"Monitor academy growth, teaching delivery and financial performance over time.", icon:"analytics", stats:[{label:"Student growth",value:"—",icon:"trending_up"},{label:"Sessions delivered",value:"—",icon:"event_available"},{label:"Revenue",value:"—",icon:"payments"}], columns:["Report","Period","Updated","Status"], rows:[], actions:["Operational report","Financial report","Export report"], note:"Date, course and instructor filters and exportable reports will use the reporting API when available." },
   "/admin/permissions": { eyebrow:"SECURITY", title:"Roles & permissions", subtitle:"Review role access and keep sensitive finance and administration actions restricted.", icon:"admin_panel_settings", stats:[{label:"Roles",value:"—",icon:"badge"},{label:"Permissions",value:"—",icon:"verified_user"},{label:"Pending reviews",value:"—",icon:"fact_check"}], columns:["Role","Workspace access","Finance access","User management","Status"], rows:[], actions:["Review roles","Audit permissions"], note:"The API remains the authority for permission enforcement; this workspace does not grant permissions by itself." },
   "/instructor/schedule": { eyebrow:"TEACHING WORKSPACE", title:"My schedule", subtitle:"See only your assigned sessions, with class time, course details and classroom access.", icon:"calendar_month", stats:[{label:"Today",value:"—",icon:"today"},{label:"This week",value:"—",icon:"date_range"},{label:"Completed",value:"—",icon:"task_alt"}], columns:["Time","Course","Students","Duration","Classroom"], rows:[], actions:["Today","Week","Month"], note:"Only sessions assigned to your instructor account should be displayed here." },
   "/instructor/assignments": { eyebrow:"TEACHING WORKSPACE", title:"Assignments & grading", subtitle:"Create course work, track submissions and provide feedback to enrolled students.", icon:"assignment", stats:[{label:"Assignments",value:"—",icon:"assignment"},{label:"To grade",value:"—",icon:"rate_review"},{label:"Graded",value:"—",icon:"task_alt"}], columns:["Assignment","Course","Due date","Submissions","Status"], rows:[], actions:["Create assignment","Review submissions"], note:"Student eligibility should come from coordinator-approved enrollments. Submission and grading data will load from the assignment APIs." },
   "/instructor/messages": { eyebrow:"TEACHING WORKSPACE", title:"Student messages", subtitle:"Keep course-related questions and responses together in one place.", icon:"forum", stats:[{label:"Conversations",value:"—",icon:"forum"},{label:"Unread",value:"—",icon:"mark_chat_unread"},{label:"Awaiting reply",value:"—",icon:"schedule"}], columns:["Student","Course","Last message","Updated","Status"], rows:[], actions:["Unread","All conversations"], note:"Messages will be scoped to your assigned students and courses when the messaging API is connected." },
-  "/instructor/earnings": { eyebrow:"MY FINANCES", title:"My earnings", subtitle:"Review your personal earnings and approved items without academy-wide financial data.", icon:"payments", stats:[{label:"This month",value:"—",icon:"calendar_month"},{label:"Pending",value:"—",icon:"pending_actions"},{label:"Approved",value:"—",icon:"task_alt"}], columns:["Date","Course / session","Pay model","Amount","Status"], rows:[], actions:["Current month","Earnings history"], note:"Only your own earnings and approved transactions belong in this view." },
+  "/instructor/earnings": { eyebrow:"MY FINANCES", title:"My earnings", subtitle:"Review your personal earnings and approved items without academy-wide financial data.", icon:"payments", stats:[{label:"This month",value:"—",icon:"calendar_month"},{label:"Pending",value:"—",icon:"pending_actions"},{label:"Paid",value:"—",icon:"task_alt"}], columns:["Date","Course / session","Pay model","Amount","Status"], rows:[], actions:["Current month","Earnings history"], note:"Only your own earnings and approved transactions belong in this view." },
   "/instructor/availability": { eyebrow:"TEACHING WORKSPACE", title:"My availability", subtitle:"Set the teaching windows coordinators can use when arranging sessions.", icon:"event_available", stats:[{label:"Available windows",value:"—",icon:"event_available"},{label:"Booked windows",value:"—",icon:"event_busy"},{label:"Upcoming sessions",value:"—",icon:"calendar_month"}], columns:["Day","Available from","Available to","Timezone","Status"], rows:[], actions:["Add availability","Save changes"], note:"Availability is provided by the instructor; coordinators schedule sessions within these windows. Changes will be saved once the availability API is available." },
 };
+const iso=(d:Date)=>d.toLocaleDateString("en-CA");
+function rangeFor(period:string):{from:string;to:string}|undefined{
+ const n=new Date(),y=n.getFullYear(),m=n.getMonth();
+ if(period==="Today")return{from:iso(n),to:iso(n)};
+ if(period==="This week"){const mon=new Date(y,m,n.getDate()-((n.getDay()+6)%7));const sun=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+6);return{from:iso(mon),to:iso(sun)};}
+ if(period==="This month")return{from:iso(new Date(y,m,1)),to:iso(new Date(y,m+1,0))};
+ if(period==="This year")return{from:`${y}-01-01`,to:`${y}-12-31`};
+ return undefined;
+}
 export default function StaffWorkspacePage(){
  const {pathname}=useLocation(); const config=configs[pathname] ?? configs["/admin/reports"];
  const [query,setQuery]=useState(""); const [period,setPeriod]=useState("This month"); const [notice,setNotice]=useState("");
  const [liveRows,setLiveRows]=useState<string[][]>(config.rows); const [liveStats,setLiveStats]=useState(config.stats); const [loading,setLoading]=useState(false); const [loadError,setLoadError]=useState("");
+ const [reloadKey,setReloadKey]=useState(0); const [busyPayout,setBusyPayout]=useState<number|null>(null);
+ const payoutByRow=useRef(new WeakMap<string[],StaffPayoutDto>());
+ const [dialog,setDialog]=useState<null|"instructor"|"student"|"session"|"roles"|"assignment"|"submissions">(null); const [monthOnly,setMonthOnly]=useState(false); const [assignmentsList,setAssignmentsList]=useState<StaffAssignmentDto[]>([]); const [scheduleOptions,setScheduleOptions]=useState<{id:number;label:string}[]>([]); const [pendingOnly,setPendingOnly]=useState(false); const [schedules,setSchedules]=useState<AdminScheduleDto[]>([]);
+ useEffect(()=>{setPendingOnly(false);setMonthOnly(false);setDialog(null);},[pathname]);
+ function dialogDone(message:string){ setDialog(null); setNotice(message); setReloadKey(k=>k+1); }
+ const canReviewPayouts=pathname==="/admin/compensation";
+ async function changePayout(payout:StaffPayoutDto,status:"Pending"|"Paid"|"Cancelled"){
+  setBusyPayout(payout.id); setNotice("");
+  try{ await updateStaffPayoutStatus(payout.id,status); setNotice(`Payout #${payout.id} marked ${status.toLowerCase()}.`); setReloadKey(k=>k+1); }
+  catch(e){ setNotice(e instanceof Error?e.message:"Could not update this payout."); }
+  finally{ setBusyPayout(null); }
+ }
  useEffect(()=>{
   const controller=new AbortController();
   const signal=controller.signal;
   setLiveRows(config.rows); setLiveStats(config.stats); setLoadError("");
   const setCount=(label:string,value:string)=>setLiveStats(prev=>prev.map(item=>item.label===label?{...item,value}:item));
   const load=async()=>{
-   if(["/admin/instructors","/admin/students"].includes(pathname)){
+   if(pathname==="/admin/instructors"){
     setLoading(true);
     try{
-     const role=pathname==="/admin/students"?"Learner":"Instructor";
-     const result=await getUsers({role,page:1,pageSize:100},signal);
+     const result=await getAdminInstructors({page:1,pageSize:100},signal);
      if(signal.aborted)return;
-     setLiveRows(result.data.map((u:AdminUser)=>pathname==="/admin/students"
-      ?[u.fullName,u.email,"—",new Date(u.createdAt).toLocaleDateString(),u.isActive?"Active":"Inactive"]
-      :[u.fullName,u.email,"—","—",u.isActive?"Active":"Inactive"]));
-     setCount(pathname==="/admin/students"?"Students":"Total instructors",String(result.count));
-     if(pathname==="/admin/instructors")setCount("Active",String(result.data.filter(u=>u.isActive).length));
-    }catch(e){if(!signal.aborted)setLoadError(e instanceof Error?e.message:"Could not load users.");}
+     setLiveRows(result.data.map(i=>[i.fullName,i.jobTitle||"—",`${i.schedulesCount} ${i.schedulesCount===1?"schedule":"schedules"}`,"—",i.isActive?"Active":"Inactive"]));
+     setCount("Total instructors",String(result.count));
+     setCount("Active",String(result.data.filter(i=>i.isActive).length));
+     setCount("Teaching load",String(result.data.reduce((sum,i)=>sum+i.schedulesCount,0)));
+    }catch(e){if(!signal.aborted)setLoadError(e instanceof Error?e.message:"Could not load instructors.");}
     finally{if(!signal.aborted)setLoading(false);}
-   } else if(pathname==="/admin/courses"){
+   } else if(pathname==="/admin/students"){
     setLoading(true);
     try{
-     const result=await apiGet<Paginated<CourseListItemDto>>("/api/courses",{page:1,pageSize:100},signal);
+     const rows=await getStaffStudents(undefined,signal);
      if(signal.aborted)return;
-     setLiveRows(result.data.map(c=>[c.title,c.slug,c.mentor||"—",c.seats||"—",`${c.tuition} ${c.currency||""}`.trim(),"Listed"]));
-     setCount("Courses",String(result.count));
-    }catch(e){if(!signal.aborted)setLoadError(e instanceof Error?e.message:"Could not load courses.");}
+     setLiveRows(rows.map(r=>[`${r.name} (${r.email})`,r.courseTitle||"—","—",new Date(r.enrolledAt).toLocaleDateString(),String(r.status).replaceAll("_"," ")]));
+     setCount("Students",String(new Set(rows.map(r=>r.id)).size));
+     setCount("Active enrollments",String(rows.filter(r=>["active","enrolled"].includes(String(r.status).toLowerCase())).length));
+    }catch(e){if(!signal.aborted)setLoadError(e instanceof Error?e.message:"Could not load students.");}
     finally{if(!signal.aborted)setLoading(false);}
-   } else if(pathname==="/admin/schedule" || pathname==="/instructor/schedule"){
+   } else if(pathname==="/admin/schedule"){
     setLoading(true);
     try{
-     const rows=await getStaffSchedule(undefined,signal); if(signal.aborted)return;
-     setLiveRows(rows.map(r=>pathname==="/admin/schedule" ? [r.title || r.courseTitle,r.courseTitle,r.batchCode || "—",`${r.date} ${r.startTime}–${r.endTime}`,r.roomDetails || "—","Scheduled"] : [`${r.date} ${r.startTime}–${r.endTime}`,r.courseTitle,"—",`${r.endTime}`,r.roomDetails || "—"]));
-     setCount("Sessions today",String(rows.filter(r=>r.date===new Date().toISOString().slice(0,10)).length));
-     setCount("Upcoming",String(rows.filter(r=>new Date(`${r.date}T${r.startTime}`)>=new Date()).length));
+     const result=await getAdminSchedules({page:1,pageSize:100},signal); if(signal.aborted)return;
+     const rows=result.data;
+     setLiveRows(rows.map(r=>[r.title || r.batchCode || `Schedule #${r.id}`,r.courseId ? `Course #${r.courseId}` : r.programId ? `Program #${r.programId}` : "—",r.instructors.map(i=>i.name).join(", ") || "Unassigned",`${r.startDate} – ${r.endDate}`,`${r.enrolledCount}/${r.capacity}`,r.status]));
+     setSchedules(rows);
+     const t=new Date().toLocaleDateString("en-CA");
+     const [todays,dash]=await Promise.all([getStaffSchedule({from:t,to:t},signal),getStaffDashboard(signal)]); if(signal.aborted)return;
+     const now=new Date().toTimeString().slice(0,8);
+     setCount("Sessions today",String(todays.length));
+     setCount("Upcoming",String(dash.upcomingSessions));
+     setCount("Live now",String(todays.filter(x=>x.startTime<=now&&now<x.endTime).length));
+    }catch(e){if(!signal.aborted)setLoadError(e instanceof Error?e.message:"Could not load schedules.");}
+    finally{if(!signal.aborted)setLoading(false);}
+   } else if(pathname==="/instructor/schedule"){
+    setLoading(true);
+    try{
+     const [rows,weekRows]=await Promise.all([getStaffSchedule(rangeFor(period),signal),getStaffSchedule(rangeFor("This week"),signal)]); if(signal.aborted)return;
+     const dur=(a:string,b:string)=>{const[h1,m1]=a.split(":").map(Number),[h2,m2]=b.split(":").map(Number);const mins=(h2*60+m2)-(h1*60+m1);return mins>0?`${mins} min`:"—";};
+     setLiveRows(rows.map(r=>[`${r.date} ${r.startTime.slice(0,5)}–${r.endTime.slice(0,5)}`,r.courseTitle,"—",dur(r.startTime,r.endTime),r.roomDetails || "—"]));
+     const t=iso(new Date()),nowT=new Date().toTimeString().slice(0,8);
+     setCount("Today",String(weekRows.filter(r=>r.date===t).length));
+     setCount("This week",String(weekRows.length));
+     setCount("Completed",String(rows.filter(r=>r.date<t||(r.date===t&&r.endTime<=nowT)).length));
     }catch(e){if(!signal.aborted)setLoadError(e instanceof Error?e.message:"Could not load schedule.");}
     finally{if(!signal.aborted)setLoading(false);}
    } else if(pathname==="/instructor/assignments"){
     setLoading(true);
     try{
-     const rows=await getStaffAssignments(signal); if(signal.aborted)return;
+     const [rows,sessions,students]=await Promise.all([getStaffAssignments(signal),getStaffSchedule(undefined,signal).catch(()=>[]),getStaffStudents(undefined,signal).catch(()=>[])]); if(signal.aborted)return;
+     setAssignmentsList(rows);
+     const opts=new Map<number,string>();
+     students.forEach(x=>{if(x.scheduleId!=null)opts.set(x.scheduleId,x.courseTitle);});
+     rows.forEach(x=>opts.set(x.scheduleId,x.courseTitle));
+     sessions.forEach(x=>opts.set(x.scheduleId,`${x.courseTitle} · ${x.batchCode}`));
+     setScheduleOptions(Array.from(opts,([id,label])=>({id,label:`${label} (#${id})`})));
      setLiveRows(rows.map(r=>[r.title,r.courseTitle,new Date(r.dueDate).toLocaleString(),String(r.submissions),new Date(r.dueDate)<new Date()?"Past due":"Open"]));
      setCount("Assignments",String(rows.length)); setCount("To grade",String(rows.reduce((sum,r)=>sum+r.submissions,0)));
     }catch(e){if(!signal.aborted)setLoadError(e instanceof Error?e.message:"Could not load assignments.");}
@@ -76,9 +123,19 @@ export default function StaffWorkspacePage(){
     setLoading(true);
     try{
      const rows=await getStaffPayouts(signal); if(signal.aborted)return;
-     setLiveRows(rows.map(r=>[r.instructorName,new Date(r.createdAt).toLocaleDateString(),r.scheduleId?String(r.scheduleId):"—",`${r.amount} ${r.currency}`,String(r.status)]));
-     setCount(pathname==="/admin/compensation"?"Pending payout":"Pending",String(rows.filter(r=>String(r.status).toLowerCase()==="pending"||r.status===0).length));
-     setCount(pathname==="/admin/compensation"?"Recent transactions":"Approved",String(rows.length));
+     const payoutRows=rows.map(r=>pathname==="/instructor/earnings"?[new Date(r.createdAt).toLocaleDateString(),r.scheduleId?`Schedule #${r.scheduleId}`:(r.notes||"—"),"—",`${r.amount} ${r.currency}`,String(r.status)]:[r.instructorName,new Date(r.createdAt).toLocaleDateString(),r.scheduleId?`Schedule #${r.scheduleId}`:"—",`${r.amount} ${r.currency}`,String(r.status)]);
+     payoutRows.forEach((row,i)=>payoutByRow.current.set(row,rows[i]));
+     setLiveRows(payoutRows);
+     const cur=rows[0]?.currency??"EGP"; const money=(n:number)=>`${n.toLocaleString("en-US")} ${cur}`;
+     const sum=(list:StaffPayoutDto[])=>list.reduce((a,r)=>a+r.amount,0);
+     const sameMonth=(iso:string|null)=>{ if(!iso)return false; const d=new Date(iso),n=new Date(); return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth(); };
+     const pending=rows.filter(r=>String(r.status)==="Pending"); const paid=rows.filter(r=>String(r.status)==="Paid");
+     setCount("Pending payout",money(sum(pending)));
+     setCount("Paid this month",money(sum(paid.filter(r=>sameMonth(r.paidAt)))));
+     setCount("Recent transactions",String(rows.length));
+     setCount("This month",money(sum(rows.filter(r=>sameMonth(r.createdAt)))));
+     setCount("Pending",money(sum(pending)));
+     setCount("Paid",money(sum(paid)));
     }catch(e){if(!signal.aborted)setLoadError(e instanceof Error?e.message:"Could not load payouts.");}
     finally{if(!signal.aborted)setLoading(false);}
    } else if(pathname==="/admin/permissions"){
@@ -86,7 +143,7 @@ export default function StaffWorkspacePage(){
     try{
      const roles:AdminRole[]=await getRoles(signal);
      if(signal.aborted)return;
-     setLiveRows(roles.map(r=>[r.name, r.permissions.length?`${r.permissions.length} permissions`:"No permissions",r.permissions.some(p=>p.toLowerCase().includes("finance"))?"Yes":"No",r.permissions.some(p=>p.toLowerCase().includes("users.manage"))?"Yes":"No","Configured"]));
+     setLiveRows(roles.map(r=>[r.name, r.permissions.length?`${r.permissions.length} permissions`:"No permissions",r.permissions.includes("payments.view")?"Yes":"No",r.permissions.some(p=>p.toLowerCase().includes("users.manage"))?"Yes":"No","Configured"]));
      setCount("Roles",String(roles.length));
      setCount("Permissions",String(new Set(roles.flatMap(r=>r.permissions)).size));
     }catch(e){if(!signal.aborted)setLoadError(e instanceof Error?e.message:"Could not load roles.");}
@@ -94,19 +151,46 @@ export default function StaffWorkspacePage(){
    }
   };
   void load(); return ()=>controller.abort();
- },[pathname]);
- const filteredRows=useMemo(()=>liveRows.filter(r=>r.join(" ").toLowerCase().includes(query.toLowerCase())),[liveRows,query]);
+ },[pathname,reloadKey,period]);
+ const filteredRows=useMemo(()=>liveRows.filter(r=>r.join(" ").toLowerCase().includes(query.toLowerCase())&&(!pendingOnly||!canReviewPayouts||String(payoutByRow.current.get(r)?.status)==="Pending")&&(!monthOnly||(()=>{const c=payoutByRow.current.get(r)?.createdAt; if(!c)return true; const d=new Date(c),n=new Date(); return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth();})())),[liveRows,query,pendingOnly,canReviewPayouts,monthOnly]);
+ function runAction(action:string){
+  setNotice("");
+  if(action==="Add instructor"){setDialog("instructor");return;}
+  if(action==="Add student"){setDialog("student");return;}
+  if(action==="Schedule session"){setDialog("session");return;}
+  if(action==="Review roles"){setDialog("roles");return;}
+  if(action==="Review pending"){setPendingOnly(p=>!p);return;}
+  if(action==="Today"){setPeriod("Today");return;}
+  if(action==="Week"){setPeriod("This week");return;}
+  if(action==="Month"){setPeriod("This month");return;}
+  if(action==="Create assignment"){setDialog("assignment");return;}
+  if(action==="Review submissions"){if(!assignmentsList.length){setNotice("There are no assignments to review yet.");return;}setDialog("submissions");return;}
+  if(action==="Current month"){setMonthOnly(true);setNotice("Showing this month's earnings.");return;}
+  if(action==="Earnings history"){setMonthOnly(false);setNotice("Showing your full earnings history.");return;}
+  if(action.startsWith("Export")){
+   if(!filteredRows.length){setNotice("Nothing to export yet.");return;}
+   downloadCsv(`${config.title.toLowerCase().replace(/[^a-z0-9]+/g,"-")}.csv`,[config.columns,...filteredRows]); return;
+  }
+  setNotice(`${action} is not available yet: the backend has no endpoint for it.`);
+ }
+ if(pathname === "/admin/courses") return <AdminCoursesManager />;
  return <div className="staff-dashboard staff-workspace-page">
-  <header className="staff-page_head"><div><div className="staff-eyebrow">{config.eyebrow}</div><h1 className="staff-page_title">{config.title}</h1><p className="staff-page_sub">{config.subtitle}</p></div><div className="staff-workspace-head-actions"><label className="staff-select-label">Period <select className="staff-select" value={period} onChange={e=>setPeriod(e.target.value)}><option>This week</option><option>This month</option><option>This year</option><option>All time</option></select></label>{config.actions.slice(0,1).map(a=><button className="staff-workspace-primary" key={a} onClick={()=>setNotice(`${a}: connect the relevant API to enable this action.`)}><span className="material-symbols-outlined">add</span>{a}</button>)}</div></header>
-  <section className="staff-workspace-stats">{liveStats.map(s=><article className="staff-workspace-stat" key={s.label}><span className="material-symbols-outlined">{s.icon}</span><small>{s.label}</small><strong>{s.value}</strong><em>Awaiting live data</em></article>)}</section>
+  <header className="staff-page_head"><div><div className="staff-eyebrow">{config.eyebrow}</div><h1 className="staff-page_title">{config.title}</h1><p className="staff-page_sub">{config.subtitle}</p></div><div className="staff-workspace-head-actions"><label className="staff-select-label">Period <select className="staff-select" value={period} onChange={e=>setPeriod(e.target.value)}>{pathname==="/instructor/schedule"&&<option>Today</option>}<option>This week</option><option>This month</option><option>This year</option><option>All time</option></select></label>{config.actions.slice(0,1).map(a=><button className="staff-workspace-primary" key={a} onClick={()=>runAction(a)}><span className="material-symbols-outlined">add</span>{a==="Review pending"&&pendingOnly?"Show all payouts":a}</button>)}</div></header>
+  <section className="staff-workspace-stats">{liveStats.map(s=><article className="staff-workspace-stat" key={s.label}><span className="material-symbols-outlined">{s.icon}</span><small>{s.label}</small><strong>{s.value}</strong><em>{s.value==="—"?"Not available yet":"Live data"}</em></article>)}</section>
   <section className="staff-card staff-workspace-table-card"><div className="staff-card_head"><div><h2>{config.title} register</h2><p className="staff-page_sub">Search, review and manage the records available to your role.</p></div><span className="material-symbols-outlined staff-workspace-card-icon">{config.icon}</span></div>
-   <div className="staff-toolbar"><input className="staff-input" value={query} onChange={e=>setQuery(e.target.value)} placeholder={`Search ${config.title.toLowerCase()}...`} aria-label={`Search ${config.title}`}/><button className="staff-workspace-secondary" onClick={()=>{setQuery("");setPeriod("This month");}}>Reset filters</button>{config.actions.slice(1).map(a=><button className="staff-workspace-secondary" key={a} onClick={()=>setNotice(`${a}: connect the relevant API to enable this action.`)}>{a}</button>)}</div>
+   <div className="staff-toolbar"><input className="staff-input" value={query} onChange={e=>setQuery(e.target.value)} placeholder={`Search ${config.title.toLowerCase()}...`} aria-label={`Search ${config.title}`}/><button className="staff-workspace-secondary" onClick={()=>{setQuery("");setPeriod("This month");setPendingOnly(false);setMonthOnly(false);}}>Reset filters</button>{config.actions.slice(1).map(a=><button className="staff-workspace-secondary" key={a} onClick={()=>runAction(a)}>{a}</button>)}</div>
    {notice&&<p className="staff-workspace-notice" role="status">{notice}</p>}
    {loadError&&<p className="staff-workspace-notice" role="alert">Could not load live data: {loadError}</p>}
    {loading&&<p className="staff-workspace-notice" role="status">Loading live records…</p>}
-   <div className="staff-table-wrap"><table className="staff-table"><thead><tr>{config.columns.map(c=><th key={c}>{c}</th>)}</tr></thead><tbody>{filteredRows.length?filteredRows.map((r,i)=><tr key={i}>{r.map((cell,j)=><td key={j}>{cell}</td>)}</tr>):<tr><td colSpan={config.columns.length}><div className="staff-workspace-empty"><span className="material-symbols-outlined">{config.icon}</span><strong>{query?"No matching records":loading?"Loading records…":"No records to display yet"}</strong><p>{query?"Try another search term.":loadError?"Check the API and your permissions, then retry.":config.note}</p></div></td></tr>}</tbody></table></div>
+   <div className="staff-table-wrap"><table className="staff-table"><thead><tr>{config.columns.map(c=><th key={c}>{c}</th>)}{canReviewPayouts&&<th>Actions</th>}</tr></thead><tbody>{filteredRows.length?filteredRows.map((r,i)=><tr key={i}>{r.map((cell,j)=><td key={j}>{cell}</td>)}{canReviewPayouts&&<td>{(()=>{const p=payoutByRow.current.get(r); if(!p)return null; const done=String(p.status)!=="Pending"; return done?"—":<span className="staff-row-actions"><button className="staff-workspace-secondary" disabled={busyPayout===p.id} onClick={()=>void changePayout(p,"Paid")}>Mark paid</button><button className="staff-workspace-secondary" disabled={busyPayout===p.id} onClick={()=>void changePayout(p,"Cancelled")}>Cancel</button></span>;})()}</td>}</tr>):<tr><td colSpan={config.columns.length+(canReviewPayouts?1:0)}><div className="staff-workspace-empty"><span className="material-symbols-outlined">{config.icon}</span><strong>{query?"No matching records":loading?"Loading records…":"No records to display yet"}</strong><p>{query?"Try another search term.":loadError?"Check the API and your permissions, then retry.":config.note}</p></div></td></tr>}</tbody></table></div>
    <div className="staff-workspace-foot"><span>Showing {filteredRows.length} records</span><span>Period: {period}</span></div>
   </section>
   <nav className="staff-workspace-related" aria-label="Related workspace pages"><strong>Workspace navigation</strong>{(pathname.startsWith("/admin")?[["/admin","Overview"],["/admin/instructors","Instructors"],["/admin/students","Students"],["/admin/courses","Courses"],["/admin/schedule","Schedule"],["/admin/compensation","Compensation"],["/admin/reports","Reports"],["/admin/permissions","Roles & permissions"]]:[["/instructor","Overview"],["/instructor/schedule","My schedule"],["/instructor/assignments","Assignments"],["/instructor/messages","Messages"],["/instructor/earnings","My earnings"],["/instructor/availability","Availability"]]).map(([to,label])=><Link key={to} to={to} className={pathname===to?"is-current":""}>{label}<span className="material-symbols-outlined">arrow_forward</span></Link>)}</nav>
+  {dialog==="instructor"&&<AddPersonDialog kind="instructor" onClose={()=>setDialog(null)} onDone={dialogDone}/>}
+  {dialog==="student"&&<AddPersonDialog kind="student" onClose={()=>setDialog(null)} onDone={dialogDone}/>}
+  {dialog==="session"&&<ScheduleSessionDialog schedules={schedules} onClose={()=>setDialog(null)} onDone={dialogDone}/>}
+  {dialog==="roles"&&<ReviewRolesDialog onClose={()=>setDialog(null)} onDone={dialogDone}/>}
+  {dialog==="assignment"&&<CreateAssignmentDialog schedules={scheduleOptions} onClose={()=>setDialog(null)} onDone={dialogDone}/>}
+  {dialog==="submissions"&&<ReviewSubmissionsDialog assignments={assignmentsList} onClose={()=>{setDialog(null);setReloadKey(k=>k+1);}}/>}
  </div>;
 }

@@ -1,5 +1,8 @@
 // Extra Arabic strings for the page-wide LanguageSwitcher (exact-text match).
 export const extraTranslations: Record<string, string> = {
+  "About Us": "من نحن",
+  "No matching pages": "لا توجد صفحات مطابقة",
+  "Keep In Touch": "ابقَ على تواصل",
   "Application submitted! Our admissions director will contact you.":
     "تم إرسال الطلب! سيتواصل معك مدير القبول.",
   "Cannot reach the server. Check that the API is running and allows this site (CORS).":

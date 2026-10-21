@@ -45,6 +45,7 @@ function NavbarComponent({ signedIn, menuOpen, onToggleMenu, onCloseMenu }: Prop
           <a href="#enterprise-section">For Business</a>
           <a href="#accreditations">Accreditations</a>
           <a href="#portal-preview-section">Campus Portals</a>
+          <a href="#about-us">About Us</a>
         </nav>
 
         <div className="navbar_actions">
@@ -108,6 +109,9 @@ function NavbarComponent({ signedIn, menuOpen, onToggleMenu, onCloseMenu }: Prop
           </a>
           <a href="#portal-preview-section" onClick={onCloseMenu}>
             Campus Portals
+          </a>
+          <a href="#about-us" onClick={onCloseMenu}>
+            About Us
           </a>
           <div className="navbar_drawer-cta">
             <Link className="btn btn-outline" to={signedIn ? "/profile" : "/login"} onClick={onCloseMenu}>

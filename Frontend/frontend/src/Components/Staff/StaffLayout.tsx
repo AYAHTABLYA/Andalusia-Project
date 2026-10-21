@@ -6,6 +6,7 @@ import { logoutRequest } from "../../apis/portalApi";
 import { initials, resolveAssetUrl } from "../../utils/format";
 import { ROLES } from "../../utils/roles";
 import { STAFF_TABS } from "./constants";
+import StaffSearch from "./StaffSearch";
 import logo from "../../assets/andalusia-logo.png";
 import "../Academy/theme.css";
 import "../Portal/theme.css";
@@ -92,11 +93,11 @@ function StaffLayout() {
           <button type="button" className="staff-topbar_menu" aria-label="Open menu" onClick={() => setOpen(true)}>
             <span className="material-symbols-outlined">menu</span>
           </button>
-          <label className="staff-search">
-            <span className="material-symbols-outlined">search</span>
-            <input type="search" placeholder="Search your workspace..." aria-label="Search your workspace" />
-            <kbd>⌘ K</kbd>
-          </label>
+          <Link to="/" className="staff-back-home">
+            <span className="material-symbols-outlined">arrow_back</span>
+            Back to Home
+          </Link>
+          <StaffSearch tabs={tabs} />
           <div className="staff-topbar_actions">
             <button type="button" className="staff-icon-button" aria-label="Notifications" title="Notifications">
               <span className="material-symbols-outlined">notifications</span>

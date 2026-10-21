@@ -137,6 +137,15 @@ export async function apiPut<T>(
   return response.data;
 }
 
+// DELETE Request
+export async function apiDelete<T = void>(
+  path: string,
+  signal?: AbortSignal,
+): Promise<T> {
+  const response = await apiClient.delete<T>(path, { signal });
+  return response.data;
+}
+
 // Multipart upload (profile photo)
 export async function apiUpload<T>(
   path: string,

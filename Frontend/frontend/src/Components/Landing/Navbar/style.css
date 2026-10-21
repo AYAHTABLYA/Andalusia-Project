@@ -275,3 +275,11 @@
     min-width: 220px;
   }
 }
+
+/* "About Us" added a 7th link: on the narrowest desktop widths, drop the
+   "Alex Campus" pill so the links never run into the sign-in button. */
+@media (min-width: 1100px) and (max-width: 1179px) {
+  .navbar_links .navbar_pill {
+    display: none;
+  }
+}
