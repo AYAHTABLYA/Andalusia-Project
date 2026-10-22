@@ -7,13 +7,21 @@ import { initials, resolveAssetUrl } from "../../utils/format";
 import { ROLES } from "../../utils/roles";
 import { STAFF_TABS } from "./constants";
 import StaffSearch from "./StaffSearch";
+import { LanguageSwitcher } from "../LanguageSwitcher";
 import logo from "../../assets/andalusia-logo.png";
 import "../Academy/theme.css";
 import "../Portal/theme.css";
 import "./style.css";
 
-const cairoTime = () =>
-  new Intl.DateTimeFormat("en-US", { hour: "2-digit", minute: "2-digit", timeZone: "Africa/Cairo" }).format(new Date());
+const currentLang = () =>
+  typeof document === "undefined" ? "en" : document.documentElement.lang;
+
+const cairoTime = (lang: string) =>
+  new Intl.DateTimeFormat(lang === "ar" ? "ar-EG-u-nu-latn" : "en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Africa/Cairo",
+  }).format(new Date());
 
 // Sidebar shell shared by Admin / Manager / Content Manager / Instructor (AHA-style workspace).
 function StaffLayout() {
@@ -22,19 +30,37 @@ function StaffLayout() {
   const user = useSessionUser();
   const role = user?.role ?? "";
   const [open, setOpen] = useState(false);
-  const [time, setTime] = useState(cairoTime);
+  const [lang, setLang] = useState(currentLang);
+  const [time, setTime] = useState(() => cairoTime(currentLang()));
+
+  // Follow the LanguageSwitcher: it sets <html lang="ar|en">.
+  useEffect(() => {
+    const observer = new MutationObserver(() => setLang(currentLang()));
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["lang"],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
-    const id = window.setInterval(() => setTime(cairoTime()), 30_000);
+    setTime(cairoTime(lang));
+    const id = window.setInterval(() => setTime(cairoTime(lang)), 30_000);
     return () => window.clearInterval(id);
-  }, []);
+  }, [lang]);
   useEffect(() => setOpen(false), [pathname]);
 
   const tabs = STAFF_TABS.filter(
-    (tab) => tab.roles.includes(role) && (!tab.permission || hasPermission(tab.permission)),
+    (tab) =>
+      tab.roles.includes(role) &&
+      (!tab.permission || hasPermission(tab.permission)),
   );
-  const workspace = role === ROLES.instructor ? "Instructor workspace" : "Admin workspace";
-  const isActive = (to: string) => (tab_isRoot(to) ? pathname === to : pathname === to || pathname.startsWith(`${to}/`));
+  const workspace =
+    role === ROLES.instructor ? "Instructor workspace" : "Admin workspace";
+  const isActive = (to: string) =>
+    tab_isRoot(to)
+      ? pathname === to
+      : pathname === to || pathname.startsWith(`${to}/`);
 
   async function logout() {
     try {
@@ -76,21 +102,42 @@ function StaffLayout() {
           <a href="mailto:support@andalusia.academy">Talk to support</a>
         </div>
         <div className="staff-side_user">
-          {photo ? <img className="staff-avatar" src={photo} alt="" /> : <span className="staff-avatar">{initials(user?.name || "?")}</span>}
+          {photo ? (
+            <img className="staff-avatar" src={photo} alt="" />
+          ) : (
+            <span className="staff-avatar">{initials(user?.name || "?")}</span>
+          )}
           <div>
             <strong>{user?.name}</strong>
             <span>{role.replace("_", " ")}</span>
           </div>
-          <button type="button" onClick={logout} aria-label="Sign out" title="Sign out">
+          <button
+            type="button"
+            onClick={logout}
+            aria-label="Sign out"
+            title="Sign out"
+          >
             <span className="material-symbols-outlined">logout</span>
           </button>
         </div>
       </aside>
-      {open && <button type="button" className="staff-scrim" aria-label="Close menu" onClick={() => setOpen(false)} />}
+      {open && (
+        <button
+          type="button"
+          className="staff-scrim"
+          aria-label="Close menu"
+          onClick={() => setOpen(false)}
+        />
+      )}
 
       <div className="staff-content">
         <header className="staff-topbar">
-          <button type="button" className="staff-topbar_menu" aria-label="Open menu" onClick={() => setOpen(true)}>
+          <button
+            type="button"
+            className="staff-topbar_menu"
+            aria-label="Open menu"
+            onClick={() => setOpen(true)}
+          >
             <span className="material-symbols-outlined">menu</span>
           </button>
           <Link to="/" className="staff-back-home">
@@ -99,7 +146,13 @@ function StaffLayout() {
           </Link>
           <StaffSearch tabs={tabs} />
           <div className="staff-topbar_actions">
-            <button type="button" className="staff-icon-button" aria-label="Notifications" title="Notifications">
+            <LanguageSwitcher />
+            <button
+              type="button"
+              className="staff-icon-button"
+              aria-label="Notifications"
+              title="Notifications"
+            >
               <span className="material-symbols-outlined">notifications</span>
             </button>
             {role !== ROLES.instructor && (
