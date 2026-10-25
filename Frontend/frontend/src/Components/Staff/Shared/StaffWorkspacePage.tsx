@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "../style.css";
 import { getRoles } from "../../../apis/adminApi";
 import type { AdminRole } from "../../../Types/Admin";
@@ -30,6 +30,7 @@ import {
 } from "./StaffActionDialogs";
 import { downloadCsv } from "../../../utils/csv";
 import AdminCoursesManager from "../Admin/Courses/AdminCoursesManager";
+import { initials } from "../../../utils/format";
 
 type PageConfig = {
   eyebrow: string;
@@ -300,6 +301,19 @@ const configs: Record<string, PageConfig> = {
     note: "Availability is provided by the instructor; coordinators schedule sessions within these windows. Changes will be saved once the availability API is available.",
   },
 };
+// Display-only headings for the admin pages (AHA design). config.* keeps driving data/CSV logic.
+const ADMIN_HEADINGS: Record<string, { eyebrow: string; title: string; sub: string }> = {
+  "/admin/instructors": { eyebrow: "ACADEMY MANAGEMENT", title: "Instructors", sub: "Manage, review, and keep every record up to date." },
+  "/admin/students": { eyebrow: "ACADEMY MANAGEMENT", title: "Students", sub: "Manage, review, and keep every record up to date." },
+  "/admin/schedule": { eyebrow: "CLASSES & MEETINGS", title: "Schedule", sub: "Everything you need for the academy's learning sessions." },
+  "/admin/compensation": { eyebrow: "AHA ACADEMY", title: "Compensation & payouts", sub: "Review instructor earnings, approvals, and payout history." },
+  "/admin/reports": { eyebrow: "AHA ACADEMY", title: "Academy reports", sub: "Operational, learning, and financial performance in one place." },
+  "/admin/permissions": { eyebrow: "SECURITY & ACCESS", title: "Roles & permissions", sub: "Control exactly what every role can see and change." },
+};
+// Pages whose first column is a person (shown with an avatar).
+const PEOPLE_PAGES = ["/admin/instructors", "/admin/students", "/instructor/students"];
+const POSITIVE = /^(active|approved|paid|configured|yes|completed|live|graded|running)$/i;
+
 const iso = (d: Date) => d.toLocaleDateString("en-CA");
 function rangeFor(period: string): { from: string; to: string } | undefined {
   const n = new Date(),
@@ -349,6 +363,7 @@ export default function StaffWorkspacePage() {
   >([]);
   const [pendingOnly, setPendingOnly] = useState(false);
   const [schedules, setSchedules] = useState<AdminScheduleDto[]>([]);
+  const [roleMatrix, setRoleMatrix] = useState<AdminRole[]>([]);
   useEffect(() => {
     setPendingOnly(false);
     setMonthOnly(false);
@@ -387,6 +402,7 @@ export default function StaffWorkspacePage() {
     const signal = controller.signal;
     setLiveRows(config.rows);
     setLiveStats(config.stats);
+    setRoleMatrix([]);
     setLoadError("");
     const setCount = (label: string, value: string) =>
       setLiveStats((prev) =>
@@ -770,6 +786,7 @@ export default function StaffWorkspacePage() {
         try {
           const roles: AdminRole[] = await getRoles(signal);
           if (signal.aborted) return;
+          setRoleMatrix(roles);
           setLiveRows(
             roles.map((r) => [
               r.name,
@@ -953,13 +970,17 @@ export default function StaffWorkspacePage() {
     );
   }
   if (pathname === "/admin/courses") return <AdminCoursesManager />;
+  const adminHeading = ADMIN_HEADINGS[pathname];
+  const heading = adminHeading ?? { eyebrow: config.eyebrow, title: config.title, sub: config.subtitle };
+  const permissionKeys = [...new Set(roleMatrix.flatMap((r) => r.permissions))].sort();
+  const showMatrix = pathname === "/admin/permissions" && roleMatrix.length > 0;
   return (
     <div className="staff-dashboard staff-workspace-page">
       <header className="staff-page_head">
         <div>
-          <div className="staff-eyebrow">{config.eyebrow}</div>
-          <h1 className="staff-page_title">{config.title}</h1>
-          <p className="staff-page_sub">{config.subtitle}</p>
+          <div className="staff-eyebrow">{heading.eyebrow}</div>
+          <h1 className="staff-page_title">{heading.title}</h1>
+          <p className="staff-page_sub">{heading.sub}</p>
         </div>
         <div className="staff-workspace-head-actions">
           <label className="staff-select-label">
@@ -1003,9 +1024,11 @@ export default function StaffWorkspacePage() {
       <section className="staff-card staff-workspace-table-card">
         <div className="staff-card_head">
           <div>
-            <h2>{config.title} register</h2>
+            <h2>{adminHeading ? adminHeading.title : `${config.title} register`}</h2>
             <p className="staff-page_sub">
-              Search, review and manage the records available to your role.
+              {adminHeading
+                ? `${filteredRows.length} record${filteredRows.length === 1 ? "" : "s"} in your academy`
+                : "Search, review and manage the records available to your role."}
             </p>
           </div>
           <span className="material-symbols-outlined staff-workspace-card-icon">
@@ -1056,7 +1079,40 @@ export default function StaffWorkspacePage() {
             Loading live records…
           </p>
         )}
-        <div className="staff-table-wrap">
+        {showMatrix && (
+          <div className="staff-table-wrap staff-matrix">
+            <table className="staff-table">
+              <thead>
+                <tr>
+                  <th>Permission key</th>
+                  {roleMatrix.map((r) => (
+                    <th key={r.roleId} className="staff-matrix_role">{r.name.replace("_", " ")}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {permissionKeys.map((key) => (
+                  <tr key={key}>
+                    <td>{key}</td>
+                    {roleMatrix.map((r) => {
+                      const on = r.permissions.includes(key);
+                      return (
+                        <td key={r.roleId} className="staff-matrix_cell">
+                          <span
+                            className={`staff-switch${on ? " is-on" : ""}`}
+                            role="img"
+                            aria-label={`${r.name}: ${key} ${on ? "allowed" : "not allowed"}`}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <div className="staff-table-wrap" hidden={showMatrix}>
           <table className="staff-table">
             <thead>
               <tr>
@@ -1071,7 +1127,18 @@ export default function StaffWorkspacePage() {
                 filteredRows.map((r, i) => (
                   <tr key={i}>
                     {r.map((cell, j) => (
-                      <td key={j}>{cell}</td>
+                      <td key={j}>
+                        {config.columns[j] === "Status" && cell && cell !== "—" ? (
+                          <span className={`staff-pill${POSITIVE.test(cell) ? "" : " staff-pill--off"}`}>{cell}</span>
+                        ) : j === 0 && PEOPLE_PAGES.includes(pathname) ? (
+                          <span className="staff-person">
+                            <span className="staff-avatar staff-avatar--sm staff-avatar--square">{initials(cell)}</span>
+                            <strong>{cell}</strong>
+                          </span>
+                        ) : (
+                          cell
+                        )}
+                      </td>
                     ))}
                     {canReviewPayouts && (
                       <td>
@@ -1141,44 +1208,6 @@ export default function StaffWorkspacePage() {
           <span>Period: {period}</span>
         </div>
       </section>
-      <nav
-        className="staff-workspace-related"
-        aria-label="Related workspace pages"
-      >
-        <strong>Workspace navigation</strong>
-        {(pathname.startsWith("/admin")
-          ? [
-              ["/admin", "Overview"],
-              ["/admin/instructors", "Instructors"],
-              ["/admin/students", "Students"],
-              ["/admin/courses", "Courses"],
-              ["/admin/schedule", "Schedule"],
-              ["/admin/compensation", "Compensation"],
-              ["/admin/reports", "Reports"],
-              ["/admin/permissions", "Roles & permissions"],
-            ]
-          : [
-              ["/instructor", "Overview"],
-              ["/instructor/courses", "My courses"],
-              ["/instructor/students", "My students"],
-              ["/instructor/schedule", "My schedule"],
-              ["/instructor/attendance", "Attendance"],
-              ["/instructor/assignments", "Assignments"],
-              ["/instructor/messages", "Messages"],
-              ["/instructor/earnings", "Earnings"],
-              ["/instructor/availability", "Availability"],
-            ]
-        ).map(([to, label]) => (
-          <Link
-            key={to}
-            to={to}
-            className={pathname === to ? "is-current" : ""}
-          >
-            {label}
-            <span className="material-symbols-outlined">arrow_forward</span>
-          </Link>
-        ))}
-      </nav>
       {dialog === "instructor" && (
         <AddPersonDialog
           kind="instructor"

@@ -1778,3 +1778,58 @@ a.staff-quick-action:hover {
 html[dir="rtl"] .staff-shell * {
   letter-spacing: 0 !important;
 }
+
+/* =====================================================================
+   AHA admin design pass (view-only): brand colours, register tables,
+   avatars, status pills and the read-only permissions matrix.
+   ===================================================================== */
+.staff-workspace-primary { background: var(--brand-500); border-color: var(--brand-500); box-shadow: var(--shadow-brand); }
+.staff-workspace-primary:hover { background: var(--brand-600); border-color: var(--brand-600); }
+.staff-workspace-secondary:hover { border-color: var(--brand-400); color: var(--brand-600); }
+.staff-workspace-stat > .material-symbols-outlined,
+.staff-workspace-card-icon { background: var(--brand-100); color: var(--brand-600); }
+.staff-workspace-stat { border-color: var(--line); box-shadow: var(--shadow-sm); }
+.staff-workspace-stat strong { color: var(--ink-950); }
+.staff-workspace-empty > .material-symbols-outlined { background: var(--brand-50); color: var(--brand-500); }
+.staff-workspace-notice { background: var(--brand-50); color: var(--brand-700); }
+.staff-workspace-table-card { padding: 1.5rem 1.6rem; border-radius: 1.1rem; }
+.staff-workspace-table-card .staff-card_head { border-bottom: 0; padding-bottom: 0.25rem; }
+
+/* Register tables */
+.staff-workspace-table-card .staff-table { min-width: 40rem; }
+.staff-workspace-table-card .staff-table th {
+  padding: 0.85rem 0.75rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--faint);
+  border-bottom: 1px solid var(--line);
+}
+.staff-workspace-table-card .staff-table td {
+  padding: 1rem 0.75rem;
+  font-size: 0.9rem;
+  color: var(--ink-800);
+  border-bottom: 1px solid var(--surface-mid);
+}
+.staff-workspace-table-card .staff-table tbody tr:hover td { background: var(--brand-50); }
+.staff-person { display: inline-flex; align-items: center; gap: 0.7rem; }
+.staff-person strong { font-weight: 650; color: var(--ink-950); }
+.staff-avatar--square { border-radius: 0.65rem; }
+.staff-pill { padding: 0.25rem 0.75rem; font-size: 0.74rem; }
+
+/* Read-only permissions matrix */
+.staff-matrix_role { text-align: center !important; }
+.staff-matrix_cell { text-align: center !important; }
+.staff-matrix td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.82rem; color: var(--ink-700); }
+.staff-switch { position: relative; display: inline-block; width: 2.4rem; height: 1.3rem; border-radius: 999px; background: var(--surface-mid); transition: background 0.2s; }
+.staff-switch::after { content: ""; position: absolute; top: 0.15rem; left: 0.15rem; width: 1rem; height: 1rem; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); transition: transform 0.2s; }
+.staff-switch.is-on { background: var(--brand-400); }
+.staff-switch.is-on::after { transform: translateX(1.1rem); }
+[dir="rtl"] .staff-switch::after { left: auto; right: 0.15rem; }
+[dir="rtl"] .staff-switch.is-on::after { transform: translateX(-1.1rem); }
+
+/* Overview (OverviewView) polish: bigger tiles, per-card icon tones, live dot */
+.staff-stat strong { font-size: 2.2rem; }
+.staff-stat i { background: linear-gradient(90deg, var(--brand-500) var(--p, 60%), var(--brand-100) var(--p, 60%)); }
+.staff-session_time strong { font-size: 1.15rem; }
+.staff-status { display: inline-flex; align-items: center; font-size: 0.78rem; color: var(--muted); }
+.staff-session .staff-btn--ghost { border: 1px solid var(--line); border-radius: 0.6rem; padding: 0.35rem 0.8rem; }

@@ -1,0 +1,218 @@
+/* My Workspace (student dashboard). Uses the portal tokens + .portal-card/.portal-stat from Applications/style.css */
+.ws { display: grid; grid-template-columns: 17.5rem minmax(0, 1fr); gap: 1.75rem; align-items: start; }
+.ws_content { min-width: 0; }
+
+/* ---- Sidebar ---- */
+.ws_side { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.1rem; padding: 1.25rem; min-height: 32rem; border: 1px solid var(--color-outline-variant); border-radius: 1rem; background: rgba(255, 255, 255, 0.86); }
+.ws_side-label { padding: 0 0.5rem; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.14em; color: var(--color-on-surface-variant); }
+.ws_side-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+.ws_side-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0.9rem; border-radius: 0.65rem; font-size: 0.984rem; font-weight: 600; color: var(--color-on-surface-variant); transition: background 0.2s ease, color 0.2s ease; }
+.ws_side-link:hover { background: var(--color-surface-container-low); color: var(--color-primary); }
+.ws_side-link.is-active { background: var(--brand-100); color: var(--brand-700); }
+.ws_side-link .material-symbols-outlined { font-size: 1.38rem; }
+.ws_side-text { flex: 1; }
+.ws_badge { display: inline-grid; place-items: center; min-width: 1.15rem; height: 1.15rem; padding: 0 0.3rem; border-radius: 999px; font-size: 0.78rem; font-weight: 800; color: #fff; background: var(--color-primary-dark); }
+.ws_help { margin-top: auto; display: flex; flex-direction: column; gap: 0.25rem; padding: 0.9rem; border-radius: 0.85rem; background: linear-gradient(160deg, var(--brand-50), var(--brand-100)); font-size: 0.864rem; }
+.ws_help .material-symbols-outlined { font-size: 1.2rem; color: var(--color-primary); }
+.ws_help strong { font-size: 0.984rem; }
+.ws_help p { color: var(--color-on-surface-variant); }
+.ws_help a { margin-top: 0.3rem; font-weight: 700; color: var(--color-primary-dark); }
+.ws_me { display: flex; align-items: center; gap: 0.6rem; padding-top: 0.9rem; border-top: 1px solid var(--color-outline-variant); }
+.ws_me strong { display: block; font-size: 0.936rem; }
+.ws_me small { color: var(--color-on-surface-variant); font-size: 0.816rem; }
+.ws_avatar { display: inline-grid; place-items: center; flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 50%; font-size: 0.84rem; font-weight: 800; color: var(--brand-700); background: var(--brand-100); }
+.ws_avatar--sm { width: 1.8rem; height: 1.8rem; font-size: 0.78rem; }
+
+.ws_demo { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding: 0.55rem 0.8rem; border-radius: 0.65rem; font-size: 0.888rem; color: #92400e; background: var(--color-warning-soft); }
+.ws_demo .material-symbols-outlined { font-size: 1.2rem; }
+
+/* ---- Headings ---- */
+.ws_head, .ws_hello { margin-bottom: 1.25rem; }
+.ws_head h1, .ws_hello h1 { margin: 0.2rem 0 0.3rem; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 800; line-height: 1.2; }
+.ws_head p, .ws_hello p { font-size: 1.02rem; color: var(--color-on-surface-variant); }
+.ws_hello { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.ws_clock { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.8rem; border: 1px solid var(--color-outline-variant); border-radius: 0.65rem; background: rgba(255, 255, 255, 0.86); font-size: 0.96rem; white-space: nowrap; }
+.ws_clock small { color: var(--color-on-surface-variant); }
+.ws_clock .material-symbols-outlined { font-size: 1.2rem; color: var(--color-primary); }
+
+/* ---- Stats ---- */
+.ws_stat { position: relative; }
+.ws_stat-icon { position: absolute; top: 1rem; right: 1rem; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 0.55rem; font-size: 1.26rem; color: var(--color-primary-dark); background: var(--brand-100); }
+.ws_bar { height: 0.28rem; margin-top: 0.5rem; border-radius: 999px; background: var(--color-surface-container); overflow: hidden; }
+.ws_bar i { display: block; height: 100%; border-radius: inherit; background: var(--grad-brand); transition: width 0.6s var(--ease); }
+
+/* ---- Panels ---- */
+.ws_grid { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr); gap: 1rem; }
+.ws_split { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.ws_panel { padding: 1.4rem 1.6rem; }
+.ws_panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+.ws_panel-head h2, .ws_detail h2 { font-size: 1.2rem; font-weight: 800; }
+.ws_panel-head p { font-size: 0.864rem; color: var(--color-on-surface-variant); }
+.ws_link { display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.864rem; font-weight: 700; color: var(--color-primary-dark); }
+.ws_link .material-symbols-outlined { font-size: 1.14rem; }
+.ws_foot { justify-content: center; width: 100%; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--color-outline-variant); }
+.ws_rows { display: flex; flex-direction: column; }
+.ws_rows > li { border-top: 1px solid var(--color-outline-variant); }
+.ws_rows > li:first-child { border-top: 0; }
+.ws_pad { padding: 1.25rem; font-size: 1.02rem; }
+.ws_pad0 { padding: 0; overflow: hidden; }
+.ws_center { display: flex; justify-content: center; padding-bottom: 1.5rem; }
+.ws_muted { font-size: 0.936rem; color: var(--color-on-surface-variant); }
+.ws_actions { display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; }
+
+.ws_session-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) auto auto auto; align-items: center; gap: 1rem; padding: 1rem 0; font-size: 0.936rem; }
+.ws_time strong { display: block; font-size: 1.35rem; }
+.ws_time small, .ws_session-main small, .ws_assign-main small { color: var(--color-on-surface-variant); font-size: 0.816rem; }
+.ws_session-main { display: flex; flex-direction: column; border-left: 3px solid var(--color-primary); padding-left: 0.7rem; min-width: 0; }
+.ws_session-main strong { font-size: 1.02rem; }
+.ws_who, .ws_meta { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--color-on-surface-variant); white-space: nowrap; }
+.ws_session-main strong { overflow-wrap: anywhere; }
+.ws_meta .material-symbols-outlined { font-size: 1.2rem; }
+.ws_join { min-height: 2rem !important; padding: 0.35rem 0.75rem !important; }
+.ws_join .material-symbols-outlined { font-size: 1.2rem; }
+
+.ws_tag { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.22rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 750; color: var(--color-on-surface-variant); background: var(--color-surface-container-low); }
+.ws_tag--live, .ws_tag--graded { color: #166534; background: var(--color-success-soft); }
+.ws_tag--live::before { content: ""; width: 0.38rem; height: 0.38rem; border-radius: 50%; background: var(--color-success); }
+.ws_tag--pending { color: #92400e; background: var(--color-warning-soft); }
+.ws_tag--submitted { color: var(--brand-700); background: var(--brand-100); }
+
+.ws_update { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.65rem; padding: 0.75rem 0; font-size: 0.9rem; }
+.ws_update-icon { display: grid; place-items: center; width: 1.8rem; height: 1.8rem; border-radius: 0.5rem; font-size: 1.2rem; color: var(--color-primary-dark); background: var(--brand-50); border: 1px solid var(--color-outline-variant); }
+.ws_update p { color: var(--color-on-surface-variant); line-height: 1.35; }
+.ws_update small { font-size: 0.78rem; color: var(--color-on-surface-variant); white-space: nowrap; }
+
+/* ---- Empty ---- */
+.ws_empty { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 2rem 1rem; text-align: center; }
+.ws_empty .material-symbols-outlined { font-size: 2rem; color: var(--brand-400); }
+.ws_empty h3 { font-size: 1.14rem; font-weight: 800; }
+.ws_empty p { font-size: 0.936rem; color: var(--color-on-surface-variant); }
+
+/* ---- Courses ---- */
+.ws_courses { display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 1rem; }
+.ws_course { display: flex; flex-direction: column; gap: 0.4rem; padding: 1.25rem; }
+.ws_course h2 { font-size: 1.26rem; font-weight: 800; }
+.ws_course-icon { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 0.65rem; color: #fff; background: var(--grad-brand); }
+.ws_progress { margin-top: 0.5rem; }
+.ws_progress-top { display: flex; justify-content: space-between; font-size: 0.864rem; color: var(--color-on-surface-variant); }
+.ws_progress-top strong { color: var(--color-on-surface); }
+.ws_course-meta { display: flex; flex-direction: column; gap: 0.35rem; margin: 0.6rem 0; font-size: 0.9rem; color: var(--color-on-surface-variant); }
+.ws_course-meta li { display: flex; align-items: center; gap: 0.4rem; }
+.ws_course-meta .material-symbols-outlined { font-size: 1.2rem; }
+.ws_course .ws_actions { margin-top: auto; justify-content: flex-start; }
+
+/* ---- Schedule ---- */
+.ws_week { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-bottom: 0.9rem; padding-bottom: 0.9rem; border-bottom: 1px solid var(--color-outline-variant); }
+.ws_day { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.15rem; padding: 0.55rem 0; border-radius: 0.65rem; transition: background 0.2s ease; }
+.ws_day small { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; color: var(--color-on-surface-variant); }
+.ws_day strong { font-size: 1.2rem; }
+.ws_day:hover { background: var(--color-surface-container-low); }
+.ws_day.is-active { background: var(--color-primary); color: #fff; }
+.ws_day.is-active small { color: rgba(255, 255, 255, 0.8); }
+.ws_dot { position: absolute; bottom: 0.25rem; width: 0.28rem; height: 0.28rem; border-radius: 50%; background: currentColor; opacity: 0.55; }
+.ws_slot { display: grid; grid-template-columns: 4rem minmax(0, 1fr) auto auto; align-items: center; gap: 0.8rem; width: 100%; padding: 0.8rem 0.6rem; border-radius: 0.65rem; text-align: left; }
+.ws_slot:hover, .ws_slot.is-active { background: var(--brand-50); }
+.ws_slot.is-active { box-shadow: inset 3px 0 0 var(--color-primary); }
+.ws_slot .ws_session-main { border: 0; padding: 0; }
+.ws_detail { display: flex; flex-direction: column; gap: 0.35rem; }
+.ws_zoom { display: flex; align-items: center; gap: 0.7rem; margin: 0.7rem 0; padding: 0.8rem; border-radius: 0.85rem; background: linear-gradient(160deg, var(--brand-50), var(--brand-100)); }
+.ws_zoom > .material-symbols-outlined { color: var(--color-primary-dark); }
+.ws_zoom div { flex: 1; min-width: 0; }
+.ws_zoom strong { display: block; font-size: 0.96rem; }
+.ws_zoom small { font-size: 0.792rem; color: var(--color-on-surface-variant); }
+.ws_zoom .portal-btn { min-height: 2rem; padding: 0.35rem 0.75rem; }
+.ws_zoom .portal-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.ws_facts div { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0; border-top: 1px solid var(--color-outline-variant); font-size: 0.9rem; }
+.ws_facts dt { color: var(--color-on-surface-variant); }
+.ws_facts dd { font-weight: 700; }
+.ws_sub { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.7rem; font-size: 0.936rem; font-weight: 800; }
+.ws_sub .material-symbols-outlined { font-size: 1.2rem; }
+.ws_comments { display: flex; flex-direction: column; gap: 0.5rem; max-height: 17rem; overflow-y: auto; }
+.ws_comments > li { display: flex; gap: 0.55rem; padding: 0.65rem; border-radius: 0.7rem; background: var(--color-surface-container-low); font-size: 0.864rem; }
+.ws_comments > li.is-me { background: var(--brand-50); }
+.ws_comments strong small { margin-left: 0.4rem; font-weight: 600; color: var(--color-on-surface-variant); }
+.ws_comments p { margin: 0.1rem 0; line-height: 1.35; }
+.ws_comments div > small { font-size: 0.78rem; color: var(--color-on-surface-variant); }
+.ws_compose { display: flex; align-items: flex-end; gap: 0.5rem; margin-top: 0.6rem; }
+.ws_compose textarea, .ws_submit textarea { flex: 1; width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--color-outline); border-radius: 0.65rem; background: #fff; font-size: 0.936rem; resize: vertical; }
+.ws_send { min-width: 2.5rem; padding: 0.5rem !important; }
+.ws_send[disabled], .ws_submit .portal-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.ws_send .material-symbols-outlined { font-size: 1.32rem; }
+
+/* ---- Assignments ---- */
+.ws_assign > li { border-top: 1px solid var(--color-outline-variant); }
+.ws_assign > li:first-child { border-top: 0; }
+.ws_assign-row { display: flex; align-items: center; gap: 0.9rem; padding: 1rem 1.25rem; }
+.ws_assign-icon { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 0.65rem; color: var(--color-primary-dark); background: var(--brand-100); }
+.ws_assign-main { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.ws_assign-main strong { font-size: 1.08rem; }
+.ws_score { font-size: 1.08rem; }
+.ws_feedback { margin: -0.4rem 1.25rem 1rem 4.6rem; font-size: 0.888rem; color: var(--color-on-surface-variant); }
+.ws_submit { display: flex; flex-direction: column; gap: 0.6rem; margin: 0 1.25rem 1rem 4.6rem; }
+
+/* ---- Messages ---- */
+.ws_chat { display: grid; grid-template-columns: 16rem minmax(0, 1fr); min-height: 30rem; overflow: hidden; }
+.ws_chat-list { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.9rem; border-right: 1px solid var(--color-outline-variant); }
+.ws_chat-list .portal-search { width: 100%; }
+.ws_conv { display: flex; align-items: center; gap: 0.6rem; width: 100%; padding: 0.6rem; border-radius: 0.7rem; text-align: left; }
+.ws_conv:hover, .ws_conv.is-active { background: var(--brand-50); }
+.ws_conv-text { flex: 1; min-width: 0; }
+.ws_conv-text strong, .ws_conv-text small { display: block; }
+.ws_conv-text strong { font-size: 0.936rem; }
+.ws_conv-text small { font-size: 0.792rem; color: var(--color-on-surface-variant); }
+.ws_chat-pane { display: flex; flex-direction: column; min-width: 0; }
+.ws_chat-head { display: flex; align-items: center; gap: 0.65rem; padding: 0.8rem 1rem; border-bottom: 1px solid var(--color-outline-variant); }
+.ws_chat-head strong, .ws_chat-head small { display: block; }
+.ws_chat-head strong { font-size: 0.984rem; }
+.ws_chat-head small { font-size: 0.792rem; color: var(--color-on-surface-variant); }
+.ws_chat-body { display: flex; flex-direction: column; gap: 0.7rem; flex: 1; max-height: 24rem; padding: 1rem; overflow-y: auto; }
+.ws_msg { max-width: min(26rem, 80%); padding: 0.65rem 0.85rem; border: 1px solid var(--color-outline-variant); border-radius: 0.85rem; background: #fff; font-size: 0.9rem; align-self: flex-start; }
+.ws_msg p { margin: 0.15rem 0; line-height: 1.4; }
+.ws_msg small { font-size: 0.78rem; color: var(--color-on-surface-variant); }
+.ws_msg.is-me { align-self: flex-end; border-color: transparent; color: #fff; background: var(--color-primary); }
+.ws_msg.is-me small { color: rgba(255, 255, 255, 0.75); }
+.ws_chat-compose { display: flex; gap: 0.5rem; padding: 0.75rem 1rem; border-top: 1px solid var(--color-outline-variant); }
+.ws_chat-compose input { flex: 1; min-width: 0; height: 2.5rem; padding: 0 0.85rem; border: 1px solid var(--color-outline); border-radius: 0.65rem; background: #fff; font-size: 0.96rem; }
+
+/* ---- RTL ---- */
+[dir="rtl"] .ws_session-main { border-left: 0; border-right: 3px solid var(--color-primary); padding-left: 0; padding-right: 0.7rem; }
+[dir="rtl"] .ws_slot, [dir="rtl"] .ws_conv, [dir="rtl"] .ws_comments, [dir="rtl"] .ws_msg { text-align: right; }
+[dir="rtl"] .ws_slot.is-active { box-shadow: inset -3px 0 0 var(--color-primary); }
+[dir="rtl"] .ws_chat-list { border-right: 0; border-left: 1px solid var(--color-outline-variant); }
+[dir="rtl"] .ws_stat-icon { right: auto; left: 1rem; }
+[dir="rtl"] .ws_feedback, [dir="rtl"] .ws_submit { margin: 0 4.6rem 1rem 1.25rem; }
+[dir="rtl"] .ws_link .material-symbols-outlined, [dir="rtl"] .ws_slot > .material-symbols-outlined:last-child { transform: scaleX(-1); }
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  .ws { grid-template-columns: 1fr; }
+  .ws_side { position: static; min-height: 0; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 0.6rem; }
+  .ws_side-label, .ws_help, .ws_me { display: none; }
+  .ws_side-nav { flex-direction: row; overflow-x: auto; width: 100%; }
+  .ws_side-link { white-space: nowrap; }
+  .ws_grid, .ws_split { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .ws_session-row { grid-template-columns: 4.5rem 1fr auto; }
+  .ws_session-row .ws_who, .ws_session-row .ws_tag { display: none; }
+  .ws_chat { grid-template-columns: 1fr; }
+  .ws_chat-list { border-right: 0; border-bottom: 1px solid var(--color-outline-variant); }
+  .ws_assign-row { flex-wrap: wrap; }
+  .ws_hello { flex-direction: column; }
+  .ws_feedback, .ws_submit { margin-left: 1.25rem; }
+}
+
+/* ---- Larger stat tiles / headings (match the rest of the portal) ---- */
+.ws_stat { padding: 1.35rem 1.5rem; }
+.ws_stat strong { font-size: 2.25rem; }
+.ws_stat > span:not(.ws_stat-icon) { font-size: 0.9rem; }
+.ws_stat small { font-size: 0.8rem; }
+.ws_stat-icon { width: 2.4rem; height: 2.4rem; font-size: 1.25rem; }
+.ws_panel-head h2, .ws_detail h2 { font-size: 1.25rem; }
+.ws_hello h1, .ws_head h1 { font-size: clamp(2rem, 3.4vw, 2.6rem); }
+.ws_course, .ws_assign-row { padding: 1.5rem; }
+.ws_chat { min-height: 36rem; }
+.ws_chat-body { max-height: 28rem; }
+@media (max-width: 1024px) { .ws { grid-template-columns: 1fr; } }
+
+@media (max-width: 1280px) { .ws_session-row .ws_who { display: none; } }

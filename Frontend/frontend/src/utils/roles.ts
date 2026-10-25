@@ -20,7 +20,7 @@ const ROLE_HOME: Record<RoleName, string> = {
 
 // URL prefixes each role may open inside the signed-in area.
 // Learner pages live at the root (/profile, /payments, ...), so they are listed explicitly.
-const LEARNER_PATHS = ["/profile", "/payments", "/checkout", "/applications", "/enrollments", "/learn"];
+const LEARNER_PATHS = ["/profile", "/payments", "/checkout", "/applications", "/enrollments", "/workspace", "/learn"];
 const ROLE_PATHS: Record<RoleName, string[]> = {
   [ROLES.learner]: LEARNER_PATHS,
   [ROLES.instructor]: ["/instructor", "/profile"],

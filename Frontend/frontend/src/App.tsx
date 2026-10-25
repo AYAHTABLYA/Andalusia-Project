@@ -19,6 +19,12 @@ import EnrollmentContainer from "./Components/Portal/Enrollment/EnrollmentContai
 import EnrollmentsContainer from "./Components/Portal/Enrollments/EnrollmentsContainer";
 import EnrollmentDetailContainer from "./Components/Portal/Enrollments/EnrollmentDetailContainer";
 import CheckoutContainer from "./Components/Portal/Checkout/CheckoutContainer";
+import WorkspaceLayoutContainer from "./Components/Portal/Workspace/WorkspaceLayoutContainer";
+import OverviewContainer from "./Components/Portal/Workspace/OverviewContainer";
+import WorkspaceCoursesContainer from "./Components/Portal/Workspace/CoursesContainer";
+import ScheduleContainer from "./Components/Portal/Workspace/ScheduleContainer";
+import AssignmentsContainer from "./Components/Portal/Workspace/AssignmentsContainer";
+import MessagesContainer from "./Components/Portal/Workspace/MessagesContainer";
 import RequireRole from "./Components/Auth/RequireRole";
 import StaffLayout from "./Components/Staff/StaffLayout";
 import AdminHome from "./Components/Staff/Admin/AdminHome";
@@ -63,6 +69,13 @@ function App() {
               <Route path="/enrollments" element={<EnrollmentsContainer />} />
               <Route path="/enrollments/:id" element={<EnrollmentDetailContainer />} />
               <Route path="/enrollments/new" element={<EnrollmentContainer />} />
+              <Route path="/workspace" element={<WorkspaceLayoutContainer />}>
+                <Route index element={<OverviewContainer />} />
+                <Route path="courses" element={<WorkspaceCoursesContainer />} />
+                <Route path="schedule" element={<ScheduleContainer />} />
+                <Route path="assignments" element={<AssignmentsContainer />} />
+                <Route path="messages" element={<MessagesContainer />} />
+              </Route>
             </Route>
           </Route>
 
