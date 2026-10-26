@@ -76,6 +76,7 @@ builder.Services.AddSingleton<ITokenBlacklist, InMemoryTokenBlacklist>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ILearnerDashboardService, LearnerDashboardService>();
+builder.Services.AddScoped<ILearnerCourseService, LearnerCourseService>();
 
 builder.Services.AddScoped<IStaffWorkspaceService, StaffWorkspaceService>();
 builder.Services.AddScoped<IStaffSessionService, StaffSessionService>();
