@@ -79,6 +79,7 @@ builder.Services.AddScoped<ILearnerDashboardService, LearnerDashboardService>();
 builder.Services.AddScoped<ILearnerCourseService, LearnerCourseService>();
 
 builder.Services.AddScoped<IStaffWorkspaceService, StaffWorkspaceService>();
+builder.Services.AddScoped<ICoordinatorEnrollmentService, CoordinatorEnrollmentService>();
 builder.Services.AddScoped<IStaffSessionService, StaffSessionService>();
 builder.Services.AddScoped<IStaffContentService, StaffContentService>();
 builder.Services.AddScoped<IStaffStudentService, StaffStudentService>();

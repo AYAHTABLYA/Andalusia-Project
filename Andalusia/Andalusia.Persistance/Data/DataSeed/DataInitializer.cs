@@ -1,4 +1,4 @@
-﻿using Andalusia.Domain.Contracts;
+using Andalusia.Domain.Contracts;
 using Andalusia.Domain.Enums;
 using Andalusia.Domain.Models;
 using Andalusia.Shared.Authorization;
@@ -60,6 +60,17 @@ public class DataInitializer : IDataInitializer
         await _db.SaveChangesAsync();
 
         var roles = await _db.Roles.ToDictionaryAsync(r => r.Name);
+        var newlyCreatedRoles = new HashSet<string>();
+        foreach (var roleName in AppRoles.All)
+        {
+            if (roles.ContainsKey(roleName)) continue;
+            var role = new Role { Name = roleName };
+            _db.Roles.Add(role);
+            roles[roleName] = role;
+            newlyCreatedRoles.Add(roleName);
+        }
+        if (newlyCreatedRoles.Count > 0) await _db.SaveChangesAsync();
+
         var existingLinks = (await _db.RolePermissions
                 .Select(rp => new { rp.RoleId, rp.PermissionId })
                 .ToListAsync())
@@ -72,7 +83,9 @@ public class DataInitializer : IDataInitializer
 
             foreach (var code in codes)
             {
-                if (!newlyCreated.Contains(code)) continue;
+                // Preserve existing administrator-edited grants. For a newly-created role,
+                // seed its complete default matrix even when the permission already existed.
+                if (!newlyCreatedRoles.Contains(roleName) && !newlyCreated.Contains(code)) continue;
 
                 var permissionId = permissions[code].PermissionId;
                 if (existingLinks.Add((role.RoleId, permissionId)))

@@ -25,12 +25,15 @@ public abstract class StaffControllerBase : ControllerBase
     {
         actor = default;
         var isAdmin = IsAdmin;
-        if (!isAdmin && !User.IsInRole(AppRoles.Instructor)) return Forbid();
+        var isCoordinator = User.IsInRole(AppRoles.Coordinator);
+        if (!isAdmin && !isCoordinator && !User.IsInRole(AppRoles.Instructor)) return Forbid();
 
         var raw = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
         if (!long.TryParse(raw, out var userId)) return Unauthorized();
 
-        actor = new StaffActor(userId, isAdmin);
+        // StaffActor.IsAdmin represents academy-wide operational scope in services.
+        // Coordinator receives that scope only on endpoints whose role and permission policies allow it.
+        actor = new StaffActor(userId, isAdmin || isCoordinator);
         return null;
     }
 

@@ -119,6 +119,52 @@ namespace Andalusia.Persistance.Migrations
                     b.ToTable("CourseCohorts");
                 });
 
+            modelBuilder.Entity("Andalusia.Domain.Models.EnrollmentAudit", b =>
+                {
+                    b.Property<long>("EnrollmentAuditId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("EnrollmentAuditId"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<long>("ActorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("EnrollmentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("NewStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("PerformedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PreviousStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("EnrollmentAuditId");
+
+                    b.HasIndex("ActorUserId");
+
+                    b.HasIndex("EnrollmentId", "PerformedAtUtc");
+
+                    b.ToTable("ENROLLMENT_AUDITS", (string)null);
+                });
+
             modelBuilder.Entity("Andalusia.Domain.Models.LearningOutcome", b =>
                 {
                     b.Property<long>("Id")
@@ -1566,6 +1612,21 @@ namespace Andalusia.Persistance.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Andalusia.Domain.Models.EnrollmentAudit", b =>
+                {
+                    b.HasOne("AndalusiaApp.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("ActorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AndalusiaApp.Models.Enrollment", null)
+                        .WithMany()
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Andalusia.Domain.Models.LearningOutcome", b =>

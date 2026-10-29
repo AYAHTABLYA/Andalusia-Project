@@ -18,7 +18,7 @@ internal static class StaffScope
         return links.Select(l => l.ScheduleId).ToHashSet();
     }
 
-    /// <summary>Admins/Managers can access every schedule; instructors only the ones they teach.</summary>
+    /// <summary>Admins/Managers and authorized Coordinators can access every operational schedule; instructors only the ones they teach.</summary>
     public static async Task<bool> CanAccessScheduleAsync(IUnitOfWork uow, StaffActor actor, long scheduleId)
     {
         if (actor.IsAdmin) return true;

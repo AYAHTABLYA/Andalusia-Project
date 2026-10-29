@@ -6,14 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AndalusiaApp.Controllers;
 
-/// <summary>Instructor profiles and their schedules. Permission: instructors.manage (Admin/Manager).</summary>
-[Authorize(Roles = AppRoles.AdminOrManager, Policy = AppPermissions.InstructorsManage)]
+/// <summary>Instructor profiles and their schedules. Coordinators may read; only Admin/Manager may mutate.</summary>
+[Authorize(Policy = AppPermissions.InstructorsManage)]
 [Route("api/admin/instructors")]
 public sealed class AdminInstructorsController(IInstructorAdminService instructors, IScheduleAdminService schedules)
     : StaffControllerBase
 {
     // GET /api/admin/instructors?search=&isActive=&page=1&pageSize=20
     [HttpGet]
+    [Authorize(Roles = AppRoles.AdminManagerOrCoordinator)]
     public async Task<IActionResult> List(
         [FromQuery] string? search, [FromQuery] bool? isActive,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
@@ -21,21 +22,25 @@ public sealed class AdminInstructorsController(IInstructorAdminService instructo
 
     // GET /api/admin/instructors/{id}
     [HttpGet("{id:long}")]
+    [Authorize(Roles = AppRoles.AdminManagerOrCoordinator)]
     public async Task<IActionResult> Get(long id, CancellationToken ct)
         => ToOk(await instructors.GetInstructorAsync(id, ct));
 
     // POST /api/admin/instructors
     [HttpPost]
+    [Authorize(Roles = AppRoles.AdminOrManager)]
     public async Task<IActionResult> Create([FromBody] CreateInstructorDto dto, CancellationToken ct)
         => ToCreated(await instructors.CreateInstructorAsync(dto, ct));
 
     // PUT /api/admin/instructors/{id}
     [HttpPut("{id:long}")]
+    [Authorize(Roles = AppRoles.AdminOrManager)]
     public async Task<IActionResult> Update(long id, [FromBody] UpdateInstructorDto dto, CancellationToken ct)
         => ToOk(await instructors.UpdateInstructorAsync(id, dto, ct));
 
     // PUT /api/admin/instructors/{id}/status   body: { "isActive": false }
     [HttpPut("{id:long}/status")]
+    [Authorize(Roles = AppRoles.AdminOrManager)]
     public async Task<IActionResult> SetStatus(long id, [FromBody] SetUserStatusDto dto, CancellationToken ct)
     {
         if (TryGetActor(out var actor) is { } denied) return denied;
@@ -44,6 +49,7 @@ public sealed class AdminInstructorsController(IInstructorAdminService instructo
 
     // GET /api/admin/instructors/{id}/schedules
     [HttpGet("{id:long}/schedules")]
+    [Authorize(Roles = AppRoles.AdminManagerOrCoordinator)]
     public async Task<IActionResult> Schedules(long id, CancellationToken ct)
         => ToOk(await schedules.GetInstructorSchedulesAsync(id, ct));
 }

@@ -1,4 +1,4 @@
-﻿using Andalusia.Domain.Models;
+using Andalusia.Domain.Models;
 using AndalusiaApp.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -32,6 +32,7 @@ namespace AndalusiaApp.Data
         public DbSet<Attendance> Attendances => Set<Attendance>();
         public DbSet<Application> Applications => Set<Application>();
         public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+        public DbSet<EnrollmentAudit> EnrollmentAudits => Set<EnrollmentAudit>();
         public DbSet<Payment> Payments => Set<Payment>();
         public DbSet<CourseMaterial> CourseMaterials => Set<CourseMaterial>();
         public DbSet<Assignment> Assignments => Set<Assignment>();

@@ -15,13 +15,15 @@ public sealed class StaffWorkspaceController(IStaffWorkspaceService staff) : Con
     private bool TryGetUserId(out long id) => long.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub"), out id);
     private bool IsAdmin => User.IsInRole(AppRoles.Admin) || User.IsInRole(AppRoles.Manager);
     private bool IsInstructor => User.IsInRole(AppRoles.Instructor);
+    private bool IsCoordinator => User.IsInRole(AppRoles.Coordinator);
+    private bool IsAcademyWide => IsAdmin || IsCoordinator;
 
     [HttpGet("dashboard")]
-    public async Task<IActionResult> Dashboard(CancellationToken ct) { if (!IsAdmin && !IsInstructor) return Forbid(); if (!IsAdmin && !TryGetUserId(out _)) return Unauthorized(); TryGetUserId(out var id); return Ok(await staff.GetDashboardAsync(IsAdmin ? null : id, IsAdmin, ct)); }
+    public async Task<IActionResult> Dashboard(CancellationToken ct) { if (!IsAcademyWide && !IsInstructor) return Forbid(); if (!IsAcademyWide && !TryGetUserId(out _)) return Unauthorized(); TryGetUserId(out var id); return Ok(await staff.GetDashboardAsync(IsAcademyWide ? null : id, IsAcademyWide, ct)); }
 
     [HttpGet("schedule")]
     [Authorize(Policy = AppPermissions.SessionsManage)]
-    public async Task<IActionResult> Schedule([FromQuery] DateOnly? from, [FromQuery] DateOnly? to, CancellationToken ct) { if (!IsAdmin && !IsInstructor) return Forbid(); if (!IsAdmin && !TryGetUserId(out _)) return Unauthorized(); TryGetUserId(out var id); return Ok(await staff.GetScheduleAsync(IsAdmin ? null : id, IsAdmin, from, to, ct)); }
+    public async Task<IActionResult> Schedule([FromQuery] DateOnly? from, [FromQuery] DateOnly? to, CancellationToken ct) { if (!IsAcademyWide && !IsInstructor) return Forbid(); if (!IsAcademyWide && !TryGetUserId(out _)) return Unauthorized(); TryGetUserId(out var id); return Ok(await staff.GetScheduleAsync(IsAcademyWide ? null : id, IsAcademyWide, from, to, ct)); }
 
     [HttpGet("assignments")]
     [Authorize(Policy = AppPermissions.AssignmentsManage)]
@@ -33,7 +35,7 @@ public sealed class StaffWorkspaceController(IStaffWorkspaceService staff) : Con
 
     [HttpGet("students")]
     [Authorize(Policy = AppPermissions.StudentsView)]
-    public async Task<IActionResult> Students([FromQuery] string? search, CancellationToken ct) { if (!IsAdmin && !IsInstructor) return Forbid(); if (!IsAdmin && !TryGetUserId(out _)) return Unauthorized(); TryGetUserId(out var id); return Ok(await staff.GetStudentsAsync(IsAdmin ? null : id, IsAdmin, search, ct)); }
+    public async Task<IActionResult> Students([FromQuery] string? search, CancellationToken ct) { if (!IsAcademyWide && !IsInstructor) return Forbid(); if (!IsAcademyWide && !TryGetUserId(out _)) return Unauthorized(); TryGetUserId(out var id); return Ok(await staff.GetStudentsAsync(IsAcademyWide ? null : id, IsAcademyWide, search, ct)); }
 
     [HttpGet("payouts")]
     [Authorize(Policy = AppPermissions.PaymentsView)]

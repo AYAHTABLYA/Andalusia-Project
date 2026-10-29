@@ -27,6 +27,7 @@ public static class AppPermissions
     public const string InstructorsManage = "instructors.manage";
     public const string StudentsView = "students.view";
     public const string EnrollmentsView = "enrollments.view";
+    public const string EnrollmentsManage = "enrollments.manage";
 
     // Teaching operations (Sprint 4)
     public const string SchedulesManage = "schedules.manage";
@@ -50,6 +51,7 @@ public static class AppPermissions
         (InstructorsManage, "Manage instructor profiles and assignments"),
         (StudentsView, "View students (own students for instructors)"),
         (EnrollmentsView, "View enrollments and progress"),
+        (EnrollmentsManage, "Enroll or remove learners from schedules"),
         (SchedulesManage, "Create and edit course schedules/cohorts"),
         (SessionsManage, "Create and edit class sessions"),
         (AttendanceManage, "Mark and edit attendance"),
@@ -69,8 +71,14 @@ public static class AppPermissions
             [AppRoles.Manager] =
             [
                 CoursesManage, ProgramsManage, CareerPathsManage, ApplicationsReview, PaymentsView,
-                InstructorsManage, StudentsView, EnrollmentsView, SchedulesManage, SessionsManage,
+                InstructorsManage, StudentsView, EnrollmentsView, EnrollmentsManage, SchedulesManage, SessionsManage,
                 AttendanceManage, ReportsView,
+            ],
+
+            [AppRoles.Coordinator] =
+            [
+                InstructorsManage, StudentsView, EnrollmentsView, EnrollmentsManage, SchedulesManage,
+                SessionsManage, AttendanceManage, ReportsView,
             ],
 
             [AppRoles.ContentManager] =
