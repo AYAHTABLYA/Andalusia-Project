@@ -66,14 +66,29 @@ builder.Services.AddRateLimiter(options =>
                 Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             }));
+
+    // Public admission-interview form: a few submissions per IP every 10 minutes (spam protection)
+    options.AddPolicy("contact", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0
+            }));
 });
 builder.Services.AddScoped<IProgramService, ProgramService>();
 builder.Services.AddScoped<ICareerPathService, CareerPathService>();
+builder.Services.AddScoped<ITestimonialService, TestimonialService>();
+builder.Services.AddScoped<IFaqService, FaqService>();
+builder.Services.AddScoped<IContactEnquiryService, ContactEnquiryService>();
 builder.Services.AddScoped<
     IPortalRecordsService,
     PortalRecordsService>();
 builder.Services.AddSingleton<ITokenBlacklist, InMemoryTokenBlacklist>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ILearnerDashboardService, LearnerDashboardService>();
 builder.Services.AddScoped<ILearnerCourseService, LearnerCourseService>();

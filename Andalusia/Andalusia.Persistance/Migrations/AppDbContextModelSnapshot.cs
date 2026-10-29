@@ -1480,6 +1480,11 @@ namespace Andalusia.Persistance.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Rating")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(5);
+
                     b.Property<string>("TitleOrRole")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -1494,7 +1499,10 @@ namespace Andalusia.Persistance.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TESTIMONIALS", (string)null);
+                    b.ToTable("TESTIMONIALS", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_TESTIMONIALS_Rating", "[Rating] BETWEEN 1 AND 5");
+                        });
                 });
 
             modelBuilder.Entity("AndalusiaApp.Models.User", b =>

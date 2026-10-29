@@ -9,7 +9,7 @@ using AndalusiaApp.Models;
 
 namespace Andalusia.Services;
 
-public sealed class PaymentAdminService(IUnitOfWork uow) : IPaymentAdminService
+public sealed class PaymentAdminService(IUnitOfWork uow, INotificationService notifications) : IPaymentAdminService
 {
     public async Task<Result<PaginatedResult<AdminPaymentDto>>> GetPaymentsAsync(
         string? status, string? search, int page, int pageSize, CancellationToken ct = default)
@@ -77,6 +77,12 @@ public sealed class PaymentAdminService(IUnitOfWork uow) : IPaymentAdminService
 
         payment.Status = target;
         await uow.SaveChangesAsync();
+        await notifications.NotifyAsync(payment.UserId,
+            target == PaymentStatus.Refunded ? "Payment refunded" : "Payment failed",
+            target == PaymentStatus.Refunded
+                ? $"Your payment {payment.TransactionRef} was refunded."
+                : $"Your payment {payment.TransactionRef} was marked as failed.",
+            target == PaymentStatus.Refunded ? "Info" : "Warning", ct);
         return Result<AdminPaymentDto>.Ok((await ToDtosAsync([payment]))[0]);
     }
 

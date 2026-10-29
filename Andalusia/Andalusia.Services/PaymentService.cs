@@ -7,7 +7,7 @@ using AndalusiaApp.Specifications;
 
 namespace Andalusia.Services;
 
-public sealed class PaymentService(IUnitOfWork uow) : IPaymentService
+public sealed class PaymentService(IUnitOfWork uow, INotificationService notifications) : IPaymentService
 {
     private const string Currency = "EGP";
     private const string Gateway = "Simulation";
@@ -162,6 +162,9 @@ public sealed class PaymentService(IUnitOfWork uow) : IPaymentService
 
         await enrollRepo.AddAsync(enrollment);
         await uow.SaveChangesAsync();   // payment + enrollment + application in one transaction
+
+        await notifications.NotifyAsync(userId, "Payment successful",
+            $"Your payment {payment.TransactionRef} was received and your enrollment is confirmed.", "Success", ct);
 
         return ToDto(payment, app);
     }

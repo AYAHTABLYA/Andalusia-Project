@@ -32,6 +32,7 @@ public class DataInitializer : IDataInitializer
         {
             await SeedDemoUsersAsync();
             await SeedDemoPortalRecordsAsync();
+            await SeedLandingContentAsync();
         }
     }
 
@@ -478,6 +479,119 @@ public class DataInitializer : IDataInitializer
         _db.Faqs.AddRange(faqs);
         _db.Testimonials.AddRange(testimonials);
 
+        await _db.SaveChangesAsync();
+    }
+
+    // =====================================================================
+    // 2b) Landing-page demo content: testimonials (with ratings) + FAQs (Development only)
+    // =====================================================================
+    private async Task SeedLandingContentAsync()
+    {
+        await SeedLandingTestimonialsAsync();
+        await SeedLandingFaqsAsync();
+    }
+
+    private async Task SeedLandingTestimonialsAsync()
+    {
+        // Sentinel: the landing-page set is added once.
+        if (await _db.Testimonials.AnyAsync(t => t.ClientName == "Eng. Omar Farouk")) return;
+
+        var courseIds = await _db.Courses.ToDictionaryAsync(c => c.Slug, c => c.CourseId);
+        long? CourseIdOf(string slug) => courseIds.TryGetValue(slug, out var id) ? id : (long?)null;
+
+        // Not featured: they only feed the rating summary / admin list. Inserted first so the featured
+        // set below is the newest (GET /api/testimonials?featured=true&take=4 returns newest first).
+        var extras = new (string Name, string Role, string Quote, int Rating, string Course)[]
+        {
+            ("Mariam Hassan", "Operations Analyst",
+                "Clear structure and patient mentors. I would have liked more evening cohort options, but the content was excellent.",
+                4, "payments-fraud-risk"),
+            ("Tamer Ghoneim", "Head of Digital Products",
+                "The metrics workshop changed how my team reports delivery. We dropped three vanity dashboards the week after.",
+                5, "agile-delivery-metrics"),
+            ("Salma Reda", "Data Analyst",
+                "Good balance of theory and practice. The lab sessions were the highlight for me.",
+                4, "open-banking-apis"),
+            ("Youssef Nabil", "IT Project Manager",
+                "Good instructors and useful material. The schedule changed twice, which made planning harder.",
+                3, "ai-strategy-for-executives"),
+        };
+
+        // The four cards on the landing page (same copy the page showed before it was wired to the API).
+        var landing = new (string Name, string Role, string Quote, int Rating, string Course)[]
+        {
+            ("Eng. Omar Farouk", "FinTech & Payment Architecture",
+                "The in-person architecture sprint sessions at Gleem Campus are unlike any online course. We designed real fault-tolerant microservices under intense regulatory constraints.",
+                5, "cloud-architecture-fintech"),
+            ("Yasmine El-Sayed", "Enterprise Generative AI & LLMs",
+                "Having my capstone vetted by senior industry leaders gave me the direct confidence to transition our firm to enterprise LLM pipelines with strict data governance.",
+                5, "generative-ai-banking"),
+            ("Karim Mostafa", "Cloud & Zero Trust Architecture",
+                "The Pearson dual accreditation seal is genuinely recognized internationally. It immediately opened doors for our cloud consulting contracts across the Gulf region.",
+                5, "open-banking-apis"),
+            ("Nourhan Adel", "Executive Full Stack Engineering",
+                "Small cohort sizes mean genuine 1-on-1 feedback on real distributed codebase implementations. A world-class learning experience right here in Alexandria.",
+                5, "product-discovery-bootcamp"),
+        };
+
+        _db.Testimonials.AddRange(extras.Select(x => NewTestimonial(x, featured: false, CourseIdOf)));
+        _db.Testimonials.AddRange(landing.Select(x => NewTestimonial(x, featured: true, CourseIdOf)));
+        await _db.SaveChangesAsync();
+
+        static Testimonial NewTestimonial(
+            (string Name, string Role, string Quote, int Rating, string Course) x,
+            bool featured,
+            Func<string, long?> courseIdOf) => new()
+        {
+            ClientName = x.Name,
+            TitleOrRole = x.Role,
+            QuoteText = x.Quote,
+            AvatarUrl = "",
+            Rating = x.Rating,
+            IsFeatured = featured,
+            CourseId = courseIdOf(x.Course)
+        };
+    }
+
+    private async Task SeedLandingFaqsAsync()
+    {
+        // **double asterisks** mark bold text; the frontend renders them as <strong>.
+        var items = new (string Question, string Answer)[]
+        {
+            ("How can I apply for a program?",
+                "You can submit your application directly using the **Request Admission Interview** form below. Once reviewed, our admissions committee reaches out within 2 business days to schedule an interview with an academic lead."),
+            ("Are the programs online or offline?",
+                "All executive diplomas are delivered in an intensive **blended executive format**. Core architectural theory is accompanied by mandatory hands-on cohort sessions hosted physically at the **Alexandria Executive Campus (Gleem District)** on evenings and weekends."),
+            ("What are the admission requirements?",
+                "Most executive tracks require a minimum of 1–3 years of hands-on software, data, or product management background. Because seats are limited to a **1:12 mentor-to-learner ratio**, selection evaluates prior experience and portfolio readiness."),
+            ("Will I receive a certificate after completing a program?",
+                "Yes. Successful candidates receive a verified **Dual Credential**: an accredited Andalusia Academy Executive Diploma together with an internationally recognized **Pearson Assured & CPD Standards UK** transcript badge."),
+            ("How can I track my application status?",
+                "Upon submitting your application, you will receive an acknowledgment email with a tracking reference number. You may also contact our admissions desk via WhatsApp or email directly with your applicant reference ID."),
+        };
+
+        // Sentinel: the landing-page set is added once.
+        var sentinel = items[0].Question;
+        if (await _db.Faqs.AnyAsync(f => f.Question == sentinel)) return;
+
+        // OrderIndex is unique among general FAQs. Push the existing ones below the new set
+        // (two phases so the unique index is never hit half-way through the update).
+        var general = await _db.Faqs.Where(f => f.CategoryId == null).ToListAsync();
+        if (general.Count > 0)
+        {
+            foreach (var f in general) f.OrderIndex += 1000;
+            await _db.SaveChangesAsync();
+            foreach (var f in general) f.OrderIndex = f.OrderIndex - 1000 + items.Length;
+            await _db.SaveChangesAsync();
+        }
+
+        _db.Faqs.AddRange(items.Select((x, i) => new Faq
+        {
+            Question = x.Question,
+            Answer = x.Answer,
+            OrderIndex = i + 1,
+            IsActive = true
+        }));
         await _db.SaveChangesAsync();
     }
 

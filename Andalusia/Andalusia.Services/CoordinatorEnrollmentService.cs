@@ -9,7 +9,7 @@ using AndalusiaApp.Models;
 namespace Andalusia.Services;
 
 /// <summary>Coordinator enrollment use-cases. All persistence goes through the existing UnitOfWork abstraction.</summary>
-public sealed class CoordinatorEnrollmentService(IUnitOfWork uow) : ICoordinatorEnrollmentService
+public sealed class CoordinatorEnrollmentService(IUnitOfWork uow, INotificationService notifications) : ICoordinatorEnrollmentService
 {
     public async Task<IReadOnlyList<EligibleLearnerDto>> SearchEligibleLearnersAsync(string? search, long? scheduleId, CancellationToken ct = default)
     {
@@ -64,6 +64,8 @@ public sealed class CoordinatorEnrollmentService(IUnitOfWork uow) : ICoordinator
         }
         await uow.GetRepository<EnrollmentAudit>().AddAsync(new EnrollmentAudit { EnrollmentId = existing.EnrollmentId, ActorUserId = actorId, Action = previous == "None" ? "Created" : "Reactivated", PreviousStatus = previous, NewStatus = EnrollmentStatus.Enrolled.ToString(), Reason = TrimReason(request.Reason, "Coordinator enrollment"), PerformedAtUtc = now });
         await uow.SaveChangesAsync();
+        await notifications.NotifyAsync(learner.UserId, "You've been enrolled",
+            "The academy enrolled you in a new batch. Check your schedule for the details.", "Success", ct);
         var actor = users.GetValueOrDefault(actorId);
         return new(existing.EnrollmentId, schedule.ScheduleId, learner.UserId, existing.Status.ToString(), actor is null ? "Coordinator" : $"{actor.FirstName} {actor.LastName}".Trim(), now);
     }
@@ -79,6 +81,8 @@ public sealed class CoordinatorEnrollmentService(IUnitOfWork uow) : ICoordinator
         var now = DateTime.UtcNow;
         await uow.GetRepository<EnrollmentAudit>().AddAsync(new EnrollmentAudit { EnrollmentId = enrollment.EnrollmentId, ActorUserId = actorId, Action = "Cancelled", PreviousStatus = previous, NewStatus = EnrollmentStatus.Cancelled.ToString(), Reason = TrimReason(reason, "Coordinator removed enrollment"), PerformedAtUtc = now });
         await uow.SaveChangesAsync();
+        await notifications.NotifyAsync(enrollment.UserId, "Enrollment cancelled",
+            "Your enrollment in a batch was cancelled by the academy.", "Warning", ct);
         var actor = await uow.GetRepository<User>().GetByIdAsync(actorId);
         return new(enrollment.EnrollmentId, enrollment.ScheduleId.Value, enrollment.UserId, enrollment.Status.ToString(), actor is null ? "Coordinator" : $"{actor.FirstName} {actor.LastName}".Trim(), now);
     }

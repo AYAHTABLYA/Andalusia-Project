@@ -8,7 +8,7 @@ using AndalusiaApp.Models;
 
 namespace Andalusia.Services;
 
-public sealed class StaffContentService(IUnitOfWork uow) : IStaffContentService
+public sealed class StaffContentService(IUnitOfWork uow, INotificationService notifications) : IStaffContentService
 {
     // ================================================================== materials
     // Rules: admins manage everything. Instructors can READ course-wide materials of courses they teach and
@@ -173,6 +173,14 @@ public sealed class StaffContentService(IUnitOfWork uow) : IStaffContentService
         };
         await uow.GetRepository<Assignment>().AddAsync(assignment);
         await uow.SaveChangesAsync();
+
+        // Bell notification for every learner currently enrolled in this schedule.
+        var learnerIds = (await uow.GetRepository<Enrollment>().GetAllAsync(new QuerySpecification<Enrollment>(
+                e => e.ScheduleId == schedule.ScheduleId && e.Status != EnrollmentStatus.Cancelled)))
+            .Select(e => e.UserId);
+        await notifications.NotifyManyAsync(learnerIds, "New assignment",
+            $"\"{assignment.Title}\" was added to your course.", "Info", ct);
+
         return Result<StaffAssignmentDto>.Ok(await ToAssignmentDtoAsync(assignment));
     }
 

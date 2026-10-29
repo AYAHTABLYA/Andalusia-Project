@@ -11,6 +11,7 @@
         public string QuoteText { get; set; } = "";
         public string AvatarUrl { get; set; } = "";
         public bool IsFeatured { get; set; }
+        public int Rating { get; set; } = 5;
 
         public User User { get; set; } = null!;
         public Course Course { get; set; } = null!;
