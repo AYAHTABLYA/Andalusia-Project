@@ -23,39 +23,40 @@
   text-align: left;
 }
 
+.top-bar_dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  animation: top-bar-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes top-bar-pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+
 .top-bar_welcome-text {
   font-weight: 600;
   color: #fff;
   letter-spacing: 0.02em;
 }
 
-.top-bar_portals {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
+/* Right side message: hidden on phones, same as the design */
+.top-bar_notice {
+  display: none;
+  font-size: 11px;
   font-weight: 500;
+  color: #d1d5db;
 }
 
-.top-bar_portals-label {
-  color: #9aa6a9;
+@media (min-width: 640px) {
+  .top-bar_notice {
+    display: block;
+  }
 }
 
-.top-bar_portals a {
-  color: var(--color-primary-light);
-  transition: color 0.2s;
-}
-
-.top-bar_portals a:hover {
-  color: #fff;
-}
-.top-bar_portals {
-  flex-wrap: wrap;
-  gap: 4px 10px;
-}
-.top-bar_portals-label {
-  white-space: nowrap;
-}
 @media (max-width: 767px) {
   .top-bar {
     padding: 8px 16px;

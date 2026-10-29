@@ -6,6 +6,7 @@ import { initials } from "../../../utils/format";
 import { homeForRole } from "../../../utils/roles";
 import logo from "../../../assets/andalusia-logo.png";
 import { LanguageSwitcher } from "../../LanguageSwitcher";
+import { NotificationBell } from "../../NotificationBell";
 import "./style.css";
 
 type Props = {
@@ -34,6 +35,7 @@ function PortalHeaderComponent({ links, name, role, photoUrl, onLogout }: Props)
 
         <div className="portal-header_actions">
           <LanguageSwitcher />
+          <NotificationBell />
           <a href={`tel:${SUPPORT_PHONE.replace(/[^+\d]/g, "")}`} className="portal-header_phone">
             <span className="material-symbols-outlined">support_agent</span>
             <span>{SUPPORT_PHONE}</span>

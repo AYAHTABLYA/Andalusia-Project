@@ -18,40 +18,19 @@ function NavbarComponent({ signedIn, menuOpen, onToggleMenu, onCloseMenu }: Prop
           <img className="navbar_logo-img" src={logo} alt="Andalusia Academy" />
         </Link>
 
-        <div className="navbar_search">
-          <select
-            aria-label="Course Category Filter"
-            className="navbar_search-select"
-          >
-            <option>All Tracks</option>
-            <option>Executive AI</option>
-            <option>FinTech</option>
-            <option>Product &amp; Tech</option>
-            <option>Offline Labs</option>
-          </select>
-          <input
-            className="navbar_search-input"
-            placeholder="Search offline cohorts, certifications, diplomas..."
-            type="search"
-          />
-        </div>
-
         <nav className="navbar_links">
           <Link to="/programs">Programs</Link>
-          <Link to="/courses">
-            Offline Courses <span className="navbar_pill">Alex Campus</span>
-          </Link>
+          <Link to="/courses">Courses</Link>
           <Link to="/career-paths">Career Paths</Link>
-          <a href="#enterprise-section">For Business</a>
           <a href="#accreditations">Accreditations</a>
-          <a href="#portal-preview-section">Campus Portals</a>
+          <a href="#contact-campus">Contact Us</a>
           <a href="#about-us">About Us</a>
         </nav>
 
         <div className="navbar_actions">
           <LanguageSwitcher />
           <Link className="btn btn-outline navbar_signin" to={signedIn ? "/profile" : "/login"}>
-            {signedIn ? "My Portal" : "Sign In / Portal"}
+            My Portal
           </Link>
           <Link className="btn btn-primary navbar_apply" to="/register">
             Apply Now
@@ -86,36 +65,27 @@ function NavbarComponent({ signedIn, menuOpen, onToggleMenu, onCloseMenu }: Prop
 
       {menuOpen && (
         <div id="navbar-drawer" className="navbar_drawer">
-          <input
-            className="navbar_drawer-search"
-            type="search"
-            placeholder="Search cohorts, certifications..."
-            aria-label="Search"
-          />
           <Link to="/programs" onClick={onCloseMenu}>
             Programs
           </Link>
           <Link to="/courses" onClick={onCloseMenu}>
-            Offline Courses <span className="navbar_pill">Alex Campus</span>
+            Courses
           </Link>
           <Link to="/career-paths" onClick={onCloseMenu}>
             Career Paths
           </Link>
-          <a href="#enterprise-section" onClick={onCloseMenu}>
-            For Business
-          </a>
           <a href="#accreditations" onClick={onCloseMenu}>
             Accreditations
           </a>
-          <a href="#portal-preview-section" onClick={onCloseMenu}>
-            Campus Portals
+          <a href="#contact-campus" onClick={onCloseMenu}>
+            Contact Us
           </a>
           <a href="#about-us" onClick={onCloseMenu}>
             About Us
           </a>
           <div className="navbar_drawer-cta">
             <Link className="btn btn-outline" to={signedIn ? "/profile" : "/login"} onClick={onCloseMenu}>
-              {signedIn ? "My Portal" : "Sign In / Portal"}
+              My Portal
             </Link>
             <Link
               className="btn btn-primary"

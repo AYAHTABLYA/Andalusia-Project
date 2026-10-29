@@ -3,11 +3,13 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import useSessionUser from "../../hooks/portalHooks/useSessionUser";
 import { clearSession, hasPermission } from "../../utils/session";
 import { logoutRequest } from "../../apis/portalApi";
+import { getStaffDashboard, type StaffDashboardDto } from "../../apis/staffApi";
 import { initials, resolveAssetUrl } from "../../utils/format";
 import { ROLES } from "../../utils/roles";
 import { STAFF_TABS } from "./constants";
 import StaffSearch from "./StaffSearch";
 import { LanguageSwitcher } from "../LanguageSwitcher";
+import { NotificationBell } from "../NotificationBell";
 import logo from "../../assets/andalusia-logo.png";
 import "../Academy/theme.css";
 import "../Portal/theme.css";
@@ -32,6 +34,24 @@ function StaffLayout() {
   const [open, setOpen] = useState(false);
   const [lang, setLang] = useState(currentLang);
   const [time, setTime] = useState(() => cairoTime(currentLang()));
+  const [counts, setCounts] = useState<StaffDashboardDto | null>(null);
+
+  // Real totals shown as small badges in the sidebar. Best effort: no badge if the call is not allowed.
+  const hasTotals = role === ROLES.admin || role === ROLES.manager || role === ROLES.coordinator;
+  useEffect(() => {
+    if (!hasTotals) return;
+    const controller = new AbortController();
+    getStaffDashboard(controller.signal).then(setCounts).catch(() => undefined);
+    return () => controller.abort();
+  }, [hasTotals]);
+  const badges: Record<string, number | undefined> = {
+    "/admin/instructors": counts?.totalInstructors,
+    "/admin/students": counts?.totalStudents,
+    "/admin/courses": counts?.totalCourses,
+    "/coordinator/instructors": counts?.totalInstructors,
+    "/coordinator/students": counts?.totalStudents,
+    "/coordinator/courses": counts?.totalSchedules,
+  };
 
   // Follow the LanguageSwitcher: it sets <html lang="ar|en">.
   useEffect(() => {
@@ -53,10 +73,16 @@ function StaffLayout() {
   const tabs = STAFF_TABS.filter(
     (tab) =>
       tab.roles.includes(role) &&
-      (!tab.permission || hasPermission(tab.permission)),
+      (!tab.permission || [tab.permission].flat().some(hasPermission)),
   );
   const workspace =
-    role === ROLES.instructor ? "Instructor workspace" : "Admin workspace";
+    role === ROLES.instructor
+      ? "Instructor workspace"
+      : role === ROLES.coordinator
+        ? "Coordinator workspace"
+        : role === ROLES.contentManager
+          ? "Content workspace"
+          : "Admin workspace";
   const isActive = (to: string) =>
     tab_isRoot(to)
       ? pathname === to
@@ -92,6 +118,7 @@ function StaffLayout() {
             >
               <span className="material-symbols-outlined">{tab.icon}</span>
               {tab.label}
+              {badges[tab.to] ? <span className="staff-side_badge">{badges[tab.to]}</span> : null}
             </Link>
           ))}
         </nav>
@@ -109,7 +136,7 @@ function StaffLayout() {
           )}
           <div>
             <strong>{user?.name}</strong>
-            <span>{role.replace("_", " ")}</span>
+            <span>{role.replace(/_/g, " ")}</span>
           </div>
           <button
             type="button"
@@ -147,16 +174,12 @@ function StaffLayout() {
           <StaffSearch tabs={tabs} />
           <div className="staff-topbar_actions">
             <LanguageSwitcher />
-            <button
-              type="button"
-              className="staff-icon-button"
-              aria-label="Notifications"
-              title="Notifications"
-            >
-              <span className="material-symbols-outlined">notifications</span>
-            </button>
-            {role !== ROLES.instructor && (
-              <Link to="/admin/users" className="staff-quick-add">
+            <NotificationBell />
+            {(role === ROLES.admin || role === ROLES.coordinator) && (
+              <Link
+                to={role === ROLES.coordinator ? "/coordinator/courses" : "/admin/users"}
+                className="staff-quick-add"
+              >
                 <span className="material-symbols-outlined">add</span> Quick add
               </Link>
             )}
@@ -176,6 +199,7 @@ function StaffLayout() {
 }
 
 // Overview pages (/admin, /instructor) must not stay highlighted on their sub-pages.
-const tab_isRoot = (to: string) => to === "/admin" || to === "/instructor";
+const tab_isRoot = (to: string) =>
+  to === "/admin" || to === "/instructor" || to === "/coordinator";
 
 export default StaffLayout;

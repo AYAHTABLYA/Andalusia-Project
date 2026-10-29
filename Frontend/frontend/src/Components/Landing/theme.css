@@ -188,22 +188,13 @@
   gap: 8px;
 }
 
-/* Hero: gradient headline accent + glass cards */
+/* Hero: gradient headline accent */
 .landing-page .hero_title-accent {
   background: var(--grad-text);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-}
-.landing-page .hero_session-card,
-.landing-page .hero_finder {
-  backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: var(--shadow-lg);
-}
-.landing-page .hero_session-card {
-  animation: ds-float 14s ease-in-out infinite;
 }
 .landing-page .hero_content > * {
   animation: ds-rise 0.7s var(--ease) both;

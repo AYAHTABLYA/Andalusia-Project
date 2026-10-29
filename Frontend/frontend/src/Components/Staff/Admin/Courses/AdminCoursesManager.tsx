@@ -4,6 +4,7 @@ import {
   createAdminCourse, deleteAdminCourse, getAdminCourses, getAdminCourseMentors, updateAdminCourse,
   type AdminCourseBody, type AdminCourseDto, type AdminCourseMentorDto,
 } from '../../../../apis/staffAdminApi';
+import Select from "../../../Shared/Select/Select";
 
 type CourseForm = {
   title: string; description: string; category: string; deliveryMode: string; hall: string;
@@ -99,7 +100,7 @@ export default function AdminCoursesManager() {
         <label>Course title<input required minLength={2} maxLength={160} value={form.title} onChange={e => updateField('title', e.target.value)} /></label>
         <label>Category<input required maxLength={100} value={form.category} onChange={e => updateField('category', e.target.value)} /></label>
         <label>Duration label<input required value={form.durationLabel} onChange={e => updateField('durationLabel', e.target.value)} placeholder="e.g. 8 weeks" /></label>
-        <label>Mentor<select required value={form.mentorId} onChange={e => updateField('mentorId', e.target.value)}><option value="">Choose mentor</option>{mentors.map(m => <option key={m.id} value={m.id}>{m.name}{m.title ? ` — ${m.title}` : ''}</option>)}</select></label>
+        <label>Mentor<Select required value={form.mentorId} onChange={e => updateField('mentorId', e.target.value)}><option value="">Choose mentor</option>{mentors.map(m => <option key={m.id} value={m.id}>{m.name}{m.title ? ` — ${m.title}` : ''}</option>)}</Select></label>
         <label>Delivery mode<input required value={form.deliveryMode} onChange={e => updateField('deliveryMode', e.target.value)} /></label>
         <label>Hall / location<input required value={form.hall} onChange={e => updateField('hall', e.target.value)} /></label>
         <label>Level<input required value={form.level} onChange={e => updateField('level', e.target.value)} /></label>

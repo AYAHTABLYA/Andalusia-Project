@@ -31,6 +31,7 @@ import {
 import { downloadCsv } from "../../../utils/csv";
 import AdminCoursesManager from "../Admin/Courses/AdminCoursesManager";
 import { initials } from "../../../utils/format";
+import Select from "../../Shared/Select/Select";
 
 type PageConfig = {
   eyebrow: string;
@@ -40,7 +41,7 @@ type PageConfig = {
   stats: { label: string; value: string; icon: string }[];
   columns: string[];
   rows: string[][];
-  actions: string[];
+  actions: { id: string; label: string }[];
   note: string;
 };
 const configs: Record<string, PageConfig> = {
@@ -63,7 +64,7 @@ const configs: Record<string, PageConfig> = {
       "Status",
     ],
     rows: [],
-    actions: ["Add instructor", "Export list"],
+    actions: [{ id: "add-instructor", label: "Add instructor" }, { id: "export-list", label: "Export list" }],
     note: "Instructor records will appear when the instructor-management API is connected.",
   },
   "/admin/students": {
@@ -79,7 +80,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Student", "Course", "Progress", "Last activity", "Status"],
     rows: [],
-    actions: ["Add student", "Export list"],
+    actions: [{ id: "add-student", label: "Add student" }, { id: "export-list", label: "Export list" }],
     note: "Student records and progress will appear when the relevant APIs are connected.",
   },
   "/admin/courses": {
@@ -95,7 +96,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Course", "Code", "Instructor", "Capacity", "Price", "Status"],
     rows: [],
-    actions: ["Create course", "Export list"],
+    actions: [{ id: "create-course", label: "Create course" }, { id: "export-list", label: "Export list" }],
     note: "Course records will appear when the course-management API is connected.",
   },
   "/admin/schedule": {
@@ -118,7 +119,7 @@ const configs: Record<string, PageConfig> = {
       "Status",
     ],
     rows: [],
-    actions: ["Schedule session", "Calendar view"],
+    actions: [{ id: "schedule-session", label: "Schedule session" }, { id: "calendar-view", label: "Calendar view" }],
     note: "The calendar will show authoritative session data, timezone and Zoom links when the schedule API is connected.",
   },
   "/admin/compensation": {
@@ -134,7 +135,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Instructor", "Period", "Sessions", "Amount", "Approval status"],
     rows: [],
-    actions: ["Review pending", "Export transactions"],
+    actions: [{ id: "review-pending", label: "Review pending" }, { id: "export-transactions", label: "Export transactions" }],
     note: "Compensation data is intentionally separate from student payments and academy revenue.",
   },
   "/admin/reports": {
@@ -150,7 +151,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Report", "Period", "Updated", "Status"],
     rows: [],
-    actions: ["Operational report", "Financial report", "Export report"],
+    actions: [{ id: "operational-report", label: "Operational report" }, { id: "financial-report", label: "Financial report" }, { id: "export-report", label: "Export report" }],
     note: "Reports are calculated from enrollments, completed sessions and successful payments for the selected period.",
   },
   "/admin/permissions": {
@@ -172,7 +173,7 @@ const configs: Record<string, PageConfig> = {
       "Status",
     ],
     rows: [],
-    actions: ["Review roles", "Audit permissions"],
+    actions: [{ id: "review-roles", label: "Review roles" }, { id: "audit-permissions", label: "Audit permissions" }],
     note: "The API remains the authority for permission enforcement; this workspace does not grant permissions by itself.",
   },
   "/instructor/courses": {
@@ -187,7 +188,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Course", "Batch", "Students", "Next session", "Status"],
     rows: [],
-    actions: ["Export courses"],
+    actions: [{ id: "export-courses", label: "Export courses" }],
     note: "Only courses assigned to your instructor account are shown here.",
   },
   "/instructor/students": {
@@ -202,7 +203,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Student", "Course", "Batch", "Enrolled", "Status"],
     rows: [],
-    actions: ["Export students"],
+    actions: [{ id: "export-students", label: "Export students" }],
     note: "You only see learners assigned to you through an approved enrollment.",
   },
   "/instructor/attendance": {
@@ -217,7 +218,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Session", "Course", "Date", "Present", "Absent"],
     rows: [],
-    actions: ["Export attendance"],
+    actions: [{ id: "export-attendance", label: "Export attendance" }],
     note: "Attendance tracking will load once the attendance API is connected.",
   },
   "/instructor/schedule": {
@@ -233,7 +234,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Time", "Course", "Students", "Duration", "Classroom"],
     rows: [],
-    actions: ["Today", "Week", "Month"],
+    actions: [{ id: "today", label: "Today" }, { id: "week", label: "Week" }, { id: "month", label: "Month" }],
     note: "Only sessions assigned to your instructor account should be displayed here.",
   },
   "/instructor/assignments": {
@@ -249,7 +250,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Assignment", "Course", "Due date", "Submissions", "Status"],
     rows: [],
-    actions: ["Create assignment", "Review submissions"],
+    actions: [{ id: "create-assignment", label: "Create assignment" }, { id: "review-submissions", label: "Review submissions" }],
     note: "Student eligibility should come from coordinator-approved enrollments. Submission and grading data will load from the assignment APIs.",
   },
   "/instructor/messages": {
@@ -265,7 +266,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Student", "Course", "Last message", "Updated", "Status"],
     rows: [],
-    actions: ["Unread", "All conversations"],
+    actions: [{ id: "unread", label: "Unread" }, { id: "all-conversations", label: "All conversations" }],
     note: "Messages will be scoped to your assigned students and courses when the messaging API is connected.",
   },
   "/instructor/earnings": {
@@ -281,7 +282,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Date", "Course / session", "Pay model", "Amount", "Status"],
     rows: [],
-    actions: ["Current month", "Earnings history"],
+    actions: [{ id: "current-month", label: "Current month" }, { id: "earnings-history", label: "Earnings history" }],
     note: "Only your own earnings and approved transactions belong in this view.",
   },
   "/instructor/availability": {
@@ -297,7 +298,7 @@ const configs: Record<string, PageConfig> = {
     ],
     columns: ["Day", "Available from", "Available to", "Timezone", "Status"],
     rows: [],
-    actions: ["Add availability", "Save changes"],
+    actions: [{ id: "add-availability", label: "Add availability" }, { id: "save-changes", label: "Save changes" }],
     note: "Availability is provided by the instructor; coordinators schedule sessions within these windows. Changes will be saved once the availability API is available.",
   },
 };
@@ -332,8 +333,21 @@ function rangeFor(period: string): { from: string; to: string } | undefined {
   return undefined;
 }
 export default function StaffWorkspacePage() {
-  const { pathname } = useLocation();
-  const config = configs[pathname] ?? configs["/admin/reports"];
+  const { pathname: rawPathname } = useLocation();
+  // Coordinator pages share the Admin page logic (same endpoints, same columns); only the URL prefix differs.
+  const isCoordinator = rawPathname.startsWith("/coordinator");
+  const pathname = isCoordinator ? rawPathname.replace("/coordinator", "/admin") : rawPathname;
+  const baseConfig = configs[pathname] ?? configs["/admin/reports"];
+  // A Coordinator manages people/courses/schedules, but never creates accounts and never sees revenue
+  // (the API enforces the same limits; this just keeps the screen honest).
+  const COORDINATOR_HIDDEN_ACTION_IDS = new Set(["add-instructor", "add-student", "financial-report"]);
+  const config = isCoordinator
+    ? {
+        ...baseConfig,
+        actions: baseConfig.actions.filter((action) => !COORDINATOR_HIDDEN_ACTION_IDS.has(action.id)),
+        stats: baseConfig.stats.filter((s) => s.label !== "Revenue"),
+      }
+    : baseConfig;
   const [query, setQuery] = useState("");
   const [reportSearch, setReportSearch] = useState("");
   const [period, setPeriod] = useState("This month");
@@ -985,7 +999,7 @@ export default function StaffWorkspacePage() {
         <div className="staff-workspace-head-actions">
           <label className="staff-select-label">
             Period{" "}
-            <select
+            <Select
               className="staff-select"
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
@@ -997,16 +1011,16 @@ export default function StaffWorkspacePage() {
               <option value="This month">This month</option>
               <option value="This year">This year</option>
               <option value="All time">All time</option>
-            </select>
+            </Select>
           </label>
           {config.actions.slice(0, 1).map((a) => (
             <button
               className="staff-workspace-primary"
-              key={a}
-              onClick={() => runAction(a)}
+              key={a.id}
+              onClick={() => runAction(a.label)}
             >
-              <span className="material-symbols-outlined">add</span>
-              {a === "Review pending" && pendingOnly ? "Show all payouts" : a}
+              {/^(Add|Create|Schedule|New)/.test(a.label) && <span className="material-symbols-outlined">add</span>}
+              {a.label === "Review pending" && pendingOnly ? "Show all payouts" : a.label}
             </button>
           ))}
         </div>
@@ -1057,10 +1071,10 @@ export default function StaffWorkspacePage() {
           {config.actions.slice(1).map((a) => (
             <button
               className="staff-workspace-secondary"
-              key={a}
-              onClick={() => runAction(a)}
+              key={a.id}
+              onClick={() => runAction(a.label)}
             >
-              {a}
+              {a.label}
             </button>
           ))}
         </div>
@@ -1086,7 +1100,7 @@ export default function StaffWorkspacePage() {
                 <tr>
                   <th>Permission key</th>
                   {roleMatrix.map((r) => (
-                    <th key={r.roleId} className="staff-matrix_role">{r.name.replace("_", " ")}</th>
+                    <th key={r.roleId} className="staff-matrix_role">{r.name.replace(/_/g, " ")}</th>
                   ))}
                 </tr>
               </thead>

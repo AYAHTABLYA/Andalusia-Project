@@ -8,7 +8,6 @@ function useFetchUser() {
   useEffect(() => {
     if (userStored) {
       const user = JSON.parse(userStored);
-      console.log(user);
       setUser(user);
     }
   }, []);

@@ -5,18 +5,14 @@ import {
   getStaffDashboard, getStaffSchedule, getStaffAssignments, getStaffPayouts, getStaffStudents,
   type StaffDashboardDto, type StaffSessionDto, type StaffAssignmentDto, type StaffPayoutDto, type StaffStudentDto,
 } from "../../../apis/staffApi";
+import { payoutSegments, settle, submissionBars, weekBars } from "../Shared/overviewData";
+import { OverviewHero, OverviewProfile } from "../Shared/OverviewHero";
+import { BarChart, ChartCard, DonutChart } from "../../Charts/Charts";
+import { resolveAssetUrl } from "../../../utils/format";
 import "../style.css";
 
 const TZ = "Africa/Cairo";
 const iso = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: TZ });
-const cairoHour = () => Number(new Intl.DateTimeFormat("en-US", { hour: "numeric", hour12: false, timeZone: TZ }).format(new Date())) % 24;
-const greeting = () => { const h = cairoHour(); return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; };
-const dateLine = () => {
-  const d = new Date();
-  const weekday = new Intl.DateTimeFormat("en-US", { weekday: "long", timeZone: TZ }).format(d);
-  const rest = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "long", timeZone: TZ }).format(d);
-  return `${weekday} · ${rest}`.toUpperCase();
-};
 const weekRange = () => {
   const n = new Date();
   const mon = new Date(n.getFullYear(), n.getMonth(), n.getDate() - ((n.getDay() + 6) % 7));
@@ -42,7 +38,6 @@ type Activity = { key: string; icon: string; title: string; detail: string; at: 
 
 function InstructorHomeComponent() {
   const user = getStoredUser();
-  const firstName = user?.name?.trim().split(/\s+/)[0] || "there";
   const [stats, setStats] = useState<StaffDashboardDto | null>(null);
   const [today, setToday] = useState<StaffSessionDto[]>([]);
   const [week, setWeek] = useState<StaffSessionDto[]>([]);
@@ -56,16 +51,22 @@ function InstructorHomeComponent() {
     const controller = new AbortController();
     const { signal } = controller;
     const t = iso(new Date());
-    Promise.all([
+    // Independent requests: a failing one (e.g. payouts) no longer blanks the whole dashboard.
+    Promise.allSettled([
       getStaffDashboard(signal), getStaffSchedule({ from: t, to: t }, signal), getStaffSchedule(weekRange(), signal),
       getStaffStudents(undefined, signal), getStaffAssignments(signal), getStaffPayouts(signal),
-    ])
-      .then(([d, td, wk, st, a, p]) => {
-        if (signal.aborted) return;
-        setStats(d); setToday(td); setWeek(wk); setStudents(st); setAssignments(a); setPayouts(p);
-      })
-      .catch((e: unknown) => { if (!signal.aborted) setLoadError(e instanceof Error ? e.message : "Could not load instructor data."); })
-      .finally(() => { if (!signal.aborted) setLoading(false); });
+    ]).then(([d, td, wk, st, a, p]) => {
+      if (signal.aborted) return;
+      const bad: string[] = [];
+      setStats(settle(d, "summary figures", bad));
+      setToday(settle(td, "today's schedule", bad) ?? []);
+      setWeek(settle(wk, "this week's sessions", bad) ?? []);
+      setStudents(settle(st, "students", bad) ?? []);
+      setAssignments(settle(a, "assignments", bad) ?? []);
+      setPayouts(settle(p, "earnings", bad) ?? []);
+      setLoadError(bad.join(", "));
+      setLoading(false);
+    });
     return () => controller.abort();
   }, []);
 
@@ -103,15 +104,27 @@ function InstructorHomeComponent() {
   const joinHref = (s: StaffSessionDto) => (/^https?:\/\//i.test(s.roomDetails ?? "") ? s.roomDetails : null);
 
   return <div className="instructor-dashboard">
-    <header className="instructor-greeting">
-      <div>
-        <span className="instructor-kicker">{dateLine()}</span>
-        <h1>{greeting()}, {firstName} <span className="staff-spark">✷</span></h1>
-        <p>Your classes and students are ready for today.</p>
-      </div>
-      <Link to="/instructor/schedule" className="instructor-primary-action"><span className="material-symbols-outlined">calendar_today</span> View schedule</Link>
-    </header>
-    {loadError && <p className="staff-workspace-notice" role="alert">Could not load live teaching data: {loadError}</p>}
+    <div className="ov-top">
+      <OverviewHero
+        workspace="INSTRUCTOR WORKSPACE"
+        name={user?.name ?? ""}
+        subtitle="Your classes and students are ready for today."
+        pulse={loading ? undefined : view.upcoming ? `${view.upcoming} session${view.upcoming === 1 ? "" : "s"} still to go today` : "No sessions left today"}
+        cta={{ label: "View timetable", to: "/instructor/schedule" }}
+      />
+      <OverviewProfile
+        name={user?.name ?? ""}
+        email={user?.email}
+        role={user?.role ?? "Instructor"}
+        photoUrl={resolveAssetUrl(user?.photoUrl)}
+        loading={loading}
+        tiles={[
+          { label: "Pending assignments", value: stats?.pendingAssignments },
+          { label: "Pending payouts", value: stats?.pendingPayouts },
+        ]}
+      />
+    </div>
+    {loadError && <p className="staff-workspace-notice" role="alert">Some teaching data could not be loaded ({loadError}). Check that the API is running and that your role has access.</p>}
     <section className="instructor-metrics" aria-busy={loading}>{view.metrics.map(m => <article className="instructor-metric" key={m.label}>
       <span className={`instructor-metric_icon ${m.tone} material-symbols-outlined`}>{m.icon}</span>
       <span className="instructor-metric_label">{m.label}</span>
@@ -119,6 +132,17 @@ function InstructorHomeComponent() {
       <small>{m.note}</small>
       <span className="instructor-metric_bar" role="presentation"><i style={{ width: `${m.bar}%` }} /></span>
     </article>)}</section>
+    <div className="ov-charts">
+      <ChartCard title="Sessions this week" subtitle="Per day, Cairo time" empty={!loading && week.length === 0 ? "No sessions scheduled this week." : undefined}>
+        <BarChart data={weekBars(week)} ariaLabel="Sessions per weekday this week" />
+      </ChartCard>
+      <ChartCard title="Assignment submissions" subtitle="Your busiest assignments" empty={!loading && submissionBars(assignments).length === 0 ? "No submissions yet." : undefined}>
+        <BarChart data={submissionBars(assignments)} ariaLabel="Submissions per assignment" />
+      </ChartCard>
+      <ChartCard title="Earnings payouts" subtitle="By status" empty={!loading && payouts.length === 0 ? "No payouts recorded." : undefined}>
+        <DonutChart segments={payoutSegments(payouts)} centerValue={payouts.length} centerLabel="payouts" ariaLabel="Payouts by status" />
+      </ChartCard>
+    </div>
     <div className="instructor-main-grid">
       <section className="instructor-panel" id="instructor-today">
         <div className="instructor-panel_header">
@@ -128,11 +152,15 @@ function InstructorHomeComponent() {
         {today.length ? <div className="instructor-tools-list">{today.map(s => {
           const href = joinHref(s);
           const ended = s.endTime <= view.nowT;
+          const live = !ended && s.startTime <= view.nowT;
+          const count = new Set(students.filter(x => x.scheduleId === s.scheduleId).map(x => x.id)).size;
           return <div className={`instructor-session${ended ? " is-done" : ""}`} key={s.id}>
             <span className="instructor-session_time"><strong>{hhmm(s.startTime)}</strong><small>{hhmm(s.endTime)}</small></span>
             <span className="instructor-session_bar" aria-hidden="true" />
             <span className="instructor-tool_copy"><strong>{s.title || s.courseTitle}</strong><small>{s.courseTitle}{s.batchCode ? ` · ${s.batchCode}` : ""}</small></span>
-            {href ? <a className="instructor-join" href={href} target="_blank" rel="noreferrer"><span className="material-symbols-outlined">videocam</span> Join</a> : <span className="instructor-session_status">{ended ? "Done" : "Scheduled"}</span>}
+            <span className="instructor-session_count"><span className="material-symbols-outlined">group</span>{count} students</span>
+            {live && <span className="instructor-session_status">● Live</span>}
+            {href ? <a className="instructor-join" href={href} target="_blank" rel="noreferrer"><span className="material-symbols-outlined">videocam</span> Join</a> : !live && <span className="instructor-session_status">{ended ? "Done" : "Scheduled"}</span>}
           </div>;
         })}</div> : <div className="instructor-empty-state"><span className="instructor-empty-icon material-symbols-outlined">calendar_month</span><strong>{loading ? "Loading your schedule…" : "No sessions today"}</strong><p>Your assigned sessions will appear here when available.</p></div>}
       </section>

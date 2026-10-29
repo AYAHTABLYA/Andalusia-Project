@@ -8,13 +8,15 @@ type Props = {
   assignments: WorkspaceAssignment[];
   openId: string | null;
   text: string;
+  submitting: boolean;
+  error: string | null;
   onToggle: (id: string) => void;
   onTextChange: (value: string) => void;
   onSubmit: (e: FormEvent, id: string) => void;
   onCancel: () => void;
 };
 
-function AssignmentsComponent({ loading, assignments, openId, text, onToggle, onTextChange, onSubmit, onCancel }: Props) {
+function AssignmentsComponent({ loading, assignments, openId, text, submitting, error, onToggle, onTextChange, onSubmit, onCancel }: Props) {
   return (
     <>
       <header className="ws_head">
@@ -37,13 +39,14 @@ function AssignmentsComponent({ loading, assignments, openId, text, onToggle, on
                   <div className="ws_assign-main">
                     <small className="portal-eyebrow">{a.courseTitle}</small>
                     <strong>{a.title}</strong>
-                    <small>{`Due ${fmtDate(a.due)}`}</small>
+                    {a.description && <small>{a.description}</small>}
+                    <small>{a.due ? `Due ${fmtDate(a.due)}` : "No due date"}</small>
                   </div>
                   <span className={`ws_tag ws_tag--${a.status.toLowerCase()}`}>{a.status}</span>
                   {a.status === "Pending" && (
                     <button className="portal-btn portal-btn-primary" onClick={() => onToggle(a.id)}>Submit work</button>
                   )}
-                  {a.status === "Graded" && <strong className="ws_score">{`${a.score} / ${a.maxScore}`}</strong>}
+                  {a.status === "Graded" && a.score !== undefined && <strong className="ws_score">{a.maxScore !== undefined ? `${a.score} / ${a.maxScore}` : a.score}</strong>}
                 </div>
                 {a.status === "Graded" && a.feedback && <p className="ws_feedback"><b>Feedback:</b> {a.feedback}</p>}
                 {a.status === "Submitted" && a.submission && <p className="ws_feedback"><b>Your submission:</b> {a.submission}</p>}
@@ -57,9 +60,10 @@ function AssignmentsComponent({ loading, assignments, openId, text, onToggle, on
                       aria-label="Your submission"
                       autoFocus
                     />
+                    {error && <p className="ws_feedback" role="alert">{error}</p>}
                     <div className="ws_actions">
-                      <button type="button" className="portal-btn portal-btn-secondary" onClick={onCancel}>Cancel</button>
-                      <button className="portal-btn portal-btn-primary" disabled={!text.trim()}>Submit</button>
+                      <button type="button" className="portal-btn portal-btn-secondary" onClick={onCancel} disabled={submitting}>Cancel</button>
+                      <button className="portal-btn portal-btn-primary" disabled={!text.trim() || submitting}>{submitting ? "Submitting…" : "Submit"}</button>
                     </div>
                   </form>
                 )}

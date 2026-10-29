@@ -1,5 +1,5 @@
 .career-path {
-  padding: 80px 0;
+  padding: 64px 0;
   background-color: #fff;
   border-bottom: 1px solid var(--color-warm-border);
 }
@@ -20,7 +20,7 @@
 }
 
 .career-path_title {
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 700;
   margin-top: 4px;
 }

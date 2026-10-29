@@ -2,6 +2,7 @@
 const ROLES = {
   learner: "Learner",
   instructor: "Instructor",
+  coordinator: "Coordinator",
   manager: "Manager",
   admin: "Admin",
   contentManager: "Content_Manager",
@@ -13,9 +14,10 @@ type RoleName = (typeof ROLES)[keyof typeof ROLES];
 const ROLE_HOME: Record<RoleName, string> = {
   [ROLES.learner]: "/profile",
   [ROLES.instructor]: "/instructor",
+  [ROLES.coordinator]: "/coordinator",
   [ROLES.manager]: "/admin",
   [ROLES.admin]: "/admin",
-  [ROLES.contentManager]: "/admin",
+  [ROLES.contentManager]: "/admin/courses",
 };
 
 // URL prefixes each role may open inside the signed-in area.
@@ -24,9 +26,10 @@ const LEARNER_PATHS = ["/profile", "/payments", "/checkout", "/applications", "/
 const ROLE_PATHS: Record<RoleName, string[]> = {
   [ROLES.learner]: LEARNER_PATHS,
   [ROLES.instructor]: ["/instructor", "/profile"],
+  [ROLES.coordinator]: ["/coordinator", "/profile"],
   [ROLES.manager]: ["/admin", "/profile"],
   [ROLES.admin]: ["/admin", "/profile"],
-  [ROLES.contentManager]: ["/admin", "/profile"],
+  [ROLES.contentManager]: ["/admin/courses", "/profile"],
 };
 
 function isKnownRole(role?: string | null): role is RoleName {

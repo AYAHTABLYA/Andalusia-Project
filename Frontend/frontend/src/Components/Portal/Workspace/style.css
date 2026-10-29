@@ -6,10 +6,13 @@
 .ws_side { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.1rem; padding: 1.25rem; min-height: 32rem; border: 1px solid var(--color-outline-variant); border-radius: 1rem; background: rgba(255, 255, 255, 0.86); }
 .ws_side-label { padding: 0 0.5rem; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.14em; color: var(--color-on-surface-variant); }
 .ws_side-nav { display: flex; flex-direction: column; gap: 0.25rem; }
-.ws_side-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0.9rem; border-radius: 0.65rem; font-size: 0.984rem; font-weight: 600; color: var(--color-on-surface-variant); transition: background 0.2s ease, color 0.2s ease; }
+.ws_side-link { display: flex; align-items: center; gap: 0.7rem; padding: 0.4rem 0.55rem; border-radius: 0.65rem; font-size: 0.984rem; font-weight: 600; color: var(--color-on-surface-variant); transition: background 0.2s ease, color 0.2s ease; }
 .ws_side-link:hover { background: var(--color-surface-container-low); color: var(--color-primary); }
 .ws_side-link.is-active { background: var(--brand-100); color: var(--brand-700); }
-.ws_side-link .material-symbols-outlined { font-size: 1.38rem; }
+.ws_side-link .material-symbols-outlined { display: grid; place-items: center; flex: none; width: 2.15rem; height: 2.15rem; border-radius: 0.65rem; background: var(--brand-50); color: var(--brand-600); font-size: 1.2rem; transition: background 0.2s ease, color 0.2s ease; }
+.ws_side-link:hover .material-symbols-outlined { background: var(--brand-100); }
+.ws_side-link.is-active .material-symbols-outlined { background: var(--brand-500); color: #fff; }
+.ws_charts { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); margin-bottom: 1rem; }
 .ws_side-text { flex: 1; }
 .ws_badge { display: inline-grid; place-items: center; min-width: 1.15rem; height: 1.15rem; padding: 0 0.3rem; border-radius: 999px; font-size: 0.78rem; font-weight: 800; color: #fff; background: var(--color-primary-dark); }
 .ws_help { margin-top: auto; display: flex; flex-direction: column; gap: 0.25rem; padding: 0.9rem; border-radius: 0.85rem; background: linear-gradient(160deg, var(--brand-50), var(--brand-100)); font-size: 0.864rem; }

@@ -1,34 +1,29 @@
 type SessionStatus = "Live" | "Upcoming" | "Completed";
 type AssignmentStatus = "Pending" | "Submitted" | "Graded";
+type AttendanceStatus = "Present" | "Absent" | "Late" | "Excused";
 
+// One active enrollment of the learner. `id` IS the enrollment id (the API is keyed by it).
 type WorkspaceCourse = {
   id: number;
   title: string;
-  group: string;
-  instructor: string;
+  group: string; // batch / group code, "" when the API doesn't send one
+  instructor: string; // "" when unknown
   progress: number; // 0-100
-  nextSessionId: string | null;
-};
-
-type ClassComment = {
-  id: string;
-  author: string;
-  role: "Instructor" | "Student";
-  text: string;
-  at: string; // ISO
 };
 
 type WorkspaceSession = {
   id: string;
   courseId: number;
   courseTitle: string;
+  title: string;
   group: string;
   instructor: string;
-  students: number;
+  students: number | null;
   start: string; // ISO
   durationMin: number;
   zoomUrl: string | null;
-  comments: ClassComment[];
+  location: string | null;
+  attendance: AttendanceStatus | null; // null = not recorded yet
 };
 
 type WorkspaceAssignment = {
@@ -36,6 +31,7 @@ type WorkspaceAssignment = {
   courseId: number;
   courseTitle: string;
   title: string;
+  description?: string;
   due: string; // ISO
   status: AssignmentStatus;
   score?: number;
@@ -44,14 +40,15 @@ type WorkspaceAssignment = {
   submission?: string;
 };
 
-type ChatMessage = { id: string; from: "me" | "them"; author: string; text: string; at: string };
-
-type Conversation = {
+type WorkspaceMaterial = {
   id: string;
-  name: string;
-  subtitle: string;
-  unread: number;
-  messages: ChatMessage[];
+  courseId: number;
+  courseTitle: string;
+  title: string;
+  description?: string;
+  kind: string; // "pdf", "video", "link", ... (lower-case, "file" when unknown)
+  url: string | null;
+  addedAt: string | null; // ISO
 };
 
 type WorkspaceStats = {
@@ -64,16 +61,15 @@ type WorkspaceStats = {
 
 type WorkspaceData = {
   loading: boolean;
-  isDemo: boolean;
+  error: string | null; // the enrollments call failed -> nothing can be shown
+  warning: string | null; // some course data failed to load -> partial view
   courses: WorkspaceCourse[];
   sessions: WorkspaceSession[];
   assignments: WorkspaceAssignment[];
-  conversations: Conversation[];
+  materials: WorkspaceMaterial[];
   stats: WorkspaceStats;
-  submitAssignment: (id: string, text: string) => void;
-  postComment: (sessionId: string, text: string, author: string) => void;
-  sendMessage: (conversationId: string, text: string, author: string) => void;
-  markRead: (conversationId: string) => void;
+  reload: () => void;
+  submitAssignment: (id: string, text: string) => Promise<void>;
 };
 
 type WorkspaceOutletContext = { workspace: WorkspaceData; userName: string };
@@ -81,12 +77,11 @@ type WorkspaceOutletContext = { workspace: WorkspaceData; userName: string };
 export type {
   SessionStatus,
   AssignmentStatus,
+  AttendanceStatus,
   WorkspaceCourse,
-  ClassComment,
   WorkspaceSession,
   WorkspaceAssignment,
-  ChatMessage,
-  Conversation,
+  WorkspaceMaterial,
   WorkspaceStats,
   WorkspaceData,
   WorkspaceOutletContext,

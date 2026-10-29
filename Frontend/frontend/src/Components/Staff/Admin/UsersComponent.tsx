@@ -1,6 +1,7 @@
 import { memo } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import type { AdminRole, AdminUser, CreateStaffUserBody } from "../../../Types/Admin";
+import Select from "../../Shared/Select/Select";
 
 type Props = {
   users: AdminUser[];
@@ -59,11 +60,11 @@ function UsersComponent({
             <input className="staff-input" name="email" type="email" placeholder="Email" value={form.email} onChange={onFormChange} required />
             <input className="staff-input" name="mobileNumber" type="tel" placeholder="Mobile" value={form.mobileNumber} onChange={onFormChange} required />
             <input className="staff-input" name="temporaryPassword" type="password" placeholder="Temporary password (min 8)" value={form.temporaryPassword} onChange={onFormChange} required minLength={8} />
-            <select className="staff-select" name="role" value={form.role} onChange={onFormChange}>
+            <Select className="staff-select" name="role" value={form.role} onChange={onFormChange}>
               {roles.map((r) => (
                 <option key={r.roleId} value={r.name}>{r.name}</option>
               ))}
-            </select>
+            </Select>
           </div>
           <button type="submit" className="staff-btn" disabled={saving}>
             {saving ? "Creating..." : "Create account"}
@@ -74,12 +75,12 @@ function UsersComponent({
       <div className="staff-card" style={{ marginTop: "1rem" }}>
         <div className="staff-toolbar">
           <input className="staff-input" type="search" placeholder="Search name or email" value={search} onChange={onSearch} aria-label="Search users" />
-          <select className="staff-select" value={roleFilter} onChange={onRoleFilter} aria-label="Filter by role">
+          <Select className="staff-select" value={roleFilter} onChange={onRoleFilter} aria-label="Filter by role">
             <option value="">All roles</option>
             {roles.map((r) => (
               <option key={r.roleId} value={r.name}>{r.name} ({r.usersCount})</option>
             ))}
-          </select>
+          </Select>
         </div>
 
         {errorMessage ? (
@@ -106,7 +107,7 @@ function UsersComponent({
                       <td>{u.fullName}{isMe && " (you)"}</td>
                       <td>{u.email}</td>
                       <td>
-                        <select
+                        <Select
                           className="staff-select"
                           value={u.role}
                           disabled={isMe || busy}
@@ -116,7 +117,7 @@ function UsersComponent({
                           {roles.map((r) => (
                             <option key={r.roleId} value={r.name}>{r.name}</option>
                           ))}
-                        </select>
+                        </Select>
                       </td>
                       <td>
                         <span className={`staff-pill${u.isActive ? "" : " staff-pill--off"}`}>

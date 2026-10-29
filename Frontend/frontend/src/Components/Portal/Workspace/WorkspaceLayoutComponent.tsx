@@ -1,6 +1,7 @@
 import { memo, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { SUPPORT_CONVERSATION_ID, type WorkspaceLink } from "./constants";
+import type { WorkspaceLink } from "./constants";
+import EmptyState from "./EmptyState";
 import { initials } from "./helpers";
 import "../Applications/style.css";
 import "./style.css";
@@ -9,11 +10,13 @@ type Props = {
   links: WorkspaceLink[];
   badges: Record<string, number>;
   userName: string;
-  isDemo: boolean;
+  error: string | null;
+  warning: string | null;
+  onRetry: () => void;
   children: ReactNode;
 };
 
-function WorkspaceLayoutComponent({ links, badges, userName, isDemo, children }: Props) {
+function WorkspaceLayoutComponent({ links, badges, userName, error, warning, onRetry, children }: Props) {
   return (
     <section className="ws">
       <aside className="ws_side" aria-label="Student workspace">
@@ -33,13 +36,6 @@ function WorkspaceLayoutComponent({ links, badges, userName, isDemo, children }:
           ))}
         </nav>
 
-        <div className="ws_help">
-          <span className="material-symbols-outlined">auto_awesome</span>
-          <strong>Need a hand?</strong>
-          <p>Our academy support team is here for you.</p>
-          <NavLink to={`/workspace/messages?c=${SUPPORT_CONVERSATION_ID}`}>Talk to support</NavLink>
-        </div>
-
         <div className="ws_me">
           <span className="ws_avatar">{initials(userName)}</span>
           <div>
@@ -50,13 +46,23 @@ function WorkspaceLayoutComponent({ links, badges, userName, isDemo, children }:
       </aside>
 
       <div className="ws_content">
-        {isDemo && (
+        {warning && (
           <p className="ws_demo" role="status">
-            <span className="material-symbols-outlined">info</span>
-            Showing sample data — the enrollment service could not be reached.
+            <span className="material-symbols-outlined">warning</span>
+            {warning}
+            <button type="button" className="portal-btn portal-btn-secondary" onClick={onRetry}>Retry</button>
           </p>
         )}
-        {children}
+        {error ? (
+          <div className="portal-card">
+            <EmptyState icon="cloud_off" title="We couldn't load your workspace" text={error} />
+            <div className="ws_center">
+              <button type="button" className="portal-btn portal-btn-primary" onClick={onRetry}>Try again</button>
+            </div>
+          </div>
+        ) : (
+          children
+        )}
       </div>
     </section>
   );

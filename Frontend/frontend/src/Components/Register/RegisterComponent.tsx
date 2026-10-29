@@ -8,6 +8,7 @@ import { CAMPUSES, PHONE_CODES } from "./constants";
 import AuthNotice from "../AuthLayout/AuthNotice";
 import type { Feedback } from "../../Types/Feedback";
 import "./Style.css";
+import Select from "../Shared/Select/Select";
 
 type ChangeHandler = (
   e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -140,7 +141,7 @@ function RegisterComponent({
         <div className="field">
           <label htmlFor="phone">Mobile number</label>
           <div className="register_phone">
-            <select
+            <Select
               className="input"
               name="phoneCode"
               aria-label="Country code"
@@ -152,7 +153,7 @@ function RegisterComponent({
                   {c.label}
                 </option>
               ))}
-            </select>
+            </Select>
             <input
               id="phone"
               className="input"
@@ -168,7 +169,7 @@ function RegisterComponent({
 
         <div className="field">
           <label htmlFor="campus">Campus</label>
-          <select
+          <Select
             id="campus"
             className="input"
             name="campus"
@@ -180,7 +181,7 @@ function RegisterComponent({
                 {c.label}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div className="register_row">

@@ -6,6 +6,7 @@ import { PROGRESSION_LEVELS } from "./constants";
 import Breadcrumb from "../Shared/Breadcrumb";
 import Pagination from "../Shared/Pagination";
 import "./style.css";
+import Select from "../../Shared/Select/Select";
 
 type Props = {
   paths: CareerPath[];
@@ -95,7 +96,7 @@ function CareerPathsComponent({
           </div>
           <div className="career-paths_box-14">
             <label className="career-paths_label-1">Domain:</label>
-            <select
+            <Select
               value={selectedDomain}
               onChange={(e) => onDomainChange(e.target.value)}
               className="career-paths_select-1"
@@ -103,7 +104,7 @@ function CareerPathsComponent({
               {domainOptions.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
-            </select>
+            </Select>
             <button onClick={onReset} className="career-paths_btn-2">Reset</button>
           </div>
         </div>

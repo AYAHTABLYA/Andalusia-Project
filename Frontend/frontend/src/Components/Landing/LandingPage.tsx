@@ -3,11 +3,10 @@ import { useLocation } from "react-router-dom";
 import TopBarComponent from "./TopBar/Topbarcomponent";
 import NavbarContainer from "./Navbar/NavbarContainer";
 import HeroComponent from "./Hero/HeroComponent";
-import CareerPathContainer from "./CareerPath/CareerPathContainer";
-import FeaturedCoursesContainer from "./FeaturedCourses/FeaturedCoursesContainer";
-import EnterpriseComponent from "./Enterprise/EnterpriseComponent";
+import ValuePillarsContainer from "./ValuePillars/ValuePillarsContainer";
 import AccreditationsContainer from "./Accreditations/AccreditationsContainer";
-import PortalPreviewContainer from "./PortalPreview/PortalPreviewContainer";
+import TestimonialsContainer from "./Testimonials/TestimonialsContainer";
+import FaqContainer from "./Faq/FaqContainer";
 import ContactCampusContainer from "./ContactCampus/ContactCampusContainer";
 import FooterComponent from "./Footer/FooterComponent";
 import "./theme.css";
@@ -26,11 +25,10 @@ function LandingPage() {
       <NavbarContainer />
       <main>
         <HeroComponent />
-        <CareerPathContainer />
-        <FeaturedCoursesContainer />
-        <EnterpriseComponent />
+        <ValuePillarsContainer />
         <AccreditationsContainer />
-        <PortalPreviewContainer />
+        <TestimonialsContainer />
+        <FaqContainer />
         <ContactCampusContainer />
       </main>
       <FooterComponent />

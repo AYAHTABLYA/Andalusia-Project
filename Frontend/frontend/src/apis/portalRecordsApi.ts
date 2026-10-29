@@ -1,6 +1,4 @@
-import { apiGet, ApiError } from "./academyApi";
-import axios from "axios";
-import { API_BASE_URL, getAccessToken } from "./academyApi";
+import { apiGet, apiPut } from "./academyApi";
 
 export type EnrollmentDto = {
   id: number; status: string; enrolledAt: string;
@@ -19,18 +17,4 @@ export const getMyEnrollment = (id: number) => apiGet<EnrollmentDto>(`/api/enrol
 export const getMyApplications = () => apiGet<ApplicationDto[]>("/api/applications");
 export const getMyApplication = (id: number) => apiGet<ApplicationDto>(`/api/applications/${id}`);
 
-export async function cancelMyApplication(id: number): Promise<void> {
-  const token = getAccessToken();
-  try {
-    await axios.put(`${API_BASE_URL}/api/applications/${id}/cancel`, {}, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const status = error.response?.status ?? 0;
-      const body = error.response?.data;
-      throw new ApiError(status, body?.message ?? body?.detail ?? body?.title ?? "Could not cancel application.");
-    }
-    throw error;
-  }
-}
+export const cancelMyApplication = (id: number) => apiPut<void>(`/api/applications/${id}/cancel`, {});

@@ -48,7 +48,13 @@
     "confirm": "/api/payments/:id/confirm"
   },
   "learner": {
-    "dashboard": "/api/learner/dashboard"
+    "dashboard": "/api/learner/dashboard",
+    "materials": "/api/learner/enrollments/:id/materials",
+    "sessions": "/api/learner/enrollments/:id/sessions",
+    "assignments": "/api/learner/enrollments/:id/assignments",
+    "attendance": "/api/learner/enrollments/:id/attendance",
+    "progress": "/api/learner/enrollments/:id/progress",
+    "submitAssignment": "/api/learner/assignments/:id/submit"
   },
   "enrollments": {
     "getAll": "/api/enrollments",

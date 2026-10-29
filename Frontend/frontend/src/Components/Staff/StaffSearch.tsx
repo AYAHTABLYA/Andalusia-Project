@@ -14,6 +14,13 @@ const KEYWORDS: Record<string, string> = {
   "/admin/reports": "analytics statistics export",
   "/admin/permissions": "roles access security",
   "/admin/users": "accounts people roles status",
+  "/coordinator": "home dashboard overview summary",
+  "/coordinator/instructors": "teachers mentors trainers staff",
+  "/coordinator/students": "learners trainees enrolled",
+  "/coordinator/courses": "classes enrollment enroll add student cohort catalog",
+  "/coordinator/schedule": "calendar timetable sessions",
+  "/coordinator/attendance": "present absent late excused register roll call",
+  "/coordinator/reports": "analytics statistics export",
   "/instructor": "home dashboard overview summary",
   "/instructor/courses": "classes batches teaching subjects",
   "/instructor/students": "learners enrolled assigned roster",
@@ -30,7 +37,7 @@ const normalize = (value: string) => value.toLowerCase().trim();
 type Props = { tabs: StaffTab[] };
 
 // Search box in the staff top bar: finds the workspace pages the signed-in role can open.
-// Arrow keys + Enter to jump, Esc to close, Ctrl/⌘ + K to focus from anywhere.
+// Arrow keys + Enter to jump, Esc to close, Ctrl/⌘ + K to focus from anywhere (no visible hint).
 function StaffSearch({ tabs }: Props) {
   const navigate = useNavigate();
   const listId = useId();
@@ -119,7 +126,6 @@ function StaffSearch({ tabs }: Props) {
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
       />
-      <kbd aria-hidden="true">⌘ K</kbd>
 
       {open && (
         <ul id={listId} className="staff-search_results" role="listbox">

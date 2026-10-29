@@ -27,9 +27,9 @@ function CoursesComponent({ loading, items }: Props) {
           {items.map(({ course: c, next, pending }) => (
             <article className="portal-card ws_course" key={c.id}>
               <span className="ws_course-icon material-symbols-outlined">menu_book</span>
-              <span className="portal-eyebrow">{c.group}</span>
+              {c.group && <span className="portal-eyebrow">{c.group}</span>}
               <h2>{c.title}</h2>
-              <p className="ws_muted">{`Instructor: ${c.instructor}`}</p>
+              {c.instructor && <p className="ws_muted">{`Instructor: ${c.instructor}`}</p>}
               <div className="ws_progress">
                 <div className="ws_progress-top"><span>Progress</span><strong>{`${c.progress}%`}</strong></div>
                 <div className="ws_bar"><i style={{ width: `${c.progress}%` }} /></div>
@@ -41,6 +41,7 @@ function CoursesComponent({ loading, items }: Props) {
               <div className="ws_actions">
                 <Link className="portal-btn portal-btn-secondary" to="/workspace/schedule">Schedule</Link>
                 <Link className="portal-btn portal-btn-secondary" to="/workspace/assignments">Assignments</Link>
+                <Link className="portal-btn portal-btn-secondary" to="/workspace/materials">Materials</Link>
               </div>
             </article>
           ))}

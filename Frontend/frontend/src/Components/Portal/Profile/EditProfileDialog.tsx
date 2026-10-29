@@ -6,6 +6,7 @@ import useCampuses from "../../../hooks/portalHooks/useCampuses";
 import type { EditableProfile, ProfileData } from "../../../Types/Profile";
 import "../Shared/style.css";
 import "./style.css";
+import Select from "../../Shared/Select/Select";
 
 type Props = {
   profile: ProfileData;
@@ -145,12 +146,12 @@ function EditProfileDialog({ profile, onClose, onSave }: Props) {
 
         <div className="portal-ui_field">
           <label htmlFor="campusId">Primary Campus</label>
-          <select id="campusId" className="portal-ui_input" name="campusId" value={values.campusId ?? ""} onChange={handleChange}>
+          <Select id="campusId" className="portal-ui_input" name="campusId" value={values.campusId ?? ""} onChange={handleChange}>
             {values.campusId === null && <option value="">{profile.campus}</option>}
             {(campuses ?? []).map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div className="profile_form-note">

@@ -1,13 +1,18 @@
 import { useState } from "react";
 import ContactCampusComponent from "./ContactCampusComponent";
 import type { ApplicationFormType } from "./ApplicationFormType";
+import { TRACK_OPTIONS, EXPERIENCE_OPTIONS } from "./constants";
+
+// There is no API endpoint for this form yet, so it prepares an email to the admissions desk
+// instead of pretending the request was sent.
+const ADMISSIONS_EMAIL = "admissions@andalusia-academy.edu.eg";
 
 const INITIAL_FORM: ApplicationFormType = {
   fullName: "",
   email: "",
   phone: "",
-  track: "Generative AI & LLMs (Offline)",
-  experience: "1 - 3 Years (Mid-level Practitioner)",
+  track: TRACK_OPTIONS[0],
+  experience: EXPERIENCE_OPTIONS[0],
 };
 
 function ContactCampusContainer() {
@@ -24,14 +29,24 @@ function ContactCampusContainer() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log("Cohort application submitted:", formData);
+    const body = [
+      `Full name: ${formData.fullName}`,
+      `Email: ${formData.email}`,
+      `Phone: ${formData.phone}`,
+      `Track: ${formData.track}`,
+      `Experience: ${formData.experience}`,
+    ].join("\n");
+    window.location.href = `mailto:${ADMISSIONS_EMAIL}?subject=${encodeURIComponent(
+      "Cohort application",
+    )}&body=${encodeURIComponent(body)}`;
     setSubmitted(true);
-    setFormData(INITIAL_FORM);
   }
 
   return (
     <ContactCampusComponent
       formData={formData}
+      trackOptions={TRACK_OPTIONS}
+      experienceOptions={EXPERIENCE_OPTIONS}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
       submitted={submitted}

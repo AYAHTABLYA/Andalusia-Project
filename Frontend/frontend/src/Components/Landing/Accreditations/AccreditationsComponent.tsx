@@ -25,13 +25,24 @@ function AccreditationsComponent({
           </p>
         </div>
 
-        <div className="accreditations_grid">
-          {accreditations.map((item) => (
-            <div key={item.id} className="accreditations_badge">
-              <span className="accreditations_name">{item.name}</span>
-              <span className="accreditations_label">{item.label}</span>
-            </div>
-          ))}
+        <div className="accreditations_marquee">
+          <div className="accreditations_track">
+            {/* The list is rendered twice so the scroll can loop without a gap */}
+            {[false, true].map((isCopy) => (
+              <div
+                key={isCopy ? "copy" : "original"}
+                className="accreditations_sequence"
+                aria-hidden={isCopy || undefined}
+              >
+                {accreditations.map((item) => (
+                  <div key={item.id} className="accreditations_badge">
+                    <span className="accreditations_name">{item.name}</span>
+                    <span className="accreditations_label">{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

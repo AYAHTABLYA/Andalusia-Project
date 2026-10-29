@@ -14,8 +14,9 @@ import {
 import type { AdminScheduleDto, PermissionDto, StaffSubmissionDto } from "../../../apis/staffAdminApi";
 import type { StaffAssignmentDto } from "../../../apis/staffApi";
 import type { AdminRole } from "../../../Types/Admin";
+import Select from "../../Shared/Select/Select";
 
-// Dialogs opened from the admin workspace action buttons (StaffWorkspacePage).
+// Dialogs opened from the admin workspace action buttons (Instructors, Students, Schedule, Permissions and Assignments pages).
 // Each one calls an endpoint that already exists in the backend and reports back through onDone(message).
 
 const stack = { display: "grid", gap: "0.9rem" } as const;
@@ -186,11 +187,11 @@ export function ScheduleSessionDialog({ schedules, onClose, onDone }: {
           <div style={errorBox} role="alert">There are no schedules yet. Create a schedule (batch) first, then add sessions to it.</div>
         )}
         <Field id="ss-schedule" label="Schedule (batch)">
-          <select id="ss-schedule" className="portal-ui_input" name="scheduleId" required value={f.scheduleId} onChange={change}>
+          <Select id="ss-schedule" className="portal-ui_input" name="scheduleId" required value={f.scheduleId} onChange={change}>
             {schedules.map((s) => (
               <option key={s.id} value={s.id}>{(s.title || "Schedule") + " · " + s.batchCode}</option>
             ))}
-          </select>
+          </Select>
         </Field>
         <Field id="ss-title" label="Session title">
           <input id="ss-title" className="portal-ui_input" name="title" required maxLength={200} value={f.title} onChange={change} />
@@ -288,9 +289,9 @@ export function ReviewRolesDialog({ onClose, onDone }: { onClose: () => void; on
         {loading ? <p>Loading roles…</p> : (
           <>
             <Field id="rr-role" label="Role" hint={role ? `${role.usersCount} user${role.usersCount === 1 ? "" : "s"} with this role.` : undefined}>
-              <select id="rr-role" className="portal-ui_input" value={roleId ?? ""} onChange={pickRole}>
+              <Select id="rr-role" className="portal-ui_input" value={roleId ?? ""} onChange={pickRole}>
                 {roles.map((r) => <option key={r.roleId} value={r.roleId}>{r.name}</option>)}
-              </select>
+              </Select>
             </Field>
             {locked && <span className="portal-ui_hint">The Admin role always keeps every permission and can&apos;t be edited here.</span>}
             <div style={{ display: "grid", gap: "0.5rem", maxHeight: "18rem", overflowY: "auto" }}>
@@ -354,9 +355,9 @@ export function CreateAssignmentDialog({ schedules, onClose, onDone }: {
           <div style={errorBox} role="alert">No batch is assigned to you yet, so there is nothing to attach an assignment to.</div>
         )}
         <Field id="ca-schedule" label="Batch" hint="Batches that already have sessions, students or assignments are listed.">
-          <select id="ca-schedule" className="portal-ui_input" name="scheduleId" required value={f.scheduleId} onChange={change}>
+          <Select id="ca-schedule" className="portal-ui_input" name="scheduleId" required value={f.scheduleId} onChange={change}>
             {schedules.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-          </select>
+          </Select>
         </Field>
         <Field id="ca-title" label="Title">
           <input id="ca-title" className="portal-ui_input" name="title" required maxLength={200} value={f.title} onChange={change} />
@@ -448,9 +449,9 @@ export function ReviewSubmissionsDialog({ assignments, onClose }: { assignments:
     >
       <div style={stack}>
         <Field id="rs-assignment" label="Assignment" hint={assignment ? `Max score ${assignment.maxScore}` : undefined}>
-          <select id="rs-assignment" className="portal-ui_input" value={assignmentId} onChange={(e) => setAssignmentId(Number(e.target.value))}>
+          <Select id="rs-assignment" className="portal-ui_input" value={assignmentId} onChange={(e) => setAssignmentId(Number(e.target.value))}>
             {assignments.map((a) => <option key={a.id} value={a.id}>{a.title} · {a.courseTitle}</option>)}
-          </select>
+          </Select>
         </Field>
         {loading && <p>Loading submissions…</p>}
         {!loading && !subs.length && !error && <p className="portal-ui_hint">No submissions for this assignment yet.</p>}

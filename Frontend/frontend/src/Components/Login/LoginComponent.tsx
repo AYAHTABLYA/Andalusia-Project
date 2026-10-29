@@ -6,6 +6,7 @@ import type { SubmitStatus } from "../../Types/SubmitStatus";
 import AuthNotice from "../AuthLayout/AuthNotice";
 import type { Feedback } from "../../Types/Feedback";
 import "./Style.css";
+import { FEATURES } from "../../utils/features";
 
 type LoginMode = "password" | "login-otp" | "forgot-request" | "forgot-reset";
 function LoginComponent({ status, mode, feedback, onDismissFeedback, formData, handleChange, handleSubmit, otp, setOtp, newPassword, setNewPassword, confirmPassword, setConfirmPassword, switchMode }: {
@@ -32,7 +33,7 @@ function LoginComponent({ status, mode, feedback, onDismissFeedback, formData, h
       </>}
       <button className="btn" type="submit" disabled={status === "loading" || ((mode === "login-otp" || mode === "forgot-reset") && otp.length !== 6)}>{status === "loading" ? "Please wait..." : mode === "password" ? "Log in" : mode === "login-otp" ? "Verify code & sign in" : mode === "forgot-request" ? "Send reset code" : "Reset password"}</button>
     </form>
-    {mode === "password" && <p className="login_footer"><button type="button" className="text_button" onClick={() => switchMode("login-otp")}>Sign in with email code</button></p>}
+    {FEATURES.loginOtp && mode === "password" && <p className="login_footer"><button type="button" className="text_button" onClick={() => switchMode("login-otp")}>Sign in with email code</button></p>}
     {mode !== "password" && <p className="login_footer"><button type="button" className="text_button" onClick={() => switchMode("password")}>Back to password login</button></p>}
     <p className="login_footer">New learner? <Link to="/register">Create an account</Link></p>
   </div>;

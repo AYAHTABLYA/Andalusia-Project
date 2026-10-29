@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance";
+import { apiPost } from "./academyApi";
 import { saveSession } from "../utils/session";
 
 export interface LoginRequest {
@@ -30,8 +30,7 @@ export interface ResetPasswordRequest {
   newPassword: string;
 }
 
-const post = async <T = any>(url: string, body: unknown): Promise<T> =>
-  (await axiosInstance.post<T>(url, body)).data;
+const post = <T = any>(url: string, body: unknown): Promise<T> => apiPost<T>(url, body);
 
 export const login = (data: LoginRequest) => post("/api/auth/login", data);
 export const register = (data: RegisterRequest) =>

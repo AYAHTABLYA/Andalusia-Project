@@ -1,12 +1,20 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { initials } from "../../../utils/format";
+import { OverviewHero, OverviewProfile, type Tile } from "./OverviewHero";
 
-type Stat = { label: string; value?: string | number; icon: string; hint?: string };
-type SessionRow = { id: number | string; time: string; date?: string; title: string; meta?: string; person?: string; students?: number; live?: boolean; joinUrl?: string | null };
+type Stat = { label: string; value?: string | number; icon: string; hint?: string; pct?: number; note?: string };
+type SessionRow = { id: number | string; time: string; date?: string; title: string; meta?: string; person?: string; students?: number; live?: boolean; done?: boolean; joinUrl?: string | null };
 type ActivityRow = { id: number | string; who: string; text: string; when: string };
 
 type Props = {
   name: string;
+  email?: string;
+  role: string;
+  photoUrl?: string | null;
+  workspace: string;
+  tiles: Tile[]; // two real figures for the profile card
+  charts?: ReactNode; // chart cards rendered under the stat cards
   subtitle: string;
   stats: Stat[];
   sessions: SessionRow[];
@@ -15,24 +23,16 @@ type Props = {
   loading?: boolean;
 };
 
-const greeting = () => {
-  const h = Number(new Intl.DateTimeFormat("en-US", { hour: "numeric", hour12: false, timeZone: "Africa/Cairo" }).format(new Date()));
-  return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
-};
-const today = () =>
-  new Intl.DateTimeFormat("en-US", { weekday: "long", day: "numeric", month: "long", timeZone: "Africa/Cairo" })
-    .format(new Date()).replace(",", " ·").toUpperCase();
-
 // AHA-style overview: greeting, 4 stat cards, today's schedule and recent activity.
-function OverviewView({ name, subtitle, stats, sessions, activity, scheduleLink, loading }: Props) {
+function OverviewView({ name, email, role, photoUrl, workspace, tiles, charts, subtitle, stats, sessions, activity, scheduleLink, loading }: Props) {
+  const upcoming = sessions.filter((s) => !s.done).length;
+  const live = sessions.filter((s) => s.live).length;
+  const pulse = loading ? undefined : live ? `${live} live session${live === 1 ? "" : "s"} right now` : upcoming ? `${upcoming} session${upcoming === 1 ? "" : "s"} still to go today` : "No sessions left today";
   return (
     <>
-      <div className="staff-page_head">
-        <div>
-          <p className="staff-eyebrow">{today()}</p>
-          <h1 className="staff-page_title">{greeting()}, {name.split(" ")[0] || "there"} <span className="staff-spark">✷</span></h1>
-          <p className="staff-page_sub">{subtitle}</p>
-        </div>
+      <div className="ov-top">
+        <OverviewHero workspace={workspace} name={name} subtitle={subtitle} pulse={pulse} cta={scheduleLink ? { label: "View timetable", to: scheduleLink } : undefined} />
+        <OverviewProfile name={name} email={email} role={role} photoUrl={photoUrl} tiles={tiles} loading={loading} />
       </div>
 
       <div className="staff-stats">
@@ -42,22 +42,25 @@ function OverviewView({ name, subtitle, stats, sessions, activity, scheduleLink,
             <small>{s.label}</small>
             <strong>{loading ? "…" : s.value ?? "—"}</strong>
             {s.hint && <em>{s.hint}</em>}
-            <i />
+            {s.note && <span className="staff-stat_note">{s.note}</span>}
+            {s.pct !== undefined && <i style={{ ["--p" as string]: `${Math.max(0, Math.min(100, s.pct))}%` }} />}
           </div>
         ))}
       </div>
+
+      {charts && <div className="ov-charts">{charts}</div>}
 
       <div className="staff-two">
         <section className="staff-card">
           <div className="staff-card_head">
             <div>
               <h2>Today's schedule</h2>
-              <p className="staff-page_sub">{sessions.length} upcoming session{sessions.length === 1 ? "" : "s"}</p>
+              <p className="staff-page_sub">{upcoming} upcoming session{upcoming === 1 ? "" : "s"}</p>
             </div>
             {scheduleLink && <Link to={scheduleLink} className="staff-link">View calendar ↗</Link>}
           </div>
           {sessions.length === 0 ? (
-            <p className="staff-empty">No sessions scheduled for today.</p>
+            <p className="staff-empty">{loading ? "Loading today's sessions…" : "No sessions scheduled for today."}</p>
           ) : (
             sessions.map((s) => (
               <div key={s.id} className="staff-session">
@@ -65,7 +68,7 @@ function OverviewView({ name, subtitle, stats, sessions, activity, scheduleLink,
                 <div className="staff-session_main"><strong>{s.title}</strong>{s.meta && <small>{s.meta}</small>}</div>
                 {s.person && <div className="staff-session_who"><span className="staff-avatar staff-avatar--sm">{initials(s.person)}</span>{s.person}</div>}
                 {s.students !== undefined && <span className="staff-session_count"><span className="material-symbols-outlined">group</span>{s.students} students</span>}
-                <span className={`staff-status${s.live ? " staff-status--live" : ""}`}>{s.live ? "Live" : "Scheduled"}</span>
+                <span className={`staff-status${s.live ? " staff-status--live" : ""}`}>{s.live ? "Live" : s.done ? "Done" : "Scheduled"}</span>
                 {s.joinUrl && <a className="staff-btn staff-btn--ghost staff-btn--sm" href={s.joinUrl} target="_blank" rel="noreferrer">Join</a>}
               </div>
             ))
@@ -75,7 +78,7 @@ function OverviewView({ name, subtitle, stats, sessions, activity, scheduleLink,
         <section className="staff-card">
           <div className="staff-card_head"><div><h2>Recent activity</h2><p className="staff-page_sub">Latest updates</p></div></div>
           {activity.length === 0 ? (
-            <p className="staff-empty">Nothing new yet.</p>
+            <p className="staff-empty">{loading ? "Loading activity…" : "Nothing new yet."}</p>
           ) : (
             activity.map((a) => (
               <div key={a.id} className="staff-activity">

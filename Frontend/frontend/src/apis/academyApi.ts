@@ -1,103 +1,19 @@
 // src/apis/academyApi.ts
-import axios, { AxiosError } from "axios";
+// Thin typed helpers (GET / POST / PUT / DELETE / upload / download) on top of the single
+// axios client in axiosInstance.ts. Auth header, error mapping and 401 handling live there.
+import axiosInstance, {
+  ACCESS_TOKEN_KEY,
+  API_BASE_URL,
+  ApiError,
+  getAccessToken,
+  getErrorMessage,
+  isLoggedIn,
+} from "./axiosInstance";
 
-const rawBase =
-  (import.meta.env.VITE_API_URL as string | undefined) ??
-  "https://localhost:7001";
+// Re-exported so existing imports from "./academyApi" keep working.
+export { ACCESS_TOKEN_KEY, API_BASE_URL, ApiError, getAccessToken, getErrorMessage, isLoggedIn };
 
-export const API_BASE_URL = rawBase.replace(/\/+$/, "");
-export const ACCESS_TOKEN_KEY = "access_token";
-
-export class ApiError extends Error {
-  status: number;
-
-  constructor(status: number, message: string) {
-    super(message);
-    this.name = "ApiError";
-    this.status = status;
-  }
-}
-
-export function getAccessToken(): string | null {
-  try {
-    return localStorage.getItem(ACCESS_TOKEN_KEY);
-  } catch {
-    return null;
-  }
-}
-
-export function isLoggedIn(): boolean {
-  return !!getAccessToken();
-}
-
-// 1. إنشاء نسخة Axios المركزية
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
-
-// 2. Request Interceptor: لإرسال توكن الـ JWT تلقائياً
-apiClient.interceptors.request.use((config) => {
-  const token = getAccessToken();
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// 3. Response Interceptor: لمعالجة ProblemDetails والـ Errors
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError<any>) => {
-    if (axios.isCancel(error)) {
-      throw error;
-    }
-
-    if (!error.response) {
-      throw new ApiError(
-        0,
-        "Cannot reach the server. Check that the API is running.",
-      );
-    }
-
-    const res = error.response;
-
-    // Expired / invalid token on a logged-in session -> back to the login page.
-    if (res.status === 401 && getAccessToken()) {
-      try {
-        localStorage.removeItem(ACCESS_TOKEN_KEY);
-        localStorage.removeItem("user");
-      } catch {
-        /* ignore */
-      }
-      if (!window.location.pathname.startsWith("/login")) {
-        window.location.assign("/login");
-      }
-    }
-
-    let message = `Request failed (${res.status})`;
-
-    if (res.data) {
-      const body = res.data;
-      if (body.errors) {
-        message = Object.values(body.errors).flat()[0] as string;
-      } else if (body.detail) {
-        message = body.detail;
-      } else if (body.title) {
-        message = body.title;
-      } else if (body.message) {
-        message = body.message;
-      } else if (typeof body === "string") {
-        message = body;
-      }
-    }
-
-    throw new ApiError(res.status, message);
-  },
-);
+const apiClient = axiosInstance;
 
 type QueryValue = string | number | boolean | null | undefined;
 type QueryParams = Record<string, QueryValue>;

@@ -1,138 +1,95 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  getActiveCourseTitles,
-  getDemoCourseTitles,
-  getWorkspaceAssignments,
-  getWorkspaceConversations,
-  getWorkspaceCourses,
-  getWorkspaceSessions,
-} from "../../apis/workspaceApi";
+import { getErrorMessage } from "../../apis/academyApi";
+import { getActiveEnrollments, loadCourse, submitAssignment as submitAssignmentRequest } from "../../apis/learnerApi";
 import type {
-  Conversation,
   WorkspaceAssignment,
   WorkspaceCourse,
   WorkspaceData,
+  WorkspaceMaterial,
   WorkspaceSession,
   WorkspaceStats,
 } from "../../Types/Workspace";
 
-const BASE_ATTENDED = 14; // mock until attendance is exposed by the API
-const BASE_HOURS = 26;
-
-const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-
-function useWorkspaceData(studentName: string): WorkspaceData {
+// All of the learner's workspace data, loaded once per visit from the real API
+// (enrollments -> per-enrollment progress / sessions / assignments / materials / attendance).
+function useWorkspaceData(): WorkspaceData {
   const [loading, setLoading] = useState(true);
-  const [isDemo, setIsDemo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [courses, setCourses] = useState<WorkspaceCourse[]>([]);
   const [sessions, setSessions] = useState<WorkspaceSession[]>([]);
   const [assignments, setAssignments] = useState<WorkspaceAssignment[]>([]);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [materials, setMaterials] = useState<WorkspaceMaterial[]>([]);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const reload = useCallback(() => setReloadKey((k) => k + 1), []);
 
   useEffect(() => {
     let cancelled = false;
-    const name = studentName || "Student";
+    setLoading(true);
+    setError(null);
 
-    async function hydrate(titles: string[], demo: boolean) {
-      const c = await getWorkspaceCourses(titles);
-      const [sess, assign, convs] = await Promise.all([
-        getWorkspaceSessions(c, name),
-        getWorkspaceAssignments(c),
-        getWorkspaceConversations(c, name),
-      ]);
-      if (cancelled) return;
-      setCourses(c);
-      setSessions(sess);
-      setAssignments(assign);
-      setConversations(convs);
-      setIsDemo(demo);
-      setLoading(false);
-    }
+    (async () => {
+      try {
+        const enrollments = await getActiveEnrollments();
+        const bundles = await Promise.all(enrollments.map((e) => loadCourse(e)));
+        if (cancelled) return;
 
-    getActiveCourseTitles()
-      .then((titles) => hydrate(titles, false))
-      // API unreachable (local dev without the backend): show the demo course.
-      .catch(() => hydrate(getDemoCourseTitles(), true));
+        setCourses(bundles.map((b) => b.course));
+        setSessions(
+          bundles.flatMap((b) => b.sessions).sort((a, b) => +new Date(a.start) - +new Date(b.start)),
+        );
+        setAssignments(bundles.flatMap((b) => b.assignments));
+        setMaterials(
+          bundles
+            .flatMap((b) => b.materials)
+            .sort((a, b) => +new Date(b.addedAt ?? 0) - +new Date(a.addedAt ?? 0)),
+        );
+
+        const failed = bundles.filter((b) => b.failed.length);
+        setWarning(
+          failed.length
+            ? `Some data could not be loaded for ${failed.map((b) => b.course.title).join(", ")} (${[
+                ...new Set(failed.flatMap((b) => b.failed)),
+              ].join(", ")}).`
+            : null,
+        );
+      } catch (e) {
+        if (!cancelled) setError(getErrorMessage(e, "Could not load your workspace."));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
 
     return () => {
       cancelled = true;
     };
-    // studentName only seeds mock comment authors; do not refetch when it refreshes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [reloadKey]);
 
-  const submitAssignment = useCallback((id: string, text: string) => {
+  // Saves on the server first; the local copy only changes once the API accepted it.
+  const submitAssignment = useCallback(async (id: string, text: string) => {
+    await submitAssignmentRequest(id, text);
     setAssignments((prev) =>
       prev.map((a) => (a.id === id ? { ...a, status: "Submitted", submission: text } : a)),
-    );
-  }, []);
-
-  const postComment = useCallback((sessionId: string, text: string, author: string) => {
-    setSessions((prev) =>
-      prev.map((s) =>
-        s.id === sessionId
-          ? {
-              ...s,
-              comments: [
-                ...s.comments,
-                { id: newId(), author, role: "Student", text, at: new Date().toISOString() },
-              ],
-            }
-          : s,
-      ),
-    );
-  }, []);
-
-  const sendMessage = useCallback((conversationId: string, text: string, author: string) => {
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === conversationId
-          ? {
-              ...c,
-              messages: [
-                ...c.messages,
-                { id: newId(), from: "me", author, text, at: new Date().toISOString() },
-              ],
-            }
-          : c,
-      ),
-    );
-  }, []);
-
-  const markRead = useCallback((conversationId: string) => {
-    setConversations((prev) =>
-      prev.map((c) => (c.id === conversationId && c.unread ? { ...c, unread: 0 } : c)),
     );
   }, []);
 
   const stats = useMemo<WorkspaceStats>(() => {
     const now = Date.now();
     const weekAgo = now - 7 * 864e5;
-    const done = sessions.filter((s) => +new Date(s.start) + s.durationMin * 6e4 < now);
+    const attended = sessions.filter((s) => s.attendance === "Present" || s.attendance === "Late");
     return {
       courseProgress: courses.length
         ? Math.round(courses.reduce((sum, c) => sum + c.progress, 0) / courses.length)
         : 0,
-      sessionsAttended: BASE_ATTENDED + done.length,
-      sessionsThisWeek: done.filter((s) => +new Date(s.start) > weekAgo).length,
+      sessionsAttended: attended.length,
+      sessionsThisWeek: attended.filter((s) => +new Date(s.start) > weekAgo && +new Date(s.start) <= now).length,
       assignmentsDue: assignments.filter((a) => a.status === "Pending").length,
-      learningHours: BASE_HOURS + done.reduce((sum, s) => sum + s.durationMin / 60, 0),
+      learningHours: attended.reduce((sum, s) => sum + s.durationMin / 60, 0),
     };
   }, [courses, sessions, assignments]);
 
-  return {
-    loading,
-    isDemo,
-    courses,
-    sessions,
-    assignments,
-    conversations,
-    stats,
-    submitAssignment,
-    postComment,
-    sendMessage,
-    markRead,
-  };
+  return { loading, error, warning, courses, sessions, assignments, materials, stats, reload, submitAssignment };
 }
 
 export default useWorkspaceData;

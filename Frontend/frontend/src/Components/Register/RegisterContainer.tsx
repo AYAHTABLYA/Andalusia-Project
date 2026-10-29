@@ -7,6 +7,7 @@ import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
 import type { RegisterFormValues } from "../../Types/registerFormType";
 import type { SubmitStatus } from "../../Types/SubmitStatus";
 import { register, confirmEmail, resendConfirmation } from "../../apis/authApi";
+import { getErrorMessage } from "../../apis/academyApi";
 function RegisterContainer() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [verificationPending, setVerificationPending] = useState(false);
@@ -75,19 +76,10 @@ function RegisterContainer() {
     } catch (error: any) {
       setStatus("idle");
 
-      const data = error.response?.data;
-      const validationErrors = data?.errors
-        ? (Object.values(data.errors).flat() as string[]).join("\n")
-        : "";
-      const message = !error.response
-        ? "Cannot reach the server. Check that the API is running and allows this site (CORS)."
-        : validationErrors ||
-          data?.detail ||
-          data?.message ||
-          data?.title ||
-          "Registration failed. Please try again.";
-
-      console.error("Register failed:", error.response?.status, data ?? error);
+      const message = getErrorMessage(
+        error,
+        "Registration failed. Please try again.",
+      );
       setFeedback({ type: "error", text: message });
     }
   };
@@ -105,10 +97,7 @@ function RegisterContainer() {
       setStatus("idle");
       setFeedback({
         type: "error",
-        text:
-          error.response?.data?.detail ||
-          error.response?.data?.title ||
-          "The code is invalid or expired.",
+        text: getErrorMessage(error, "The code is invalid or expired."),
       });
     }
   };
@@ -126,9 +115,7 @@ function RegisterContainer() {
       setStatus("idle");
       setFeedback({
         type: "error",
-        text:
-          error.response?.data?.detail ||
-          "Could not resend the code. Please try again.",
+        text: getErrorMessage(error, "Could not resend the code. Please try again."),
       });
     }
   };

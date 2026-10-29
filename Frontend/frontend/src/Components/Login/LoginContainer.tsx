@@ -14,7 +14,7 @@ import {
   resetPassword,
   saveAuthenticatedSession,
 } from "../../apis/authApi";
-import { isLoggedIn } from "../../apis/academyApi";
+import { getErrorMessage, isLoggedIn } from "../../apis/academyApi";
 import { getStoredUser, homeRouteForRole } from "../../utils/session";
 import { canOpenPath } from "../../utils/roles";
 
@@ -50,22 +50,8 @@ function LoginContainer() {
     setFeedback(null);
   };
 
-  const showError = (error: any, fallback: string) => {
-    const data = error.response?.data;
-    const validation = data?.errors
-      ? (Object.values(data.errors).flat() as string[])[0]
-      : "";
-    setFeedback({
-      type: "error",
-      text:
-        !error.response && error.message === "Network Error"
-          ? "Cannot reach the server. Check that the API is running."
-          : validation ||
-            data?.detail ||
-            data?.title ||
-            data?.message ||
-            fallback,
-    });
+  const showError = (error: unknown, fallback: string) => {
+    setFeedback({ type: "error", text: getErrorMessage(error, fallback) });
   };
 
   // Shared by password login and code login: store the session, then go to the portal.

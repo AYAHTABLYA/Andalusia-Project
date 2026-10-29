@@ -1,12 +1,13 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
-import type { ClassComment, WorkspaceSession } from "../../../Types/Workspace";
+import type { WorkspaceMaterial, WorkspaceSession } from "../../../Types/Workspace";
+import { BarChart, ChartCard, DonutChart, type BarDatum, type Segment } from "../../Charts/Charts";
 import EmptyState from "./EmptyState";
-import { fmtDate, fmtRelative, fmtTime, initials } from "./helpers";
+import { fmtDate, fmtTime, initials } from "./helpers";
 
 type StatCard = { label: string; value: string; note: string; icon: string; pct: number };
 type UpcomingItem = { session: WorkspaceSession; live: boolean };
-type UpdateItem = ClassComment;
+type UpdateItem = WorkspaceMaterial;
 
 type Props = {
   loading: boolean;
@@ -16,10 +17,13 @@ type Props = {
   clock: string;
   cards: StatCard[];
   upcoming: UpcomingItem[];
-  updates: UpdateItem[];
+  materials: UpdateItem[];
+  courseBars: BarDatum[];
+  assignmentSegments: Segment[];
+  attendanceSegments: Segment[];
 };
 
-function OverviewComponent({ loading, hasCourses, greeting, weekday, clock, cards, upcoming, updates }: Props) {
+function OverviewComponent({ loading, hasCourses, greeting, weekday, clock, cards, upcoming, materials, courseBars, assignmentSegments, attendanceSegments }: Props) {
   if (loading) return <div className="portal-card ws_pad">Loading your workspace…</div>;
 
   if (!hasCourses) {
@@ -64,6 +68,18 @@ function OverviewComponent({ loading, hasCourses, greeting, weekday, clock, card
         ))}
       </div>
 
+      <div className="ws_charts">
+        <ChartCard className="portal-card" title="Progress by course" subtitle="Completion %" empty={courseBars.length === 0 ? "No active courses." : undefined}>
+          <BarChart data={courseBars} unit="%" ariaLabel="Progress percentage per course" />
+        </ChartCard>
+        <ChartCard className="portal-card" title="Assignments" subtitle="By status" empty={assignmentSegments.every((s) => s.value === 0) ? "No assignments yet." : undefined}>
+          <DonutChart segments={assignmentSegments} centerValue={assignmentSegments.reduce((n, s) => n + s.value, 0)} centerLabel="assignments" ariaLabel="Assignments by status" />
+        </ChartCard>
+        <ChartCard className="portal-card" title="Attendance" subtitle="Recorded sessions" empty={attendanceSegments.every((s) => s.value === 0) ? "No attendance recorded yet." : undefined}>
+          <DonutChart segments={attendanceSegments} centerValue={attendanceSegments.reduce((n, s) => n + s.value, 0)} centerLabel="sessions" ariaLabel="Attendance by status" />
+        </ChartCard>
+      </div>
+
       <div className="ws_grid">
         <article className="portal-card ws_panel">
           <header className="ws_panel-head">
@@ -82,9 +98,9 @@ function OverviewComponent({ loading, hasCourses, greeting, weekday, clock, card
                   <div className="ws_time"><strong>{fmtTime(s.start)}</strong><small>{fmtDate(s.start)}</small></div>
                   <div className="ws_session-main">
                     <strong>{s.courseTitle}</strong>
-                    <small>{`${s.group} · ${s.students} students`}</small>
+                    <small>{[s.group, s.students != null ? `${s.students} students` : ""].filter(Boolean).join(" · ")}</small>
                   </div>
-                  <span className="ws_who"><span className="ws_avatar ws_avatar--sm">{initials(s.instructor)}</span>{s.instructor}</span>
+                  {s.instructor && <span className="ws_who"><span className="ws_avatar ws_avatar--sm">{initials(s.instructor)}</span>{s.instructor}</span>}
                   <span className={`ws_tag ${live ? "ws_tag--live" : ""}`}>{live ? "Live" : "Upcoming"}</span>
                   <Link className="portal-btn portal-btn-secondary ws_join" to={`/workspace/schedule?s=${s.id}`}>
                     <span className="material-symbols-outlined">videocam</span>{live ? "Join" : "Details"}
@@ -97,25 +113,25 @@ function OverviewComponent({ loading, hasCourses, greeting, weekday, clock, card
 
         <article className="portal-card ws_panel">
           <header className="ws_panel-head">
-            <div><h2>Course updates</h2><p>Latest updates</p></div>
+            <div><h2>New materials</h2><p>Latest from your courses</p></div>
           </header>
-          {updates.length === 0 ? (
-            <EmptyState icon="notifications" title="No updates yet" text="Instructor notes will appear here." />
+          {materials.length === 0 ? (
+            <EmptyState icon="folder_open" title="No materials yet" text="Files your instructors share will appear here." />
           ) : (
             <ul className="ws_rows">
-              {updates.map((u) => (
+              {materials.map((u) => (
                 <li key={u.id} className="ws_update">
-                  <span className="ws_update-icon material-symbols-outlined">chat_bubble</span>
+                  <span className="ws_update-icon material-symbols-outlined">description</span>
                   <div>
-                    <strong>{u.author}</strong>
-                    <p>{u.text}</p>
+                    <strong>{u.title}</strong>
+                    <p>{u.courseTitle}</p>
                   </div>
-                  <small>{fmtRelative(u.at)}</small>
+                  {u.addedAt && <small>{fmtDate(u.addedAt)}</small>}
                 </li>
               ))}
             </ul>
           )}
-          <Link to="/workspace/messages" className="ws_link ws_foot">See all activity <span className="material-symbols-outlined">chevron_right</span></Link>
+          <Link to="/workspace/materials" className="ws_link ws_foot">See all materials <span className="material-symbols-outlined">chevron_right</span></Link>
         </article>
       </div>
     </>

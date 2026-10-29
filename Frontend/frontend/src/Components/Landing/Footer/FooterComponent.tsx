@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import logo from "../../../assets/andalusia-logo.png";
 import "./style.css";
 
@@ -70,16 +71,16 @@ function FooterComponent() {
             <h4>Campus &amp; Portals</h4>
             <ul>
               <li>
-                <a href="#portal-preview-section">Student Portal</a>
+                <Link to="/login">Student Portal</Link>
               </li>
               <li>
-                <a href="#portal-preview-section">Instructor Portal</a>
+                <Link to="/login">Instructor Portal</Link>
               </li>
               <li>
-                <a href="#portal-preview-section">Coordinator Portal</a>
+                <Link to="/login">Coordinator Portal</Link>
               </li>
               <li>
-                <a href="#portal-preview-section">Admin Portal</a>
+                <Link to="/login">Admin Portal</Link>
               </li>
               <li>
                 <a href="#">Alexandria Campus Facilities</a>

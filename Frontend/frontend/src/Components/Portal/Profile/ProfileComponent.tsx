@@ -305,13 +305,14 @@ function ProfileComponent({
 
               <div className="profile_security-col">
                 <h3>Cohort Notifications</h3>
+                <p className="ws_muted">Notification preferences are coming soon.</p>
                 {NOTIFICATION_OPTIONS.map((n) => (
                   <label key={n.id} className="profile_toggle">
                     <span>
                       <strong>{n.title}</strong>
                       <small>{n.text}</small>
                     </span>
-                    <input type="checkbox" defaultChecked />
+                    <input type="checkbox" disabled checked={false} readOnly aria-label={`${n.title} (not available yet)`} />
                   </label>
                 ))}
               </div>

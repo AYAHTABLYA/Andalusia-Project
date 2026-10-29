@@ -1,15 +1,20 @@
 import { memo } from "react";
 import type { ApplicationFormType } from "./ApplicationFormType";
 import "./style.css";
+import Select from "../../Shared/Select/Select";
 
 function ContactCampusComponent({
   formData,
+  trackOptions,
+  experienceOptions,
   handleChange,
   handleSubmit,
   submitted,
   onDismissSubmitted,
 }: {
   formData: ApplicationFormType;
+  trackOptions: string[];
+  experienceOptions: string[];
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => void;
@@ -22,7 +27,7 @@ function ContactCampusComponent({
       <div className="section-wrap contact-campus_grid">
         <div className="contact-campus_info">
           <span className="eyebrow">In-Person Learning Space</span>
-          <h2 className="heading-serif">The Alexandria Executive Campus</h2>
+          <h2 className="heading-serif">The Executive Campus</h2>
           <p>
             Designed explicitly for peer collaboration, quiet research
             pods, high-bandwidth compute terminals, and executive
@@ -46,6 +51,12 @@ function ContactCampusComponent({
               </span>
             </div>
           </div>
+
+          <div className="contact-campus_visitors">
+            <span className="contact-campus_visitors-dot" aria-hidden="true" />
+            <strong>Visitors Welcome:</strong>
+            <span>Tour the hardware labs during weekday reception hours.</span>
+          </div>
         </div>
 
         <div className="contact-campus_form-wrap card" id="apply-now">
@@ -67,7 +78,7 @@ function ContactCampusComponent({
                 />
               </div>
               <div>
-                <label htmlFor="email">Corporate Email</label>
+                <label htmlFor="email">Corporate Email (Optional)</label>
                 <input
                   id="email"
                   name="email"
@@ -75,7 +86,6 @@ function ContactCampusComponent({
                   placeholder="name@company.com"
                   value={formData.email}
                   onChange={handleChange}
-                  required
                 />
               </div>
             </div>
@@ -95,37 +105,37 @@ function ContactCampusComponent({
               </div>
               <div>
                 <label htmlFor="track">Desired Track</label>
-                <select id="track" name="track" value={formData.track} onChange={handleChange}>
-                  <option>Generative AI &amp; LLMs (Offline)</option>
-                  <option>FinTech Architecture (Blended)</option>
-                  <option>DevSecOps &amp; Zero Trust (Offline)</option>
-                  <option>Custom Corporate Program</option>
-                </select>
+                <Select id="track" name="track" value={formData.track} onChange={handleChange}>
+                  {trackOptions.map((option) => (
+                    <option key={option}>{option}</option>
+                  ))}
+                </Select>
               </div>
             </div>
 
             <div>
               <label htmlFor="experience">
-                Years of Technical / Management Experience
+                Years of Technical / Management Experience (Optional)
               </label>
-              <select
+              <Select
                 id="experience"
                 name="experience"
                 value={formData.experience}
                 onChange={handleChange}
               >
-                <option>1 - 3 Years (Mid-level Practitioner)</option>
-                <option>4 - 7 Years (Senior Engineer / Lead)</option>
-                <option>8+ Years (Director / VP / Head)</option>
-              </select>
+                {experienceOptions.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </Select>
             </div>
 
             {submitted && (
               <div className="contact-campus_notice" role="status">
-                <span className="material-symbols-outlined">check_circle</span>
+                <span className="material-symbols-outlined">mail</span>
                 <span className="contact-campus_notice-text">
-                  Application submitted! Our admissions director will contact
-                  you.
+                  We opened your email app with your details. Press send there
+                  to reach our admissions desk — your application is not
+                  submitted until you do.
                 </span>
                 <button
                   type="button"
@@ -139,8 +149,12 @@ function ContactCampusComponent({
             )}
 
             <button type="submit" className="contact-campus_submit">
-              Submit Cohort Application
+              Submit Application
             </button>
+            <p className="contact-campus_privacy">
+              Submissions are kept strictly confidential under educational data
+              protection standards.
+            </p>
           </form>
         </div>
       </div>
