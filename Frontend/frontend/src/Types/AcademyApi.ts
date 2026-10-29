@@ -206,6 +206,54 @@ type CourseApplicationResponseDto = {
   status: string;
 };
 
+/* ---------- Landing content: testimonials, ratings, FAQs ---------- */
+type TestimonialDto = {
+  testimonialId: number;
+  clientName: string;
+  titleOrRole: string;
+  quoteText: string;
+  avatarUrl: string;
+  initials: string;
+  rating: number;
+  isFeatured: boolean;
+  courseId?: number;
+  courseTitle?: string;
+};
+
+type RatingBucketDto = {
+  stars: number;
+  count: number;
+};
+
+type RatingSummaryDto = {
+  averageRating: number;
+  totalCount: number;
+  distribution: RatingBucketDto[];
+};
+
+type FaqDto = {
+  faqId: number;
+  categoryId?: number;
+  categoryName?: string;
+  question: string;
+  answer: string;
+  orderIndex: number;
+};
+
+/* ---------- Contact: "Request Admission Interview" form ---------- */
+type CreateContactEnquiryBody = {
+  fullName: string;
+  mobileNumber: string;
+  email?: string;
+  desiredTrack?: string;
+  experience?: string;
+};
+
+type ContactEnquiryReceiptDto = {
+  enquiryId: number;
+  status: string;
+};
+
 export type {
   CareerPathListItemDto,
   CareerPathHighlightDto,
@@ -224,4 +272,10 @@ export type {
   CourseDetailDto,
   CreateCourseApplicationBody,
   CourseApplicationResponseDto,
+  TestimonialDto,
+  RatingBucketDto,
+  RatingSummaryDto,
+  FaqDto,
+  CreateContactEnquiryBody,
+  ContactEnquiryReceiptDto,
 };

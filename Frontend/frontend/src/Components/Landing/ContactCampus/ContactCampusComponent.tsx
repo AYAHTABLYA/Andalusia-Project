@@ -1,5 +1,5 @@
 import { memo } from "react";
-import type { ApplicationFormType } from "./ApplicationFormType";
+import type { ApplicationFormType, SubmitStatus } from "./ApplicationFormType";
 import "./style.css";
 import Select from "../../Shared/Select/Select";
 
@@ -9,8 +9,9 @@ function ContactCampusComponent({
   experienceOptions,
   handleChange,
   handleSubmit,
-  submitted,
-  onDismissSubmitted,
+  status,
+  errorMessage,
+  onDismissNotice,
 }: {
   formData: ApplicationFormType;
   trackOptions: string[];
@@ -19,8 +20,9 @@ function ContactCampusComponent({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  submitted: boolean;
-  onDismissSubmitted: () => void;
+  status: SubmitStatus;
+  errorMessage: string;
+  onDismissNotice: () => void;
 }) {
   return (
     <section className="contact-campus" data-purpose="alexandria-campus-info" id="contact-campus">
@@ -98,6 +100,7 @@ function ContactCampusComponent({
                   name="phone"
                   type="tel"
                   placeholder="+20 1..."
+                  maxLength={20}
                   value={formData.phone}
                   onChange={handleChange}
                   required
@@ -129,27 +132,39 @@ function ContactCampusComponent({
               </Select>
             </div>
 
-            {submitted && (
-              <div className="contact-campus_notice" role="status">
-                <span className="material-symbols-outlined">mail</span>
+            {(status === "success" || status === "error") && (
+              <div
+                className={
+                  "contact-campus_notice" +
+                  (status === "error" ? " contact-campus_notice--error" : "")
+                }
+                role={status === "error" ? "alert" : "status"}
+              >
+                <span className="material-symbols-outlined">
+                  {status === "error" ? "error" : "check_circle"}
+                </span>
                 <span className="contact-campus_notice-text">
-                  We opened your email app with your details. Press send there
-                  to reach our admissions desk — your application is not
-                  submitted until you do.
+                  {status === "error"
+                    ? errorMessage
+                    : "Thank you! We received your application. Our admissions team will contact you within 2 business days."}
                 </span>
                 <button
                   type="button"
                   className="contact-campus_notice-close"
                   aria-label="Dismiss message"
-                  onClick={onDismissSubmitted}
+                  onClick={onDismissNotice}
                 >
                   <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
             )}
 
-            <button type="submit" className="contact-campus_submit">
-              Submit Application
+            <button
+              type="submit"
+              className="contact-campus_submit"
+              disabled={status === "submitting"}
+            >
+              {status === "submitting" ? "Submitting…" : "Submit Application"}
             </button>
             <p className="contact-campus_privacy">
               Submissions are kept strictly confidential under educational data

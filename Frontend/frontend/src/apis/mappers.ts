@@ -2,12 +2,16 @@
 import type {
   CareerPathListItemDto,
   CourseListItemDto,
+  FaqDto,
   FeaturedCourseDto,
   ProgramListItemDto,
+  TestimonialDto,
 } from "../Types/AcademyApi";
 import type { CareerPath } from "../Types/CareerPath";
 import type { CatalogCourse } from "../Types/CatalogCourse";
 import type { Course } from "../Types/Course";
+import type { FaqAnswerPart, FaqItem } from "../Types/Faq";
+import type { Testimonial } from "../Types/Testimonial";
 import type { Program } from "../Types/Program";
 import { formatMoney, initials } from "../utils/format";
 
@@ -81,4 +85,42 @@ function toFeaturedCourse(dto: FeaturedCourseDto): Course {
   };
 }
 
-export { toCareerPath, toProgram, toCatalogCourse, toFeaturedCourse };
+// Avatar colour variants cycle by position (the API has no colour field).
+const AVATAR_TONES: Testimonial["tone"][] = ["terracotta", "charcoal", "sand", "slate"];
+
+function toTestimonial(dto: TestimonialDto, index: number): Testimonial {
+  return {
+    id: dto.testimonialId,
+    quote: dto.quoteText,
+    name: dto.clientName,
+    initials: dto.initials || initials(dto.clientName),
+    track: dto.titleOrRole,
+    rating: dto.rating,
+    tone: AVATAR_TONES[index % AVATAR_TONES.length],
+  };
+}
+
+// FAQ answers are plain text; **double asterisks** mark the bold parts.
+function parseFaqAnswer(answer: string): FaqAnswerPart[] {
+  return answer
+    .split(/\*\*(.+?)\*\*/g)
+    .map((text, i) => ({ text, bold: i % 2 === 1 }))
+    .filter((part) => part.text !== "");
+}
+
+function toFaqItem(dto: FaqDto): FaqItem {
+  return {
+    id: dto.faqId,
+    question: dto.question,
+    answer: parseFaqAnswer(dto.answer),
+  };
+}
+
+export {
+  toCareerPath,
+  toProgram,
+  toCatalogCourse,
+  toFeaturedCourse,
+  toTestimonial,
+  toFaqItem,
+};

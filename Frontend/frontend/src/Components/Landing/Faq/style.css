@@ -109,3 +109,20 @@
   font-weight: 700;
   color: var(--color-slate-900);
 }
+
+.faq_state {
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.faq_retry {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}

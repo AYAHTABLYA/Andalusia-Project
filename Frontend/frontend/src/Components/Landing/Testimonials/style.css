@@ -147,3 +147,41 @@
   font-weight: 500;
   color: var(--color-primary);
 }
+
+.testimonials_star--empty {
+  color: #e5e7eb;
+}
+
+.landing-page .testimonials_summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.testimonials_summary .testimonials_star {
+  color: #f59e0b;
+}
+
+.testimonials_summary strong {
+  color: var(--color-slate-900);
+}
+
+.testimonials_state {
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.testimonials_retry {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}

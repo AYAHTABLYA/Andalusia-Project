@@ -1,11 +1,9 @@
 import { useState } from "react";
 import ContactCampusComponent from "./ContactCampusComponent";
-import type { ApplicationFormType } from "./ApplicationFormType";
+import type { ApplicationFormType, SubmitStatus } from "./ApplicationFormType";
 import { TRACK_OPTIONS, EXPERIENCE_OPTIONS } from "./constants";
-
-// There is no API endpoint for this form yet, so it prepares an email to the admissions desk
-// instead of pretending the request was sent.
-const ADMISSIONS_EMAIL = "admissions@andalusia-academy.edu.eg";
+import { ApiError, getErrorMessage } from "../../../apis/academyApi";
+import { submitContactEnquiry } from "../../../hooks/academyHooks/useContactApi";
 
 const INITIAL_FORM: ApplicationFormType = {
   fullName: "",
@@ -17,29 +15,42 @@ const INITIAL_FORM: ApplicationFormType = {
 
 function ContactCampusContainer() {
   const [formData, setFormData] = useState<ApplicationFormType>(INITIAL_FORM);
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setSubmitted(false);
+    // Typing again dismisses the previous success / error notice.
+    setStatus((prev) => (prev === "submitting" ? prev : "idle"));
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const body = [
-      `Full name: ${formData.fullName}`,
-      `Email: ${formData.email}`,
-      `Phone: ${formData.phone}`,
-      `Track: ${formData.track}`,
-      `Experience: ${formData.experience}`,
-    ].join("\n");
-    window.location.href = `mailto:${ADMISSIONS_EMAIL}?subject=${encodeURIComponent(
-      "Cohort application",
-    )}&body=${encodeURIComponent(body)}`;
-    setSubmitted(true);
+    if (status === "submitting") return;
+
+    setStatus("submitting");
+    setErrorMessage("");
+    try {
+      await submitContactEnquiry({
+        fullName: formData.fullName.trim(),
+        mobileNumber: formData.phone.trim(),
+        email: formData.email.trim() || undefined,
+        desiredTrack: formData.track,
+        experience: formData.experience,
+      });
+      setFormData(INITIAL_FORM);
+      setStatus("success");
+    } catch (err) {
+      setErrorMessage(
+        err instanceof ApiError && err.status === 429
+          ? "Too many requests from this device. Please try again in a few minutes."
+          : getErrorMessage(err, "We could not send your application. Please try again."),
+      );
+      setStatus("error");
+    }
   }
 
   return (
@@ -49,8 +60,9 @@ function ContactCampusContainer() {
       experienceOptions={EXPERIENCE_OPTIONS}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
-      submitted={submitted}
-      onDismissSubmitted={() => setSubmitted(false)}
+      status={status}
+      errorMessage={errorMessage}
+      onDismissNotice={() => setStatus("idle")}
     />
   );
 }

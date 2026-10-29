@@ -6,4 +6,6 @@ type ApplicationFormType = {
   experience: string;
 };
 
-export type { ApplicationFormType };
+type SubmitStatus = "idle" | "submitting" | "success" | "error";
+
+export type { ApplicationFormType, SubmitStatus };

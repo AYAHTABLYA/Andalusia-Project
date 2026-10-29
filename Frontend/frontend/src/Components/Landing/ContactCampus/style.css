@@ -243,3 +243,18 @@
 .contact-campus_notice-close .material-symbols-outlined {
   font-size: 16px;
 }
+
+.contact-campus_notice--error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.contact-campus_submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.contact-campus_submit:disabled:hover {
+  background-color: var(--color-primary);
+}

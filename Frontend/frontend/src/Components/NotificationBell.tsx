@@ -1,23 +1,29 @@
 import { useEffect, useRef, useState } from "react";
+import { useNotifications } from "../hooks/portalHooks/useNotifications";
 import "./notification-bell.css";
 
-export type NotificationItem = {
-  id: string;
-  title: string;
-  text?: string;
-  time?: string;
-  read?: boolean;
-};
+// "5 min ago", "2 h ago", "3 d ago", then a plain date.
+function timeAgo(iso: string): string {
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "";
+  const mins = Math.max(0, Math.floor((Date.now() - then) / 60000));
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days} d ago`;
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
 
-type Props = {
-  /** Notifications to show. Empty by default until a notifications API exists. */
-  items?: NotificationItem[];
-};
-
-/** Bell button + dropdown, drawn like the LanguageSwitcher next to it. */
-export function NotificationBell({ items = [] }: Props) {
+/**
+ * Bell button + dropdown, drawn like the LanguageSwitcher next to it.
+ * Self-contained: it loads the signed-in user's notifications from /api/notifications,
+ * so the same component works in the learner portal and in every staff dashboard.
+ */
+export function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const [readIds, setReadIds] = useState<string[]>([]);
+  const { items, unreadCount: unread, markRead, markAllRead, reload } = useNotifications();
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,15 +42,15 @@ export function NotificationBell({ items = [] }: Props) {
     };
   }, [open]);
 
-  const isRead = (n: NotificationItem) => n.read || readIds.includes(n.id);
-  const unread = items.filter((n) => !isRead(n)).length;
-
   return (
     <div className="notification-bell" ref={rootRef}>
       <button
         type="button"
         className="notification-bell_trigger"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          if (!open) reload();
+          setOpen((o) => !o);
+        }}
         aria-label="Notifications"
         aria-expanded={open}
         title="Notifications"
@@ -70,7 +76,7 @@ export function NotificationBell({ items = [] }: Props) {
           <div className="notification-bell_head">
             <strong>Notifications</strong>
             {unread > 0 && (
-              <button type="button" onClick={() => setReadIds(items.map((n) => n.id))}>
+              <button type="button" onClick={() => void markAllRead()}>
                 Mark all as read
               </button>
             )}
@@ -95,13 +101,13 @@ export function NotificationBell({ items = [] }: Props) {
           ) : (
             <ul className="notification-bell_list">
               {items.map((n) => (
-                <li key={n.id} className={isRead(n) ? "" : "is-unread"}>
-                  <button type="button" onClick={() => setReadIds((ids) => [...ids, n.id])}>
+                <li key={n.id} className={n.isRead ? "" : "is-unread"}>
+                  <button type="button" onClick={() => void markRead(n.id)}>
                     <span className="notification-bell_dot" />
                     <span className="notification-bell_body">
                       <strong>{n.title}</strong>
-                      {n.text && <span>{n.text}</span>}
-                      {n.time && <small>{n.time}</small>}
+                      {n.message && <span>{n.message}</span>}
+                      <small data-no-translate>{timeAgo(n.createdAt)}</small>
                     </span>
                   </button>
                 </li>
