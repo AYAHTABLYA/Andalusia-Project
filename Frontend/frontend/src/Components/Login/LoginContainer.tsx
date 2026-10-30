@@ -14,18 +14,28 @@ import {
   resetPassword,
   saveAuthenticatedSession,
 } from "../../apis/authApi";
-import { getErrorMessage, isLoggedIn } from "../../apis/academyApi";
+import { ApiError, getErrorMessage, isLoggedIn } from "../../apis/academyApi";
 import { getStoredUser, homeRouteForRole } from "../../utils/session";
 import { canOpenPath } from "../../utils/roles";
 
 type LoginMode = "password" | "login-otp" | "forgot-request" | "forgot-reset";
+
+// The login endpoint answers 403 + { code: "EMAIL_NOT_CONFIRMED", email } for unconfirmed accounts.
+function isEmailNotConfirmed(error: unknown): boolean {
+  if (!(error instanceof ApiError) || error.status !== 403) return false;
+  const code = (error.data as { code?: string } | undefined)?.code;
+  return code === "EMAIL_NOT_CONFIRMED";
+}
 
 function LoginContainer() {
   const navigate = useNavigate();
   const location = useLocation();
 
   // Page the user tried to open before being sent to /login (set by PortalLayout).
-  const from = (location.state as { from?: string } | null)?.from;
+  const locationState = location.state as
+    | { from?: string; email?: string; emailConfirmed?: boolean }
+    | null;
+  const from = locationState?.from;
   const afterLoginRoute = () => {
     const role = getStoredUser()?.role;
     return from && from !== "/login" && canOpenPath(role, from)
@@ -36,10 +46,15 @@ function LoginContainer() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [mode, setMode] = useState<LoginMode>("password");
   const [formData, setFormData] = useState<loginFormType>({
-    email: "",
+    email: locationState?.email ?? "",
     password: "",
   });
-  const [feedback, setFeedback] = useState<Feedback>(null);
+  // Coming back from /confirm-email: tell the user they can sign in now.
+  const [feedback, setFeedback] = useState<Feedback>(
+    locationState?.emailConfirmed
+      ? { type: "success", text: "Email confirmed. Please sign in." }
+      : null,
+  );
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -96,6 +111,23 @@ function LoginContainer() {
       }
     } catch (error: any) {
       setStatus("idle");
+
+      // Correct credentials but the email was never confirmed: the backend has just emailed a
+      // fresh code (403 + code EMAIL_NOT_CONFIRMED), so send the user straight to the confirm page.
+      if (mode === "password" && isEmailNotConfirmed(error)) {
+        const body = error.data as { email?: string } | undefined;
+        navigate("/confirm-email", {
+          replace: true,
+          state: {
+            email: (body?.email || formData.email).trim(),
+            from,
+            notice:
+              "Your email is not confirmed yet. We sent a confirmation code to your email.",
+          },
+        });
+        return;
+      }
+
       showError(
         error,
         error.message || "The request failed. Please try again.",

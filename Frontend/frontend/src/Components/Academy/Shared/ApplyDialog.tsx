@@ -19,16 +19,19 @@ type Props = {
   status: "idle" | "submitting" | "success" | "error";
   errorText?: string;
   successText?: string;
+  // Pre-filled values (e.g. the signed-in user's name / email) and whether the phone is mandatory.
+  initialValues?: Partial<ApplyFormValues>;
+  phoneRequired?: boolean;
   onSubmit: (values: ApplyFormValues) => void;
   onClose: () => void;
 };
 
-function ApplyDialog({ title, description, mode, status, errorText, successText, onSubmit, onClose }: Props) {
+function ApplyDialog({ title, description, mode, status, errorText, successText, initialValues, phoneRequired, onSubmit, onClose }: Props) {
   const [values, setValues] = useState<ApplyFormValues>({
-    fullName: "",
-    email: "",
-    phone: "",
-    message: "",
+    fullName: initialValues?.fullName ?? "",
+    email: initialValues?.email ?? "",
+    phone: initialValues?.phone ?? "",
+    message: initialValues?.message ?? "",
   });
 
   const submitting = status === "submitting";
@@ -98,12 +101,14 @@ function ApplyDialog({ title, description, mode, status, errorText, successText,
                   />
                 </label>
                 <label className="apply-dialog_label">
-                  Phone
+                  {phoneRequired ? "Phone / WhatsApp *" : "Phone"}
                   <input
                     className="apply-dialog_input"
                     type="tel"
                     value={values.phone}
-                    maxLength={30}
+                    maxLength={phoneRequired ? 20 : 30}
+                    required={phoneRequired}
+                    placeholder="+20 100 123 4567"
                     onChange={(e) => setField("phone", e.target.value)}
                   />
                 </label>
