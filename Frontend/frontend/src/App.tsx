@@ -1,6 +1,7 @@
 import RegisterContainer from "./Components/Register/RegisterContainer";
 import Home from "./Components/Home/Home";
 import LoginContainer from "./Components/Login/LoginContainer";
+import ConfirmEmailContainer from "./Components/ConfirmEmail/ConfirmEmailContainer";
 import LandingPage from "./Components/Landing/LandingPage";
 import AcademyLayout from "./Components/Academy/AcademyLayout";
 import CareerPathsContainer from "./Components/Academy/CareerPaths/CareerPathsContainer";
@@ -55,6 +56,7 @@ function App() {
         <Routes>
           <Route path="/register" element={<RegisterContainer />} />
           <Route path="/login" element={<LoginContainer />} />
+          <Route path="/confirm-email" element={<ConfirmEmailContainer />} />
           <Route path="/" element={<LandingPage />} />
           <Route path="/starter" element={<Home />} />
 

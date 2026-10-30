@@ -6,6 +6,7 @@ import "./style.css";
 
 type Props = {
   path: CareerPathDetailDto;
+  onApply: () => void;
   onDownloadSyllabus: () => void;
   syllabusLoading: boolean;
   syllabusFeedback: { kind: "success" | "error"; text: string } | null;
@@ -18,7 +19,7 @@ const HIGHLIGHT_ICONS: Record<string, string> = {
   Facilities: "dns",
 };
 
-function CareerPathDetailComponent({ path, onDownloadSyllabus, syllabusLoading, syllabusFeedback }: Props) {
+function CareerPathDetailComponent({ path, onApply, onDownloadSyllabus, syllabusLoading, syllabusFeedback }: Props) {
   const programs = [...path.programs].sort((a, b) => a.orderIndex - b.orderIndex);
   // The API omits highlight values that are null, so only show the ones that have data.
   const highlights = path.highlights.filter((h) => h.value);
@@ -84,10 +85,10 @@ function CareerPathDetailComponent({ path, onDownloadSyllabus, syllabusLoading, 
                   <p className="career-path-detail_text-13">Corporate sponsorship &amp; installment plans available through partner banks.</p>
                 </div>
                 <div className="career-path-detail_box-19">
-                  <Link to="/#contact-campus" className="career-path-detail_btn-1">
+                  <button type="button" onClick={onApply} className="career-path-detail_btn-1">
                     <span>Apply for Executive Path Interview</span>
                     <span className="career-path-detail_text-14 material-symbols-outlined">arrow_forward</span>
-                  </Link>
+                  </button>
                   <button type="button" onClick={onDownloadSyllabus} disabled={syllabusLoading} className="career-path-detail_btn-2">
                     <span className="career-path-detail_text-4 material-symbols-outlined">download</span>
                     <span>{syllabusLoading ? "Preparing…" : "Download Full Syllabus (PDF)"}</span>
