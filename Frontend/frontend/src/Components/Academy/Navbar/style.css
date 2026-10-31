@@ -4,6 +4,16 @@ body,
   max-width: 100%;
   overflow-x: hidden;
 }
+/* "hidden" turns body/#root into scroll containers and breaks position: sticky
+   (the navbar stops following the scroll). "clip" hides the same overflow
+   without creating a scroll container. */
+@supports (overflow: clip) {
+  html,
+  body,
+  #root {
+    overflow-x: clip;
+  }
+}
 *,
 *::before,
 *::after {

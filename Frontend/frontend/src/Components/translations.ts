@@ -434,6 +434,23 @@ export const extraTranslations: Record<string, string> = {
   "Shape Your Future with": "اصنع مستقبلك مع",
   "Industry-Certified": "شهادات معتمدة من القطاع",
   "Mastery &": "وإتقان مهني و",
+  // Hero slider
+  "Andalusia Hospital": "مستشفى أندلسية",
+  "Learn with": "تعلّم مع",
+  "Andalusia Health": "أندلسية الصحية",
+  "Andalusia Academy is part of the Andalusia Health family, bringing real healthcare expertise into every program.":
+    "أكاديمية أندلسية جزء من عائلة أندلسية الصحية، وتقدّم خبرة رعاية صحية حقيقية في كل برنامج.",
+  "Explore Programs": "استكشف البرامج",
+  "Andalusia Campus": "حرم أندلسية",
+  "A Campus Built Around": "حرم أكاديمي صُمّم حول",
+  Wellbeing: "الرفاهية",
+  "Modern, welcoming spaces designed for focused learning and hands-on practice.":
+    "مساحات حديثة ومرحّبة مصمّمة للتعلّم المركّز والتطبيق العملي.",
+  "Previous slide": "الشريحة السابقة",
+  "Next slide": "الشريحة التالية",
+  "Pause slideshow": "إيقاف العرض مؤقتًا",
+  "Play slideshow": "تشغيل العرض",
+  "Andalusia Academy highlights": "أبرز ما في أكاديمية أندلسية",
   "Andalusia Academy bridges executive acumen with rigorous hands-on technical bootcamps. Access accredited blended programs, peer-driven offline studios at Alexandria Campus, and mentor-verified portfolios.":
     "تجمع أكاديمية أندلسية بين الحنكة التنفيذية والمعسكرات التقنية العملية الصارمة. التحق ببرامج مدمجة معتمدة واستوديوهات حضورية تفاعلية في حرم الإسكندرية، وابنِ ملف أعمال موثّقًا من المرشدين.",
   "FinTech Architecture": "هندسة التكنولوجيا المالية",

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import TopBarComponent from "./TopBar/Topbarcomponent";
 import NavbarContainer from "./Navbar/NavbarContainer";
-import HeroComponent from "./Hero/HeroComponent";
+import HeroContainer from "./Hero/HeroContainer";
 import ValuePillarsContainer from "./ValuePillars/ValuePillarsContainer";
 import AccreditationsContainer from "./Accreditations/AccreditationsContainer";
 import TestimonialsContainer from "./Testimonials/TestimonialsContainer";
@@ -24,7 +24,7 @@ function LandingPage() {
       <TopBarComponent />
       <NavbarContainer />
       <main>
-        <HeroComponent />
+        <HeroContainer />
         <ValuePillarsContainer />
         <AccreditationsContainer />
         <TestimonialsContainer />

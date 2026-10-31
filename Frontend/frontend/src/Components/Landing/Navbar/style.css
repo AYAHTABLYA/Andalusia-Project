@@ -205,3 +205,48 @@
     max-width: 1640px;
   }
 }
+
+/* =====================================================================
+   Wider, taller navbar (modelled on the Andalusia Hospital site)
+   Stays pinned to the top while scrolling.
+   ===================================================================== */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 18px -8px rgba(36, 48, 51, 0.18);
+}
+
+@media (min-width: 1100px) {
+  .navbar_inner {
+    height: 76px;
+    padding: 0 32px;
+  }
+  .navbar_logo-img {
+    height: 46px;
+  }
+}
+
+/* Wide screens: full-width bar, links sit in a soft pill */
+@media (min-width: 1400px) {
+  .navbar_inner {
+    max-width: 1760px;
+    height: 88px;
+    padding: 0 48px;
+  }
+  .navbar_logo-img {
+    height: 54px;
+  }
+  .navbar_links {
+    gap: 30px;
+    padding: 12px 34px;
+    border-radius: 999px;
+    background-color: var(--color-surface-low);
+    font-size: 14px;
+  }
+  .landing-page .navbar_apply {
+    padding: 14px 24px;
+  }
+}
