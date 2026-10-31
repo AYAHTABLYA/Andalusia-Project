@@ -12,6 +12,7 @@ const WORKSPACE_LINKS: WorkspaceLink[] = [
   { to: "/workspace/schedule", label: "My schedule", icon: "calendar_month" },
   { to: "/workspace/assignments", label: "Assignments", icon: "assignment_turned_in" },
   { to: "/workspace/materials", label: "Materials", icon: "folder_open" },
+  { to: "/workspace/messages", label: "Messages", icon: "forum" },
 ];
 
 // Sort weight of each assignment status: unfinished first, graded last.

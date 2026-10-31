@@ -25,6 +25,7 @@ import WorkspaceCoursesContainer from "./Components/Portal/Workspace/CoursesCont
 import ScheduleContainer from "./Components/Portal/Workspace/ScheduleContainer";
 import AssignmentsContainer from "./Components/Portal/Workspace/AssignmentsContainer";
 import MaterialsContainer from "./Components/Portal/Workspace/MaterialsContainer";
+import MessagesContainer from "./Components/Portal/Workspace/MessagesContainer";
 import RequireRole from "./Components/Auth/RequireRole";
 import StaffLayout from "./Components/Staff/StaffLayout";
 import AdminHome from "./Components/Staff/Admin/AdminHome";
@@ -93,8 +94,7 @@ function App() {
                 <Route path="schedule" element={<ScheduleContainer />} />
                 <Route path="assignments" element={<AssignmentsContainer />} />
                 <Route path="materials" element={<MaterialsContainer />} />
-                {/* Messages has no backend yet: old links land on the overview */}
-                <Route path="messages" element={<Navigate to="/workspace" replace />} />
+                <Route path="messages" element={<MessagesContainer />} />
               </Route>
             </Route>
           </Route>

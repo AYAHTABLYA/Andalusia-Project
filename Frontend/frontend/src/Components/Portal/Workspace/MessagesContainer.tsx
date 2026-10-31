@@ -1,48 +1,48 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import useWorkspace from "../../../hooks/workspaceHooks/useWorkspace";
+import useMessages from "../../../hooks/workspaceHooks/useMessages";
 import MessagesComponent from "./MessagesComponent";
 
+// Student -> instructor messages (real API: /api/messages).
 function MessagesContainer() {
-  const { workspace, userName } = useWorkspace();
-  const { conversations, markRead, sendMessage } = workspace;
-  const [params, setParams] = useSearchParams();
+  const messages = useMessages();
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
 
-  const activeId = params.get("c") ?? conversations[0]?.id ?? null;
-  const active = conversations.find((c) => c.id === activeId) ?? null;
-  const list = conversations.filter((c) => `${c.name} ${c.subtitle}`.toLowerCase().includes(search.toLowerCase()));
+  const list = messages.contacts.filter((c) =>
+    `${c.fullName} ${c.subtitle}`.toLowerCase().includes(search.toLowerCase()),
+  );
 
-  // Opening a conversation marks it as read; new messages scroll to the bottom.
-  useEffect(() => {
-    if (active?.unread) markRead(active.id);
-  }, [active?.id, active?.unread, markRead]);
+  // New messages scroll to the bottom.
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
-  }, [active?.messages.length, active?.id]);
+  }, [messages.thread.length, messages.activeId]);
 
-  function send(e: FormEvent) {
+  async function send(e: FormEvent) {
     e.preventDefault();
     const text = draft.trim();
-    if (!active || !text) return;
-    sendMessage(active.id, text, userName);
-    setDraft("");
+    if (!text || messages.sending) return;
+    if (await messages.send(text)) setDraft("");
   }
 
   return (
     <MessagesComponent
-      conversations={list}
-      active={active}
-      userName={userName}
+      loading={messages.loading}
+      error={messages.error}
+      contacts={list}
+      hasContacts={messages.contacts.length > 0}
+      active={messages.active}
+      thread={messages.thread}
+      threadLoading={messages.threadLoading}
+      sending={messages.sending}
       search={search}
       draft={draft}
       endRef={endRef}
       onSearch={setSearch}
-      onSelect={(id) => setParams({ c: id }, { replace: true })}
+      onSelect={messages.select}
       onDraftChange={setDraft}
       onSend={send}
+      onRetry={messages.reload}
     />
   );
 }

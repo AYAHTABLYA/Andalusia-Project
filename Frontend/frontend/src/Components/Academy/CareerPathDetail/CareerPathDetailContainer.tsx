@@ -5,7 +5,7 @@ import Breadcrumb from "../Shared/Breadcrumb";
 import CatalogState from "../Shared/CatalogState";
 import ApplyDialog from "../Shared/ApplyDialog";
 import type { ApplyFormValues } from "../Shared/ApplyDialog";
-import { ApiError, getErrorMessage } from "../../../apis/academyApi";
+import { ApiError, getErrorMessage, isLoggedIn } from "../../../apis/academyApi";
 import { getStoredUser } from "../../../utils/session";
 import { submitContactEnquiry } from "../../../hooks/academyHooks/useContactApi";
 import { useCareerPath } from "../../../hooks/academyHooks/useCareerPathsApi";
@@ -38,10 +38,11 @@ function CareerPathDetailContainer() {
   }
 
   // Career paths have no application record of their own, so "apply" sends an admission-interview
-  // request (POST /api/contact-enquiries, public) that names the career path. It works with or
-  // without a signed-in account; when signed in, the name / email are pre-filled.
+  // request (POST /api/contact-enquiries) that names the career path. It needs a signed-in
+  // account (the server enforces it too); the name / email are pre-filled from the account.
   async function handleApply(values: ApplyFormValues) {
     if (!data) return;
+    if (!isLoggedIn()) return;
     setApplyState({ status: "submitting" });
     try {
       await submitContactEnquiry({
@@ -62,7 +63,9 @@ function CareerPathDetailContainer() {
         errorText:
           err instanceof ApiError && err.status === 429
             ? "Too many requests from this device. Please try again in a few minutes."
-            : getErrorMessage(err, "We could not send your application. Please try again."),
+            : err instanceof ApiError && err.status === 401
+              ? "Please sign in first to apply for a career path."
+              : getErrorMessage(err, "We could not send your application. Please try again."),
       });
     }
   }
@@ -99,7 +102,7 @@ function CareerPathDetailContainer() {
         <ApplyDialog
           title={`Apply: ${data.title}`}
           description="Leave your details and our admissions team will contact you to schedule your executive path interview."
-          mode="guest-form"
+          mode={isLoggedIn() ? "guest-form" : "login-required"}
           phoneRequired
           initialValues={{ fullName: user?.name ?? "", email: user?.email ?? "" }}
           status={applyState.status}
