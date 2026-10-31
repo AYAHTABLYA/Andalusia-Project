@@ -54,13 +54,15 @@ public class AuthService(
         await userRepo.AddAsync(newUser);
         await uow.SaveChangesAsync();
 
-        await IssueEmailOtpAsync(newUser, ct);
+        var sent = await IssueEmailOtpAsync(newUser, ct);
 
         return new RegisterResponseDto(
             newUser.UserId,
             newUser.Email,
             RequiresEmailConfirmation: true,
-            Message: "Account created. We sent a 6-digit code to your email, please confirm it before logging in.");
+            Message: sent
+                ? "Account created. We sent a 6-digit code to your email, please confirm it before logging in."
+                : "Account created, but we could not send the verification code. Please use \"Resend code\" in a moment.");
     }
 
     // Password login: the email must be verified before a JWT is issued.
@@ -233,7 +235,7 @@ public class AuthService(
     }
 
     // Create and send an email confirmation OTP.
-    private async Task IssueEmailOtpAsync(User user, CancellationToken ct)
+    private async Task<bool> IssueEmailOtpAsync(User user, CancellationToken ct)
     {
         var repo = uow.GetRepository<EmailVerificationToken>();
 
@@ -264,7 +266,7 @@ public class AuthService(
 
         await uow.SaveChangesAsync();
 
-        await SendSafelyAsync(
+        return await SendSafelyAsync(
             user,
             otp,
             OtpPurpose.EmailConfirmation,
@@ -330,7 +332,7 @@ public class AuthService(
         }
     }
 
-    private async Task SendSafelyAsync(
+    private async Task<bool> SendSafelyAsync(
         User user,
         string otp,
         OtpPurpose purpose,
@@ -344,14 +346,18 @@ public class AuthService(
                 otp,
                 purpose,
                 ct);
+            return true;
         }
         catch (Exception ex)
         {
+            // The reason is in ex (missing Brevo settings, bad SMTP login/key, unverified sender, blocked port 587...).
             logger.LogError(
                 ex,
-                "Failed to send {Purpose} OTP to user {UserId}",
+                "Failed to send {Purpose} OTP to user {UserId}: {Reason}",
                 purpose,
-                user.UserId);
+                user.UserId,
+                ex.Message);
+            return false;
         }
     }
 

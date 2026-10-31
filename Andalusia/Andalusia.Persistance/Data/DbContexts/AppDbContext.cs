@@ -39,6 +39,7 @@ namespace AndalusiaApp.Data
         public DbSet<AssignmentSubmission> AssignmentSubmissions => Set<AssignmentSubmission>();
         public DbSet<Progress> ProgressRecords => Set<Progress>();
         public DbSet<Notification> Notifications => Set<Notification>();
+        public DbSet<DirectMessage> DirectMessages => Set<DirectMessage>();
         public DbSet<ContactEnquiry> ContactEnquiries => Set<ContactEnquiry>();
         public DbSet<Partner> Partners => Set<Partner>();
         public DbSet<ProgramPartner> ProgramPartners => Set<ProgramPartner>();
