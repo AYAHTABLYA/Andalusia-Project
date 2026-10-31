@@ -1,4 +1,5 @@
-namespace Andalusia.Shared.Dtos.AdminDtos;
+namespace Andalusia.Shared.Dtos.
+    Dtos;
 
 public sealed record AdminReportRecordDto(string Report, string Period, DateTime Updated, string Status);
 
