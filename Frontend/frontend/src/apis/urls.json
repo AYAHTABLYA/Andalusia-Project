@@ -1,0 +1,74 @@
+{
+  "auth": {
+    "register": "/api/auth/register",
+    "login": "/api/auth/login",
+    "confirmEmail": "/api/auth/confirm-email",
+    "resendConfirmation": "/api/auth/resend-confirmation",
+    "forgotPassword": "/api/auth/forgot-password",
+    "resetPassword": "/api/auth/reset-password",
+    "checkEmail": "/api/auth/check-email",
+    "logout": "/api/auth/logout",
+    "me": "/api/auth/me"
+  },
+  "campuses": {
+    "getAll": "/api/campuses"
+  },
+  "courses": {
+    "getAll": "/api/courses",
+    "categories": "/api/courses/categories",
+    "featured": "/api/courses/featured",
+    "getBySlug": "/api/courses/:slug",
+    "apply": "/api/courses/:slug/applications",
+    "syllabus": "/api/courses/:slug/syllabus"
+  },
+  "programs": {
+    "getAll": "/api/programs",
+    "categories": "/api/programs/categories",
+    "getBySlug": "/api/programs/:slug",
+    "apply": "/api/programs/:slug/applications",
+    "syllabus": "/api/programs/:slug/syllabus"
+  },
+  "careerPaths": {
+    "getAll": "/api/career-paths",
+    "statuses": "/api/career-paths/statuses",
+    "domains": "/api/career-paths/domains",
+    "getBySlug": "/api/career-paths/:slug",
+    "syllabus": "/api/career-paths/:slug/syllabus"
+  },
+  "profile": {
+    "get": "/api/profile",
+    "update": "/api/profile",
+    "changePassword": "/api/profile/change-password",
+    "photo": "/api/profile/photo"
+  },
+  "payments": {
+    "initiate": "/api/payments",
+    "getAll": "/api/payments",
+    "getById": "/api/payments/:id",
+    "confirm": "/api/payments/:id/confirm"
+  },
+  "learner": {
+    "dashboard": "/api/learner/dashboard",
+    "materials": "/api/learner/enrollments/:id/materials",
+    "sessions": "/api/learner/enrollments/:id/sessions",
+    "assignments": "/api/learner/enrollments/:id/assignments",
+    "attendance": "/api/learner/enrollments/:id/attendance",
+    "progress": "/api/learner/enrollments/:id/progress",
+    "submitAssignment": "/api/learner/assignments/:id/submit"
+  },
+  "enrollments": {
+    "getAll": "/api/enrollments",
+    "getById": "/api/enrollments/:id"
+  },
+  "applications": {
+    "getAll": "/api/applications",
+    "getById": "/api/applications/:id",
+    "cancel": "/api/applications/:id/cancel"
+  },
+  "admin": {
+    "users": "/api/admin/users",
+    "userRole": "/api/admin/users/:id/role",
+    "userStatus": "/api/admin/users/:id/status",
+    "roles": "/api/admin/roles"
+  }
+}

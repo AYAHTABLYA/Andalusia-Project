@@ -1,0 +1,26 @@
+.chart-card { min-width: 0; }
+.chart-card_head h2 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+.chart-card_head p { margin: 0.15rem 0 0.9rem; font-size: 0.82rem; color: var(--muted); }
+.chart-empty { padding: 2rem 0; text-align: center; font-size: 0.88rem; color: var(--muted); }
+.chart-bars { display: block; width: 100%; height: auto; max-height: 11rem; }
+.chart-axis { stroke: var(--line); stroke-width: 1; }
+.chart-bar { fill: var(--brand-300); transition: fill 0.2s; }
+.chart-bar--hi, .chart-bars g:hover .chart-bar { fill: var(--brand-500); }
+.chart-val { font-size: 10px; font-weight: 700; fill: var(--ink-800, #243033); }
+.chart-lbl { font-size: 9.5px; fill: var(--muted); }
+.chart-donut { display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
+.chart-donut svg { width: 8.5rem; height: 8.5rem; flex: none; }
+.chart-ring { fill: none; stroke: var(--brand-100); stroke-width: 12; }
+.chart-seg { fill: none; stroke-width: 12; }
+.chart-center { font-size: 18px; font-weight: 700; fill: var(--ink-950, #1b2528); }
+.chart-center-sub { font-size: 7.5px; fill: var(--muted); }
+.chart-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; font-size: 0.85rem; flex: 1; min-width: 8rem; }
+.chart-legend li { display: flex; align-items: center; gap: 0.5rem; }
+.chart-legend strong { margin-left: auto; }
+.chart-dot { width: 0.65rem; height: 0.65rem; border-radius: 50%; display: inline-block; }
+/* palette shared by segments (stroke) and legend dots (background) */
+circle.chart-c0 { stroke: var(--brand-500); } i.chart-c0 { background: var(--brand-500); }
+circle.chart-c1 { stroke: #3f7a5a; } i.chart-c1 { background: #3f7a5a; }
+circle.chart-c2 { stroke: #4a6d8c; } i.chart-c2 { background: #4a6d8c; }
+circle.chart-c3 { stroke: #d97706; } i.chart-c3 { background: #d97706; }
+circle.chart-c4 { stroke: var(--brand-300); } i.chart-c4 { background: var(--brand-300); }
