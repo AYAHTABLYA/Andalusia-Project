@@ -1,0 +1,131 @@
+.accreditations {
+  padding: 64px 0;
+  background-color: #fff;
+  border-bottom: 1px solid var(--color-warm-border);
+}
+
+.accreditations_head {
+  text-align: center;
+}
+
+/* .landing-page prefix: beats the theme's "h2 / p { margin: 0 }" reset */
+.landing-page .accreditations_title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.landing-page .accreditations_head p {
+  max-width: 672px;
+  font-size: 12px;
+  color: #6c7b7f;
+  margin: 8px auto 0;
+}
+
+/* Infinite marquee with faded edges */
+.accreditations_marquee {
+  position: relative;
+  width: 100%;
+  margin-top: 32px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 100px,
+    #000 calc(100% - 100px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 100px,
+    #000 calc(100% - 100px),
+    transparent 100%
+  );
+}
+
+.accreditations_track {
+  display: flex;
+  width: max-content;
+  padding: 8px 0;
+  animation: accreditations-marquee 25s linear infinite;
+}
+
+.accreditations_track:hover {
+  animation-play-state: paused;
+}
+
+/* Each copy carries its own trailing gap so the -50% loop lands exactly */
+.accreditations_sequence {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 16px;
+  padding-right: 16px;
+}
+
+.accreditations_badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 192px;
+  padding: 24px;
+  background-color: var(--color-surface-low);
+  border-radius: 16px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+@media (min-width: 640px) {
+  .accreditations_badge {
+    width: 224px;
+  }
+}
+
+.accreditations_badge:hover {
+  transform: scale(1.05);
+}
+
+.accreditations_name {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  color: var(--color-slate-900);
+}
+
+.accreditations_label {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c7b7f;
+}
+
+@keyframes accreditations-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Arabic (RTL): the row starts on the right, so it has to travel the other way */
+html[dir="rtl"] .accreditations_track {
+  animation-name: accreditations-marquee-rtl;
+}
+
+@keyframes accreditations-marquee-rtl {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}

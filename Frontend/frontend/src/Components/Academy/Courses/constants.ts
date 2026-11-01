@@ -1,0 +1,3 @@
+const COURSES_PAGE_SIZE = 12;
+
+export { COURSES_PAGE_SIZE };
