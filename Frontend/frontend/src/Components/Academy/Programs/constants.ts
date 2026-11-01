@@ -1,3 +1,0 @@
-const PROGRAMS_PAGE_SIZE = 12;
-
-export { PROGRAMS_PAGE_SIZE };

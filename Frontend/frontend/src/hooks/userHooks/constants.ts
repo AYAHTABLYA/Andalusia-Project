@@ -1,3 +1,0 @@
-const HTTPS_STATUS_OKAY = 200;
-
-export { HTTPS_STATUS_OKAY };
