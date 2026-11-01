@@ -699,6 +699,42 @@ namespace Andalusia.Persistance.Migrations
                         });
                 });
 
+            modelBuilder.Entity("AndalusiaApp.Models.DirectMessage", b =>
+                {
+                    b.Property<long>("DirectMessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("DirectMessageId"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("RecipientId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SenderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("DirectMessageId");
+
+                    b.HasIndex("RecipientId", "ReadAt")
+                        .HasDatabaseName("IX_DirectMessages_Recipient_Read");
+
+                    b.HasIndex("SenderId", "RecipientId", "SentAt")
+                        .HasDatabaseName("IX_DirectMessages_Thread");
+
+                    b.ToTable("DIRECT_MESSAGES", (string)null);
+                });
+
             modelBuilder.Entity("AndalusiaApp.Models.EmailVerificationToken", b =>
                 {
                     b.Property<long>("VerificationId")
@@ -1808,6 +1844,25 @@ namespace Andalusia.Persistance.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("Schedule");
+                });
+
+            modelBuilder.Entity("AndalusiaApp.Models.DirectMessage", b =>
+                {
+                    b.HasOne("AndalusiaApp.Models.User", "Recipient")
+                        .WithMany()
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AndalusiaApp.Models.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("AndalusiaApp.Models.EmailVerificationToken", b =>

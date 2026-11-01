@@ -89,6 +89,7 @@ builder.Services.AddScoped<
 builder.Services.AddSingleton<ITokenBlacklist, InMemoryTokenBlacklist>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ILearnerDashboardService, LearnerDashboardService>();
 builder.Services.AddScoped<ILearnerCourseService, LearnerCourseService>();
@@ -236,6 +237,20 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Startup check for the OTP email settings (names only, never values).
+{
+    var startupLogger = app.Services.GetRequiredService<ILogger<Program>>();
+    var missing = new[] { "Brevo:UserName", "Brevo:Password", "Brevo:SenderEmail" }
+        .Where(k => string.IsNullOrWhiteSpace(app.Configuration[k])
+                    || app.Configuration[k]!.StartsWith("YOUR_", StringComparison.OrdinalIgnoreCase))
+        .ToList();
+    if (missing.Count > 0)
+        startupLogger.LogWarning(
+            "OTP emails will NOT be sent. Missing/placeholder settings: {Keys}. Environment={Env}. " +
+            "Set them with 'dotnet user-secrets set' from the Andalusia web project folder and run with ASPNETCORE_ENVIRONMENT=Development.",
+            string.Join(", ", missing), app.Environment.EnvironmentName);
+}
 
 // ==========================================
 // 7. Migrations & Seeding

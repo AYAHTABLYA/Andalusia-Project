@@ -23,6 +23,17 @@ public sealed class ContactEnquiriesController(IContactEnquiryService svc) : Sta
             ? id
             : null;
 
+        // Career-path applications (sent by the career path page) are only accepted from signed-in users.
+        if (userId is null &&
+            dto.DesiredTrack?.TrimStart().StartsWith("Career path:", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            return Unauthorized(new ProblemDetails
+            {
+                Title = "Sign in required",
+                Detail = "Please sign in first to apply for a career path."
+            });
+        }
+
         return ToCreated(await svc.SubmitAsync(dto, userId, ct));
     }
 }
