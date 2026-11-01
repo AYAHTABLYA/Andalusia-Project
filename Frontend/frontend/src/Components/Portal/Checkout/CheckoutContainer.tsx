@@ -1,29 +1,27 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import CheckoutComponent from "./CheckoutComponent";
-import { DEMO_CARD, TUITION_LINES, VAT_RATE } from "./constants";
-import usePortalContext from "../../../hooks/portalHooks/usePortalContext";
+import { makeDemoCard } from "./constants";
 import useCheckout from "../../../hooks/portalHooks/useCheckout";
 import { detectCardBrand, formatCardNumber, formatExpiry, validateCard } from "../../../utils/card";
-import type { CardErrors, CardForm } from "../../../Types/Checkout";
+import { getStoredUser } from "../../../utils/session";
+import type { CardErrors, CardForm, CheckoutTarget } from "../../../Types/Checkout";
+import type { Transaction } from "../../../Types/Payment";
 
-const round2 = (n: number) => Math.round(n * 100) / 100;
+type Props = {
+  target: CheckoutTarget;
+  confirm: (paymentId: string, success: boolean) => Promise<Transaction>;
+  onBack: () => void;
+  // Start over with a fresh payment record (a failed payment cannot be confirmed again).
+  onRetry: () => void;
+  onContinue: () => void;
+};
 
-function CheckoutContainer() {
-  const { showToast } = usePortalContext();
-  const navigate = useNavigate();
-
-  const [card, setCard] = useState<CardForm>(DEMO_CARD);
+// Card step of the merged Payments tab. Rendered by PaymentsContainer in place of the ledger.
+function CheckoutContainer({ target, confirm, onBack, onRetry, onContinue }: Props) {
+  const [card, setCard] = useState<CardForm>(() => makeDemoCard(getStoredUser()?.name ?? ""));
   const [errors, setErrors] = useState<CardErrors>({});
 
-  // 16,666 + 2,000 = 18,666  ->  VAT 14% = 2,613.24  ->  total 21,279.24
-  const { vat, total } = useMemo(() => {
-    const subtotal = TUITION_LINES.reduce((sum, l) => sum + l.amount, 0);
-    const tax = round2(subtotal * VAT_RATE);
-    return { vat: tax, total: round2(subtotal + tax) };
-  }, []);
-
-  const { status, outcome, pay, dismiss } = useCheckout(total);
+  const { status, outcome, pay } = useCheckout(target, confirm);
   const brand = detectCardBrand(card.number);
 
   function handleField(field: keyof CardForm, value: string) {
@@ -39,25 +37,25 @@ function CheckoutContainer() {
   function handleSubmit() {
     const found = validateCard(card);
     setErrors(found);
-    if (Object.keys(found).length === 0) pay(true);
+    if (Object.keys(found).length === 0) void pay(true);
   }
 
   return (
     <CheckoutComponent
+      target={target}
       card={card}
       errors={errors}
       brand={brand}
       status={status}
       outcome={outcome}
-      lines={TUITION_LINES}
-      vat={vat}
-      total={total}
       onField={handleField}
       onSubmit={handleSubmit}
-      onSimulateFailure={() => pay(false)}
-      onDismiss={dismiss}
-      onContinue={() => navigate("/enrollments")}
-      onDownloadReceipt={() => showToast("Tax invoice generated and queued for PDF download.")}
+      onSimulateFailure={() => void pay(false)}
+      onBack={onBack}
+      // A paid receipt returns to the ledger; a failed one starts a new attempt.
+      onDismiss={outcome?.kind === "success" ? onBack : onRetry}
+      onRetry={onRetry}
+      onContinue={onContinue}
     />
   );
 }

@@ -150,3 +150,23 @@
 .payments_dialog-link:hover { color: var(--color-primary); }
 .payments_dialog-link .material-symbols-outlined { font-size: 1.125rem; }
 .payments_dialog-actions { display: flex; gap: 0.75rem; }
+
+/* ---- Awaiting payment (real applications, real fees) ---- */
+.payments_due { padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(176, 121, 99, 0.25); }
+.payments_due-head { display: flex; flex-direction: column; gap: 0.75rem; }
+@media (min-width: 768px) { .payments_due-head { flex-direction: row; align-items: center; justify-content: space-between; } }
+.payments_due-title { display: flex; align-items: flex-start; gap: 1rem; }
+.payments_due-title h2 { font-size: 1rem; font-weight: 700; letter-spacing: 0; }
+.payments_due-title p { max-width: 42rem; margin-top: 0.25rem; font-size: 0.75rem; color: var(--color-on-surface-variant); }
+.payments_due-list { margin-top: 1.25rem; }
+.payments_due-item { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem 0; }
+.payments_due-item + .payments_due-item { border-top: 1px solid var(--color-outline-variant); }
+@media (min-width: 768px) { .payments_due-item { flex-direction: row; align-items: center; justify-content: space-between; gap: 1.5rem; } }
+.payments_due-info { min-width: 0; flex: 1; }
+.payments_due-name { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+.payments_due-name strong { font-size: 0.9375rem; }
+.payments_due-amount { white-space: nowrap; font-size: 1.125rem; font-weight: 700; color: var(--color-warning); }
+.payments_due-empty { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.25rem; padding: 1rem; border-radius: 0.75rem; background-color: var(--color-surface-container-low); }
+.payments_due-empty > .material-symbols-outlined { font-size: 1.75rem; color: var(--color-success); }
+.payments_due-empty > div { flex: 1; min-width: 12rem; }
+.payments_due-empty p { margin-top: 0.125rem; font-size: 0.75rem; color: var(--color-on-surface-variant); }

@@ -1,58 +1,76 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  FAILURE_CODE,
-  FAILURE_REASONS,
-  ORDER,
-  PROCESSING_DELAY_MS,
-} from "../../Components/Portal/Checkout/constants";
-import type { CheckoutOutcome, CheckoutStatus } from "../../Types/Checkout";
+import { useCallback, useRef, useState } from "react";
+import { ApiError } from "../../apis/academyApi";
+import type {
+  CheckoutOutcome,
+  CheckoutStatus,
+  CheckoutTarget,
+} from "../../Types/Checkout";
+import type { Transaction } from "../../Types/Payment";
 
-const randomDigits = (length: number) =>
-  String(Math.floor(Math.random() * 10 ** length)).padStart(length, "0");
-
-// Client-side payment simulation. Nothing is sent anywhere.
-// To go live: replace the setTimeout with initiatePayment(...) + confirmPayment(id)
-// from apis/portalApi.ts and map the response into a CheckoutOutcome.
-function useCheckout(total: number) {
+// Card step of the Payments page. The only network call is the confirm callback:
+//   POST /api/payments/{id}/confirm { success }
+// On success the backend creates the enrollment and approves the application.
+// Card details never leave the browser.
+function useCheckout(
+  target: CheckoutTarget,
+  confirm: (paymentId: string, success: boolean) => Promise<Transaction>,
+) {
   const [status, setStatus] = useState<CheckoutStatus>("idle");
   const [outcome, setOutcome] = useState<CheckoutOutcome | null>(null);
-  const timer = useRef<number | undefined>(undefined);
+  const busy = useRef(false);
 
-  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const fail = useCallback(
+    (code: string, reason: string) => {
+      setOutcome({
+        kind: "failed",
+        failure: { code, reason, traceId: target.reference || `PAY-${target.paymentId}` },
+      });
+      setStatus("failed");
+    },
+    [target],
+  );
 
   const pay = useCallback(
-    (simulateSuccess: boolean) => {
-      if (status === "processing") return;
+    async (simulateSuccess: boolean) => {
+      if (busy.current) return;
+      busy.current = true;
       setStatus("processing");
 
-      timer.current = window.setTimeout(() => {
-        if (simulateSuccess) {
+      try {
+        const txn = await confirm(target.paymentId, simulateSuccess);
+        if (txn.status === "paid") {
           setOutcome({
             kind: "success",
             receipt: {
-              reference: `TXN-${new Date().getFullYear()}-${randomDigits(4)}`,
-              applicationRef: ORDER.applicationRef,
-              program: "Certified Digital Banking Architect",
-              cohort: "Alexandria • Starts Nov 25, 2025",
-              total,
-              currency: ORDER.currency,
+              reference: txn.reference || target.reference || `PAY-${txn.id}`,
+              applicationRef: target.applicationRef,
+              program: target.title,
+              cohort: target.scheduleLabel ?? target.itemType,
+              total: txn.amount,
+              currency: txn.currency,
             },
           });
           setStatus("success");
         } else {
-          setOutcome({
-            kind: "failed",
-            failure: {
-              code: FAILURE_CODE,
-              reason: FAILURE_REASONS[Math.floor(Math.random() * FAILURE_REASONS.length)],
-              traceId: `SIM-FAIL-${randomDigits(4)}-ERR`,
-            },
-          });
-          setStatus("failed");
+          fail(
+            "GATEWAY-DECLINED",
+            simulateSuccess
+              ? "The gateway did not approve this payment."
+              : "Payment declined by the sandbox gateway (test handler).",
+          );
         }
-      }, PROCESSING_DELAY_MS);
+      } catch (err) {
+        fail(
+          err instanceof ApiError && err.status ? `HTTP-${err.status}` : "NETWORK",
+          err instanceof Error && err.message
+            ? err.message
+            : "The payment could not be completed. Please try again.",
+        );
+      } finally {
+        busy.current = false;
+      }
     },
-    [status, total],
+    [confirm, fail, target],
   );
 
   const dismiss = useCallback(() => {

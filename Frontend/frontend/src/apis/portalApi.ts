@@ -45,12 +45,15 @@ const getPayments = (signal?: AbortSignal) =>
   apiGet<unknown>(urls.payments.getAll, undefined, signal);
 const getPayment = (id: string, signal?: AbortSignal) =>
   apiGet<unknown>(withId(urls.payments.getById, id), undefined, signal);
-// Start a payment (body = whatever the backend's InitiatePayment DTO expects).
-const initiatePayment = (body: Record<string, unknown>) =>
+// Applications the learner can still pay for (real course tuition / program price).
+const getPayableApplications = (signal?: AbortSignal) =>
+  apiGet<unknown>(urls.payments.payable, undefined, signal);
+// Start a payment for an application: creates the record (or re-uses the pending one).
+const initiatePayment = (body: { applicationId: number }) =>
   apiPost<unknown>(urls.payments.initiate, body);
-// Simulation callback: marks the payment as paid.
-const confirmPayment = (id: string) =>
-  apiPost<unknown>(withId(urls.payments.confirm, id), {});
+// Simulation callback: success=true pays (and creates the enrollment), false marks it Failed.
+const confirmPayment = (id: string, success = true) =>
+  apiPost<unknown>(withId(urls.payments.confirm, id), { success });
 
 // ---- Dashboard ----
 const getLearnerDashboard = (signal?: AbortSignal) =>
@@ -69,6 +72,7 @@ export {
   uploadProfilePhoto,
   getPayments,
   getPayment,
+  getPayableApplications,
   initiatePayment,
   confirmPayment,
   getLearnerDashboard,

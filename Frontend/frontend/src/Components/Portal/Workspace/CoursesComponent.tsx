@@ -42,6 +42,7 @@ function CoursesComponent({ loading, items }: Props) {
                 <Link className="portal-btn portal-btn-secondary" to="/workspace/schedule">Schedule</Link>
                 <Link className="portal-btn portal-btn-secondary" to="/workspace/assignments">Assignments</Link>
                 <Link className="portal-btn portal-btn-secondary" to="/workspace/materials">Materials</Link>
+                {c.instructor && <Link className="portal-btn portal-btn-secondary" to="/workspace/messages">Message instructor</Link>}
               </div>
             </article>
           ))}

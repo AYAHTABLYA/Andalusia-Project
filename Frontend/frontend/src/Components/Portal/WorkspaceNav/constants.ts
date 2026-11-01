@@ -14,10 +14,9 @@ const WORKSPACE_TABS: WorkspaceTab[] = [
   },
   {
     to: "/payments",
-    label: "Payments & Ledger",
+    label: "Payments",
     icon: "account_balance_wallet",
   },
-  { to: "/checkout", label: "Tuition Checkout", icon: "credit_card" },
   { to: "/applications", label: "My Applications", icon: "description" },
   { to: "/enrollments", label: "My Enrollments", icon: "school" },
   { to: "/workspace", label: "My Workspace", icon: "space_dashboard" },

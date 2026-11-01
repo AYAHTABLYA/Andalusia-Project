@@ -219,3 +219,78 @@
 @media (max-width: 1024px) { .ws { grid-template-columns: 1fr; } }
 
 @media (max-width: 1280px) { .ws_session-row .ws_who { display: none; } }
+
+
+/* ---- Overview polish: consistent spacing + readable card titles ---- */
+.ws_hello { margin-bottom: 1.5rem; }
+.ws_hello h1 { margin: 0.35rem 0 0.5rem; }
+.ws_content .portal-stat-grid { gap: 1.25rem; margin-bottom: 1.25rem; }
+.ws_charts { gap: 1.25rem; margin-bottom: 1.25rem; align-items: stretch; }
+.ws_grid { gap: 1.25rem; }
+.ws_charts .chart-card { display: flex; flex-direction: column; padding: 1.35rem 1.5rem; }
+.ws_charts .chart-card_head { margin-bottom: 1rem; }
+.ws_charts .chart-card_head h2 { margin: 0 0 0.2rem; font-family: inherit; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; color: var(--color-on-surface); }
+.ws_charts .chart-card_head p { margin: 0; font-size: 0.85rem; color: var(--color-on-surface-variant); }
+.ws_charts .chart-empty { flex: 1; display: grid; place-items: center; padding: 1.5rem 0; font-size: 0.92rem; }
+.ws_charts .chart-donut { justify-content: center; }
+.ws_charts .chart-bars { margin-top: auto; }
+.ws_panel-head h2 { margin: 0 0 0.2rem; font-family: inherit; font-size: 1.1rem; font-weight: 700; letter-spacing: 0; }
+.ws_stat > span:not(.ws_stat-icon) { padding-right: 2.8rem; }
+.ws_chat-compose.is-disabled { opacity: 0.7; margin-top: auto; }
+
+/* ---- Dashboard polish v2: spacing + readable typography (placed last so it wins) ---- */
+.ws { text-align: left; gap: 2rem; }
+.ws_content > * + * { margin-top: 0; }
+.ws_hello { align-items: center; margin-bottom: 1.75rem; }
+.ws_hello h1, .ws_head h1 { margin: 0.4rem 0 0.5rem; font-family: inherit; font-size: clamp(1.75rem, 2.8vw, 2.25rem); font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; }
+.ws_hello p, .ws_head p { font-size: 1rem; line-height: 1.5; }
+.ws_head { margin-bottom: 1.75rem; }
+.ws .portal-eyebrow { display: block; margin-bottom: 0.35rem; }
+
+/* stat tiles */
+.ws_content .portal-stat-grid { gap: 1.25rem; margin-bottom: 1.5rem; }
+.ws_stat { gap: 0.4rem; padding: 1.4rem 1.5rem 1.25rem; }
+.ws_stat > span:not(.ws_stat-icon) { padding-right: 3rem; font-size: 0.9rem; line-height: 1.3; }
+.ws_stat strong { margin: 0.15rem 0; font-size: 2.1rem; line-height: 1.1; }
+.ws_stat small { line-height: 1.35; }
+.ws_bar { margin-top: 0.7rem; }
+
+/* chart cards: 3 across, then 2 + 1 full width, then stacked */
+.ws_charts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+.ws .ws_charts .chart-card { padding: 1.4rem 1.5rem 1.5rem; }
+.ws .ws_charts .chart-card_head { margin-bottom: 1.1rem; }
+.ws .ws_charts .chart-card_head h2 { font-family: inherit; font-size: 1.05rem; font-weight: 700; letter-spacing: 0; text-transform: none; }
+.ws .ws_charts .chart-card_head p { font-size: 0.85rem; }
+.ws .ws_charts .chart-donut { flex-direction: column; align-items: center; gap: 1rem; }
+.ws .ws_charts .chart-legend { width: 100%; }
+@media (max-width: 1180px) {
+  .ws_charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ws_charts > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (max-width: 720px) {
+  .ws_charts { grid-template-columns: 1fr; }
+}
+
+/* lower panels */
+.ws_grid { gap: 1.25rem; }
+.ws .ws_panel { padding: 1.5rem 1.6rem; }
+.ws .ws_panel-head { margin-bottom: 1rem; }
+.ws .ws_panel-head h2 { font-family: inherit; font-size: 1.1rem; font-weight: 700; letter-spacing: 0; text-transform: none; }
+.ws .ws_empty { padding: 2.25rem 1rem; }
+.ws .ws_empty h3 { font-family: inherit; font-size: 1.05rem; }
+
+/* sidebar */
+.ws_side { gap: 1.25rem; padding: 1.4rem 1.25rem; min-height: 0; }
+.ws_side-link { padding: 0.45rem 0.6rem; }
+
+/* messages: empty state + disabled compose box */
+.ws_chat-pane > .ws_chat-empty { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.ws_actions--center { justify-content: center; padding-bottom: 1rem; }
+.ws_chat-compose.is-disabled input { background: var(--color-surface-container-low); cursor: not-allowed; }
+.ws_chat-compose.is-disabled { opacity: 1; }
+.ws_chat { min-height: 32rem; }
+
+/* stat tiles wrap to 2 x 2 instead of squeezing the label under the icon */
+.ws_content .portal-stat-grid { grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); }
+.ws_stat > span:not(.ws_stat-icon) { padding-right: 2.9rem; overflow-wrap: normal; }
+.ws_stat-icon { top: 1.1rem; right: 1.1rem; width: 2.2rem; height: 2.2rem; }

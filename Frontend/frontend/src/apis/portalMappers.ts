@@ -11,10 +11,12 @@ import type {
 } from "../Types/Profile";
 import type { LearnerDashboard } from "../Types/Dashboard";
 import type {
+  PayableApplication,
   PaymentStatus,
   Transaction,
   TransactionLine,
 } from "../Types/Payment";
+import type { CheckoutTarget } from "../Types/Checkout";
 
 type Raw = Record<string, any>;
 
@@ -129,32 +131,36 @@ function toCampusOptions(raw: unknown): CampusOption[] {
 // ---------------- Payments ----------------
 function toStatus(value: unknown): PaymentStatus {
   const s = String(value ?? "").toLowerCase();
+  if (/refund/.test(s)) return "refunded";
   if (/(paid|complete|success|settled|confirmed)/.test(s)) return "paid";
   if (/(fail|declin|reject|cancel|expire)/.test(s)) return "failed";
   return "pending";
 }
 
+// Shown in the Date column while there is no payment date yet.
+const UNSETTLED_DATE: Record<Exclude<PaymentStatus, "paid">, [string, string]> = {
+  pending: ["Pending", "Awaiting payment"],
+  failed: ["Failed", "Payment not completed"],
+  refunded: ["Refunded", "Returned to payer"],
+};
+
+// PaymentDto: { id, applicationId, enrollmentId, itemTitle, amount, currency,
+//               gatewayName, transactionRef, status, paidAt }
 function toTransaction(raw: Raw): Transaction {
   const id = String(pick(raw, "id", "paymentId", "transactionId") ?? "");
   const status = toStatus(pick(raw, "status", "paymentStatus"));
   const course =
     pick<string>(
       raw,
+      "itemTitle",
       "courseTitle",
       "programTitle",
-      "itemTitle",
       "title",
       "description",
     ) ?? "Tuition payment";
   const amount = Number(pick(raw, "amount", "totalAmount", "total") ?? 0);
-  const dateIso = pick<string>(
-    raw,
-    status === "paid" ? "paidAt" : "dueDate",
-    "paidAt",
-    "paymentDate",
-    "dueDate",
-    "createdAt",
-  );
+  const paidAt = pick<string>(raw, "paidAt", "paymentDate");
+  const applicationId = pick<number | string>(raw, "applicationId");
 
   const lineSource = pick<Raw[]>(
     raw,
@@ -173,23 +179,43 @@ function toTransaction(raw: Raw): Transaction {
 
   const n = pick<number>(raw, "installmentNumber");
   const total = pick<number>(raw, "totalInstallments", "installmentsCount");
+  const [date, dateNote] =
+    status === "paid"
+      ? paidAt
+        ? [formatDate(paidAt), formatTime(paidAt)]
+        : ["—", ""]
+      : UNSETTLED_DATE[status];
 
   return {
     id,
-    invoice: String(pick(raw, "invoiceNumber", "invoice", "reference") ?? id),
+    applicationId: applicationId === undefined ? null : Number(applicationId),
+    reference:
+      pick<string>(
+        raw,
+        "transactionRef",
+        "transactionReference",
+        "gatewayReference",
+        "authCode",
+      ) ?? "",
+    invoice:
+      pick<string>(raw, "invoiceNumber", "invoice") ??
+      `INV-${id.padStart(5, "0")}`,
     course,
     term: pick<string>(raw, "term", "termLabel", "notes") ?? "",
-    date: formatDate(dateIso),
-    dateNote: status === "paid" ? formatTime(dateIso) : "Due date",
+    date,
+    dateNote,
     amount,
     currency: pick<string>(raw, "currency") ?? "EGP",
     installment:
       pick<string>(raw, "installment", "installmentLabel") ??
       (n && total ? `Installment ${n} / ${total}` : "One-time payment"),
-    method: pick<string>(raw, "paymentMethod", "method", "gateway") ?? "—",
+    method:
+      pick<string>(raw, "paymentMethod", "method", "gatewayName", "gateway") ??
+      "—",
     methodNote:
       pick<string>(
         raw,
+        "transactionRef",
         "transactionReference",
         "gatewayReference",
         "authCode",
@@ -201,6 +227,53 @@ function toTransaction(raw: Raw): Transaction {
 
 const toTransactions = (raw: unknown): Transaction[] =>
   toArray(raw).map(toTransaction);
+
+// PayableApplicationDto: { applicationId, applicationStatus, itemType, itemTitle, amount,
+//   currency, submissionDate, scheduleId, scheduleLabel, startDate, pendingPaymentId }
+function toPayable(raw: Raw): PayableApplication {
+  const applicationId = Number(pick(raw, "applicationId", "id") ?? 0);
+  const pending = pick<number | string>(raw, "pendingPaymentId");
+  const start = pick<string>(raw, "startDate");
+  return {
+    applicationId,
+    applicationRef: `APP-${applicationId}`,
+    status: String(pick(raw, "applicationStatus", "status") ?? "Submitted").replaceAll("_", " "),
+    itemType:
+      String(pick(raw, "itemType") ?? "").toLowerCase() === "program"
+        ? "Program"
+        : "Course",
+    title: pick<string>(raw, "itemTitle", "title") ?? `Application #${applicationId}`,
+    amount: Number(pick(raw, "amount") ?? 0),
+    currency: pick<string>(raw, "currency") ?? "EGP",
+    submitted: formatDate(pick<string>(raw, "submissionDate")),
+    scheduleLabel: pick<string>(raw, "scheduleLabel") ?? null,
+    startDate: start ? formatDate(start) : null,
+    pendingPaymentId: pending === undefined ? null : String(pending),
+  };
+}
+
+const toPayables = (raw: unknown): PayableApplication[] =>
+  toArray(raw).map(toPayable);
+
+// Payment record (+ the application info, when we have it) -> what the card step shows.
+function toCheckoutTarget(
+  txn: Transaction,
+  app?: PayableApplication | null,
+): CheckoutTarget {
+  return {
+    paymentId: txn.id,
+    applicationId: txn.applicationId,
+    applicationRef:
+      txn.applicationId !== null ? `APP-${txn.applicationId}` : `PAY-${txn.id}`,
+    title: txn.course,
+    itemType: app?.itemType ?? "Course",
+    amount: txn.amount,
+    currency: txn.currency,
+    reference: txn.reference,
+    scheduleLabel: app?.scheduleLabel ?? null,
+    startDate: app?.startDate ?? null,
+  };
+}
 
 // ---------------- Dashboard ----------------
 // GET /api/learner/dashboard -> { learner, stats, recentApplications, enrollments, recentPayments }
@@ -280,4 +353,12 @@ function toDashboard(raw: unknown): LearnerDashboard {
   return { metrics, enrollment };
 }
 
-export { toProfile, toCampusOptions, toTransactions, toDashboard };
+export {
+  toProfile,
+  toCampusOptions,
+  toTransaction,
+  toTransactions,
+  toPayables,
+  toCheckoutTarget,
+  toDashboard,
+};

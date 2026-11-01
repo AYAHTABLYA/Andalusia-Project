@@ -18,7 +18,6 @@ import ApplicationsContainer from "./Components/Portal/Applications/Applications
 import ApplicationDetailContainer from "./Components/Portal/Applications/ApplicationDetailContainer";
 import EnrollmentsContainer from "./Components/Portal/Enrollments/EnrollmentsContainer";
 import EnrollmentDetailContainer from "./Components/Portal/Enrollments/EnrollmentDetailContainer";
-import CheckoutContainer from "./Components/Portal/Checkout/CheckoutContainer";
 import WorkspaceLayoutContainer from "./Components/Portal/Workspace/WorkspaceLayoutContainer";
 import OverviewContainer from "./Components/Portal/Workspace/OverviewContainer";
 import WorkspaceCoursesContainer from "./Components/Portal/Workspace/CoursesContainer";
@@ -81,7 +80,6 @@ function App() {
             <Route element={<PortalLayout />}>
               <Route path="/profile" element={<ProfileContainer />} />
               <Route path="/payments" element={<PaymentsContainer />} />
-              <Route path="/checkout" element={<CheckoutContainer />} />
               <Route path="/applications" element={<ApplicationsContainer />} />
               <Route path="/applications/:id" element={<ApplicationDetailContainer />} />
               <Route path="/enrollments" element={<EnrollmentsContainer />} />

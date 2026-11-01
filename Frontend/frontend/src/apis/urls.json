@@ -43,6 +43,7 @@
   },
   "payments": {
     "initiate": "/api/payments",
+    "payable": "/api/payments/payable",
     "getAll": "/api/payments",
     "getById": "/api/payments/:id",
     "confirm": "/api/payments/:id/confirm"

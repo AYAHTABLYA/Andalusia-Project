@@ -3,51 +3,50 @@ import type { ChangeEvent, FormEvent } from "react";
 import Breadcrumb from "../../Academy/Shared/Breadcrumb";
 import Dialog from "../Shared/Dialog";
 import CardPreview from "./CardPreview";
-import { ACCEPTED_BRANDS, ORDER, VAT_LINE } from "./constants";
+import { ACCEPTED_BRANDS } from "./constants";
 import { SUPPORT_PHONE } from "../../Academy/Navbar/constants";
 import { formatAmount } from "../../../utils/format";
 import type {
   CardBrand,
   CardErrors,
   CardForm,
-  CheckoutLine,
   CheckoutOutcome,
   CheckoutStatus,
+  CheckoutTarget,
 } from "../../../Types/Checkout";
 import "../Shared/style.css";
 import "./style.css";
 
 type Props = {
+  target: CheckoutTarget;
   card: CardForm;
   errors: CardErrors;
   brand: CardBrand;
   status: CheckoutStatus;
   outcome: CheckoutOutcome | null;
-  lines: CheckoutLine[];
-  vat: number;
-  total: number;
   onField: (field: keyof CardForm, value: string) => void;
   onSubmit: () => void;
   onSimulateFailure: () => void;
+  onBack: () => void;
   onDismiss: () => void;
+  onRetry: () => void;
   onContinue: () => void;
-  onDownloadReceipt: () => void;
 };
-
-const STEPS = [
-  { n: "01", state: "done", title: "Course & Schedule Select", text: "Alexandria Cohort • Nov 25, 2025" },
-  { n: "02", state: "active", title: "Payment & Card Simulation", text: "Order Summary + Secure Sandbox Gateway" },
-  { n: "03", state: "todo", title: "Outcome & Confirmation", text: "e-Receipt & Immediate LMS Activation" },
-] as const;
 
 const STEP_LABEL = { done: "Completed", active: "Active Now", todo: "Final Step" } as const;
 
 function CheckoutComponent({
-  card, errors, brand, status, outcome, lines, vat, total,
-  onField, onSubmit, onSimulateFailure, onDismiss, onContinue, onDownloadReceipt,
+  target, card, errors, brand, status, outcome,
+  onField, onSubmit, onSimulateFailure, onBack, onDismiss, onRetry, onContinue,
 }: Props) {
-  const money = (amount: number) => `${ORDER.currency} ${formatAmount(amount)}`;
+  const money = (amount: number) => `${target.currency} ${formatAmount(amount)}`;
   const processing = status === "processing";
+
+  const steps = [
+    { n: "01", state: "done", title: "Application Submitted", text: `${target.applicationRef} • ${target.itemType}` },
+    { n: "02", state: "active", title: "Payment & Card Details", text: "Order Summary + Secure Sandbox Gateway" },
+    { n: "03", state: "todo", title: "Confirmation & Enrollment", text: "Receipt & Immediate Workspace Access" },
+  ] as const;
 
   const bind =
     (field: keyof CardForm) => (e: ChangeEvent<HTMLInputElement>) => onField(field, e.target.value);
@@ -57,22 +56,27 @@ function CheckoutComponent({
     onSubmit();
   };
 
-  const allLines: CheckoutLine[] = [...lines, { ...VAT_LINE, amount: vat }];
-
   return (
     <div className="checkout">
       <Breadcrumb
         items={[
           { label: "Student Workspace", to: "/profile" },
-          { label: "Admissions", to: "/applications" },
-          { label: ORDER.applicationRef },
-          { label: "Tuition Checkout" },
+          { label: "Payments" },
+          { label: target.applicationRef },
+          { label: "Checkout" },
         ]}
       />
 
+      <div>
+        <button type="button" className="portal-ui_btn portal-ui_btn--outline portal-ui_btn--sm" onClick={onBack}>
+          <span className="material-symbols-outlined">arrow_back</span>
+          Back to Payments
+        </button>
+      </div>
+
       {/* Progress */}
       <ol className="portal-ui_card checkout_steps" aria-label="Checkout progress">
-        {STEPS.map((s) => (
+        {steps.map((s) => (
           <li key={s.n} className={`checkout_step checkout_step--${s.state}`}>
             <span className="checkout_step-dot">
               {s.state === "done" ? <span className="material-symbols-outlined">check</span> : s.n}
@@ -91,65 +95,59 @@ function CheckoutComponent({
         <section className="checkout_summary">
           <article className="portal-ui_card checkout_panel checkout_panel--accent">
             <div className="checkout_row-between">
-              <span className="portal-ui_pill portal-ui_pill--success">
-                <span className="checkout_dot" /> Cleared for Matriculation
+              <span className="portal-ui_pill portal-ui_pill--warning">
+                <span className="checkout_dot" /> Awaiting Payment
               </span>
-              <span className="checkout_ref">REF: {ORDER.applicationRef}</span>
+              <span className="checkout_ref">REF: {target.applicationRef}</span>
             </div>
-            <h2 className="checkout_program">{ORDER.program}</h2>
-            <p className="checkout_muted">{ORDER.moduleSummary}</p>
+            <h2 className="checkout_program">{target.title}</h2>
+            <p className="checkout_muted">{target.itemType} application</p>
 
-            <ul className="checkout_facts">
-              <li>
-                <span className="material-symbols-outlined">location_on</span>
-                <div><strong>{ORDER.campus}</strong><span>{ORDER.campusNote}</span></div>
-              </li>
-              <li>
-                <span className="material-symbols-outlined">calendar_month</span>
-                <div><strong>{ORDER.startsOn}</strong><span>{ORDER.schedule}</span></div>
-              </li>
-              <li>
-                <span className="material-symbols-outlined">school</span>
-                <div><strong>{ORDER.accreditation}</strong><span>{ORDER.accreditationNote}</span></div>
-              </li>
-            </ul>
-
-            <div className="checkout_lab">
-              <span className="material-symbols-outlined">terminal</span>
-              <strong>Dedicated Cloud FinTech Sandbox Access</strong>
-              <span className="portal-ui_pill portal-ui_pill--warning">Included</span>
-            </div>
+            {(target.scheduleLabel || target.startDate) && (
+              <ul className="checkout_facts">
+                {target.scheduleLabel && (
+                  <li>
+                    <span className="material-symbols-outlined">location_on</span>
+                    <div><strong>{target.scheduleLabel}</strong><span>Selected schedule</span></div>
+                  </li>
+                )}
+                {target.startDate && (
+                  <li>
+                    <span className="material-symbols-outlined">calendar_month</span>
+                    <div><strong>Starts {target.startDate}</strong><span>First session</span></div>
+                  </li>
+                )}
+              </ul>
+            )}
           </article>
 
           <article className="portal-ui_card checkout_panel">
             <div className="checkout_row-between checkout_panel-head">
-              <h3><span className="material-symbols-outlined">receipt_long</span> Itemized Tuition Schedule</h3>
-              <span className="portal-ui_pill portal-ui_pill--muted">{ORDER.planLabel}</span>
+              <h3><span className="material-symbols-outlined">receipt_long</span> Order Summary</h3>
+              <span className="portal-ui_pill portal-ui_pill--muted">One-time payment</span>
             </div>
 
             <ul className="checkout_lines">
-              {allLines.map((line) => (
-                <li key={line.label}>
-                  <div><strong>{line.label}</strong><span>{line.note}</span></div>
-                  <b>{money(line.amount)}</b>
-                </li>
-              ))}
+              <li>
+                <div><strong>{target.title}</strong><span>{target.itemType} tuition</span></div>
+                <b>{money(target.amount)}</b>
+              </li>
             </ul>
 
             <div className="checkout_total">
               <div>
                 <span className="checkout_total-label">Total Due Now</span>
-                <span className="checkout_muted">Includes all taxes and campus credentials</span>
+                <span className="checkout_muted">Tuition as published for this {target.itemType.toLowerCase()}</span>
               </div>
               <div className="checkout_total-amount">
-                <strong>{money(total)}</strong>
-                <span>{ORDER.currency} ({ORDER.usdApprox})</span>
+                <strong>{money(target.amount)}</strong>
+                <span>{target.currency}</span>
               </div>
             </div>
 
             <p className="checkout_guarantee">
               <span className="material-symbols-outlined">verified</span>
-              Institutional Guarantee: Official Tax Invoice provided upon validation.
+              Your enrollment is created as soon as the payment is confirmed.
             </p>
           </article>
         </section>
@@ -159,10 +157,10 @@ function CheckoutComponent({
           <div className="checkout_sandbox" role="note">
             <span className="material-symbols-outlined">science</span>
             <div>
-              <strong>Demo Payment Simulation Sandbox</strong>
+              <strong>Sandbox Payment Gateway</strong>
               <p>
-                Card credentials entered here are strictly client-side for UI testing. No sensitive
-                card data or CVV is transmitted or stored in the database.
+                Card details are checked in your browser only. No card number or CVV is sent to
+                the server or stored; only the payment result is recorded.
               </p>
             </div>
           </div>
@@ -175,7 +173,7 @@ function CheckoutComponent({
               <div className="checkout_input">
                 <span className="material-symbols-outlined">person</span>
                 <input id="cardName" className="portal-ui_input" type="text" autoComplete="cc-name"
-                  placeholder="e.g. Ahmed Samy Al-Mansoor" value={card.name} onChange={bind("name")}
+                  placeholder="Name as printed on the card" value={card.name} onChange={bind("name")}
                   aria-invalid={!!errors.name} />
               </div>
               {errors.name && <span className="checkout_error">{errors.name}</span>}
@@ -225,9 +223,9 @@ function CheckoutComponent({
             <div className="checkout_notice">
               <span className="material-symbols-outlined">info</span>
               <p>
-                <strong>Notice:</strong> No account password field is required for card checkout. In
-                authentic 3-D Secure banking workflows, your issuing bank will dispatch a one-time
-                OTP directly to your registered mobile device.
+                <strong>Notice:</strong> No account password is required for card checkout. With a
+                live 3-D Secure gateway, your issuing bank would send a one-time OTP to your
+                registered mobile device.
               </p>
             </div>
 
@@ -235,12 +233,12 @@ function CheckoutComponent({
               <span className={`material-symbols-outlined${processing ? " checkout_spin" : ""}`}>
                 {processing ? "progress_activity" : "verified"}
               </span>
-              {processing ? "Processing with Banking Gateway..." : `Confirm Payment (${money(total)})`}
+              {processing ? "Processing with Banking Gateway..." : `Confirm Payment (${money(target.amount)})`}
             </button>
             <button type="button" className="portal-ui_btn portal-ui_btn--outline checkout_fail"
               onClick={onSimulateFailure} disabled={processing}>
               <span className="material-symbols-outlined">bug_report</span>
-              Simulate Gateway Failure / Error Response (Test Handler)
+              Simulate Gateway Failure (Sandbox Test)
             </button>
           </form>
         </section>
@@ -250,27 +248,26 @@ function CheckoutComponent({
       {outcome?.kind === "success" && (
         <Dialog
           icon="check_circle"
-          title="Matriculation Confirmed!"
-          subtitle="Transaction approved & settled by the Meeza Gateway simulator."
+          title="Payment Confirmed!"
+          subtitle="Your payment was recorded and your enrollment is confirmed."
           onClose={onDismiss}
           footer={
             <>
-              <button type="button" className="portal-ui_btn portal-ui_btn--outline" onClick={onDownloadReceipt}>
-                <span className="material-symbols-outlined">download</span>
-                Download Tax Invoice (PDF)
+              <button type="button" className="portal-ui_btn portal-ui_btn--outline" onClick={onDismiss}>
+                Back to Payments
               </button>
               <button type="button" className="portal-ui_btn portal-ui_btn--primary" onClick={onContinue}>
                 <span className="material-symbols-outlined">school</span>
-                Proceed to My Courses (الانتقال إلى كورساتي)
+                Go to My Enrollments (الانتقال إلى تسجيلاتي)
               </button>
             </>
           }
         >
           <dl className="checkout_receipt">
-            <div><dt>Official Transaction Ref</dt><dd className="checkout_mono">{outcome.receipt.reference}</dd></div>
-            <div><dt>Student Application</dt><dd className="checkout_mono">{outcome.receipt.applicationRef}</dd></div>
-            <div><dt>Program Track</dt><dd>{outcome.receipt.program}</dd></div>
-            <div><dt>Campus Cohort</dt><dd>{outcome.receipt.cohort}</dd></div>
+            <div><dt>Transaction Ref</dt><dd className="checkout_mono">{outcome.receipt.reference}</dd></div>
+            <div><dt>Application</dt><dd className="checkout_mono">{outcome.receipt.applicationRef}</dd></div>
+            <div><dt>Course / Program</dt><dd>{outcome.receipt.program}</dd></div>
+            <div><dt>Schedule</dt><dd>{outcome.receipt.cohort}</dd></div>
             <div className="checkout_receipt-total">
               <dt>Total Cleared Amount</dt>
               <dd>{outcome.receipt.currency} {formatAmount(outcome.receipt.total)}</dd>
@@ -282,8 +279,8 @@ function CheckoutComponent({
       {outcome?.kind === "failed" && (
         <Dialog
           icon="error"
-          title="Payment Processing Denied"
-          subtitle={`Simulation Error Response: Code #${outcome.failure.code}`}
+          title="Payment Not Completed"
+          subtitle={`Error code: ${outcome.failure.code}`}
           onClose={onDismiss}
           footer={
             <>
@@ -291,9 +288,9 @@ function CheckoutComponent({
                 <span className="material-symbols-outlined">support_agent</span>
                 Contact Campus Bursar • {SUPPORT_PHONE}
               </a>
-              <button type="button" className="portal-ui_btn portal-ui_btn--primary" onClick={onDismiss}>
+              <button type="button" className="portal-ui_btn portal-ui_btn--primary" onClick={onRetry}>
                 <span className="material-symbols-outlined">refresh</span>
-                Try Again with Alternate Method
+                Try Again
               </button>
             </>
           }
@@ -301,9 +298,9 @@ function CheckoutComponent({
           <div className="checkout_failure">
             <span className="material-symbols-outlined">warning</span>
             <div>
-              <strong>Rejection Reason:</strong>
+              <strong>Reason:</strong>
               <p>{outcome.failure.reason}</p>
-              <small>Gateway Trace ID: <span className="checkout_mono">{outcome.failure.traceId}</span></small>
+              <small>Payment reference: <span className="checkout_mono">{outcome.failure.traceId}</span></small>
             </div>
           </div>
         </Dialog>

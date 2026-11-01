@@ -1,20 +1,28 @@
 import Dialog from "../Shared/Dialog";
 import { formatAmount } from "../../../utils/format";
+import { downloadReceiptPdf } from "../../../utils/documents";
 import type { Transaction } from "../../../Types/Payment";
 import "../Shared/style.css";
 import "./style.css";
 
 type Props = {
   transaction: Transaction;
+  canPay: boolean;
   studentName: string;
   onClose: () => void;
   onPay: (id: string) => void;
   onNotify: (message: string) => void;
 };
 
-function TransactionDialog({ transaction: t, studentName, onClose, onPay, onNotify }: Props) {
+function TransactionDialog({ transaction: t, canPay, studentName, onClose, onPay, onNotify }: Props) {
   const paid = t.status === "paid";
   const money = (amount: number) => `${t.currency} ${formatAmount(amount)}`;
+  const banner = {
+    paid: { icon: "check_circle", text: "Payment cleared and reconciled", label: "Settled" },
+    pending: { icon: "schedule", text: "Payment pending: awaiting card payment", label: "Pending" },
+    failed: { icon: "error", text: "Payment failed: you can retry it from the ledger", label: "Failed" },
+    refunded: { icon: "undo", text: "Payment refunded to the payer", label: "Refunded" },
+  }[t.status];
 
   return (
     <Dialog
@@ -27,7 +35,10 @@ function TransactionDialog({ transaction: t, studentName, onClose, onPay, onNoti
           <button
             type="button"
             className="payments_dialog-link"
-            onClick={() => onNotify(`Receipt PDF downloaded for ${t.id}.`)}
+            onClick={() => {
+              downloadReceiptPdf(t, studentName);
+              onNotify(`Receipt PDF downloaded for ${t.id}.`);
+            }}
           >
             <span className="material-symbols-outlined">file_download</span>
             Download PDF Receipt
@@ -36,9 +47,9 @@ function TransactionDialog({ transaction: t, studentName, onClose, onPay, onNoti
             <button type="button" className="portal-ui_btn portal-ui_btn--outline" onClick={onClose}>
               Close
             </button>
-            {!paid && (
+            {canPay && (
               <button type="button" className="portal-ui_btn portal-ui_btn--primary" onClick={() => onPay(t.id)}>
-                Pay {money(t.amount)} Now
+                {t.status === "failed" ? "Retry" : "Pay"} {money(t.amount)} Now
               </button>
             )}
           </div>
@@ -47,10 +58,10 @@ function TransactionDialog({ transaction: t, studentName, onClose, onPay, onNoti
     >
       <div className={`payments_status-banner payments_status-banner--${paid ? "paid" : "pending"}`}>
         <span>
-          <span className="material-symbols-outlined">{paid ? "check_circle" : "schedule"}</span>
-          {paid ? "Payment cleared and reconciled" : `Payment pending: due ${t.date}`}
+          <span className="material-symbols-outlined">{banner.icon}</span>
+          {banner.text}
         </span>
-        <b>{paid ? "Settled" : "Pending"}</b>
+        <b>{banner.label}</b>
       </div>
 
       <div className="payments_dialog-grid">

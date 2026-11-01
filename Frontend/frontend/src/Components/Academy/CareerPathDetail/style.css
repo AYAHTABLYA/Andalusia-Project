@@ -705,8 +705,12 @@
   line-height: 1.5;
   color: var(--color-on-surface-variant);
 }
+.career-path-detail_roles,
 .career-path-detail_roles strong {
-  color: var(--color-on-surface);
+  color: inherit;
+}
+.career-path-detail_roles strong {
+  font-weight: 700;
 }
 .career-path-detail_feedback {
   font-size: 0.75rem;

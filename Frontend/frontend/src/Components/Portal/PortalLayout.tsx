@@ -14,7 +14,8 @@ function PortalShell() {
   const { toast, showToast, closeToast } = useToast();
   const payments = usePayments();
 
-  const dueCount = payments.transactions.filter((t) => t.status === "pending").length;
+  // Applications that still have to be paid.
+  const dueCount = payments.payable.length;
   const context: PortalOutletContext = { showToast, payments };
 
   return (

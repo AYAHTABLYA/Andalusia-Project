@@ -1,4 +1,5 @@
 import { memo, type FormEvent, type RefObject } from "react";
+import { Link } from "react-router-dom";
 import type { ChatMessage, MessageContact } from "../../../Types/Messages";
 import EmptyState from "./EmptyState";
 import { fmtRelative, initials } from "./helpers";
@@ -62,16 +63,29 @@ function MessagesComponent({
             <p className="ws_pad">Loading…</p>
           ) : !hasContacts ? (
             <>
-              <EmptyState
-                icon="forum"
-                title={error ? "Could not load your conversations" : "No instructors yet"}
-                text={error ?? "Once you are enrolled in a batch, you can message its instructors here."}
-              />
-              {error && (
-                <div className="ws_actions">
-                  <button type="button" className="portal-btn portal-btn-secondary" onClick={onRetry}>Retry</button>
+              <div className="ws_chat-empty">
+                <EmptyState
+                  icon="forum"
+                  title={error ? "Could not load your conversations" : "No instructors to message yet"}
+                  text={
+                    error ??
+                    "You can message an instructor as soon as you are enrolled in a batch that has one assigned. Check My courses to see your batch and instructor."
+                  }
+                />
+                <div className="ws_actions ws_actions--center">
+                  {error ? (
+                    <button type="button" className="portal-btn portal-btn-secondary" onClick={onRetry}>Retry</button>
+                  ) : (
+                    <Link to="/workspace/courses" className="portal-btn portal-btn-secondary">Go to My courses</Link>
+                  )}
                 </div>
-              )}
+              </div>
+              <form className="ws_chat-compose is-disabled" onSubmit={(e) => e.preventDefault()}>
+                <input disabled placeholder="No instructor selected" aria-label="Write a message" />
+                <button type="button" className="portal-btn portal-btn-primary ws_send" disabled aria-label="Send message">
+                  <span className="material-symbols-outlined">send</span>
+                </button>
+              </form>
             </>
           ) : !active ? (
             <EmptyState icon="forum" title="Select an instructor" text="Choose a conversation from the list." />

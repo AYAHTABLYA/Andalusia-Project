@@ -9,6 +9,8 @@ const FILTERS = [
   { value: "Submitted", label: "Submitted" },
   { value: "Cancelled", label: "Cancelled" },
 ];
+// Statuses that still lead to the payment step (Approved = already paid + enrolled).
+const PAYABLE_STATUSES = ["Submitted", "Under_Review"];
 const labelStatus = (status: string) => status.replaceAll("_", " ");
 const titleFor = (app: ApplicationDto) => app.courseTitle ?? app.programTitle ?? (app.courseId ? `Course #${app.courseId}` : `Program #${app.programId}`);
 export default function ApplicationsContainer() {
@@ -55,7 +57,7 @@ export default function ApplicationsContainer() {
       <div className="application-card-top"><div><span className="application-id">APP-{app.id}</span><span className={`portal-status status-${app.status.toLowerCase()}`}>{labelStatus(app.status)}</span></div><span className="application-date">{new Date(app.submissionDate).toLocaleDateString()}</span></div>
       <h2>{titleFor(app)}</h2><p className="application-track">{app.courseId ? "Course application" : "Program application"}</p>
       <div className="application-meta"><span><span className="material-symbols-outlined">calendar_month</span>{`Submitted ${new Date(app.submissionDate).toLocaleDateString()}`}</span><span>{`Schedule: ${app.scheduleId ?? "Not assigned"}`}</span></div>
-      <div className="application-card-bottom"><p><strong>Status:</strong> {labelStatus(app.status)}</p><div className="enrollment-actions"><button className="portal-btn portal-btn-secondary" onClick={() => navigate(`/applications/${app.id}`)}>View details →</button>{app.status !== "Cancelled" && <button className="portal-btn portal-btn-secondary" disabled={busyId === app.id} onClick={() => void cancel(app)}>{busyId === app.id ? "Cancelling…" : "Cancel application"}</button>}</div></div>
+      <div className="application-card-bottom"><p><strong>Status:</strong> {labelStatus(app.status)}</p><div className="enrollment-actions"><button className="portal-btn portal-btn-secondary" onClick={() => navigate(`/applications/${app.id}`)}>View details →</button>{PAYABLE_STATUSES.includes(app.status) && <button className="portal-btn portal-btn-primary" onClick={() => navigate(`/payments?application=${app.id}`)}>Pay now</button>}{app.status !== "Cancelled" && <button className="portal-btn portal-btn-secondary" disabled={busyId === app.id} onClick={() => void cancel(app)}>{busyId === app.id ? "Cancelling…" : "Cancel application"}</button>}</div></div>
     </article>)}</div>}
   </section>;
 }

@@ -11,21 +11,19 @@ type CardErrors = Partial<Record<keyof CardForm, string>>;
 
 type CheckoutStatus = "idle" | "processing" | "success" | "failed";
 
-type CheckoutLine = { label: string; note: string; amount: number };
-
-type CheckoutOrder = {
+// Everything the card step needs. Built from the real payment record returned by
+// POST /api/payments (amount = the course tuition / program price on the server).
+type CheckoutTarget = {
+  paymentId: string;
+  applicationId: number | null;
   applicationRef: string;
-  program: string;
-  moduleSummary: string;
-  campus: string;
-  campusNote: string;
-  startsOn: string;
-  schedule: string;
-  accreditation: string;
-  accreditationNote: string;
-  planLabel: string;
+  title: string;
+  itemType: string;
+  amount: number;
   currency: string;
-  usdApprox: string;
+  reference: string;
+  scheduleLabel: string | null;
+  startDate: string | null;
 };
 
 type CheckoutReceipt = {
@@ -52,8 +50,7 @@ export type {
   CardForm,
   CardErrors,
   CheckoutStatus,
-  CheckoutLine,
-  CheckoutOrder,
+  CheckoutTarget,
   CheckoutReceipt,
   CheckoutFailure,
   CheckoutOutcome,

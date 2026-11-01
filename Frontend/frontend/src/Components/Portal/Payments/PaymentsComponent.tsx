@@ -1,12 +1,14 @@
 import { memo } from "react";
+import { Link } from "react-router-dom";
 import Breadcrumb from "../../Academy/Shared/Breadcrumb";
 import CatalogState from "../../Academy/Shared/CatalogState";
 import { SUPPORT_PHONE } from "../../Academy/Navbar/constants";
 import TransactionDialog from "./TransactionDialog";
 import { BANK_DETAILS, BILLING_CONTACT, SAVED_METHODS, STATUS_FILTERS } from "./constants";
 import { formatAmount } from "../../../utils/format";
+import { downloadReceiptPdf, downloadTaxStatementPdf } from "../../../utils/documents";
 import { getStoredUser } from "../../../utils/session";
-import type { PaymentFilter, Transaction } from "../../../Types/Payment";
+import type { PayableApplication, PaymentFilter, Transaction } from "../../../Types/Payment";
 import "../Shared/style.css";
 import "./style.css";
 
@@ -14,12 +16,15 @@ type Stats = {
   currency: string;
   paidTotal: number;
   dueTotal: number;
-  nextDue: Transaction | null;
+  dueCount: number;
   invoiceCount: number;
 };
 
 type Props = {
   transactions: Transaction[];
+  payable: PayableApplication[];
+  startingId: number | null;
+  canPay: (t: Transaction) => boolean;
   counts: Record<PaymentFilter, number>;
   stats: Stats;
   loading: boolean;
@@ -33,6 +38,7 @@ type Props = {
   onSelect: (id: string) => void;
   onCloseDialog: () => void;
   onPay: (id: string) => void;
+  onPayApplication: (applicationId: number) => void;
   onExport: () => void;
   onRetry: () => void;
   onNotify: (message: string) => void;
@@ -42,14 +48,14 @@ const STATUS_PILL = {
   paid: { cls: "portal-ui_pill--success", label: "Paid & Cleared", icon: "check" },
   pending: { cls: "portal-ui_pill--warning", label: "Pending", icon: "schedule" },
   failed: { cls: "portal-ui_pill--danger", label: "Failed", icon: "error" },
+  refunded: { cls: "portal-ui_pill--muted", label: "Refunded", icon: "undo" },
 } as const;
 
 function PaymentsComponent({
-  transactions, counts, stats, loading, errorMessage, search, status, selected,
-  onSearch, onStatus, onReset, onSelect, onCloseDialog, onPay, onExport, onRetry, onNotify,
+  transactions, payable, startingId, canPay, counts, stats, loading, errorMessage, search, status, selected,
+  onSearch, onStatus, onReset, onSelect, onCloseDialog, onPay, onPayApplication, onExport, onRetry, onNotify,
 }: Props) {
   const money = (amount: number, currency = stats.currency) => `${currency} ${formatAmount(amount)}`;
-  const { nextDue } = stats;
 
   return (
     <div className="payments">
@@ -60,16 +66,19 @@ function PaymentsComponent({
         <div>
           <h1>Payments &amp; Financial Ledger</h1>
           <p>
-            Review course tuition, upcoming installment schedules, tax invoices and payment receipts
-            for your Alexandria campus and blended programs.
+            Pay for your applications, then track every payment, receipt and invoice in one place.
+            Your enrollment is created as soon as a payment is confirmed.
           </p>
         </div>
         <div className="payments_heading-actions">
-          <button type="button" className="portal-ui_btn portal-ui_btn--outline" onClick={() => onNotify("Sponsorship ledger exported.")}>
+          <button type="button" className="portal-ui_btn portal-ui_btn--outline" onClick={onExport}>
             <span className="material-symbols-outlined">account_tree</span>
             Corporate Sponsorship Ledger
           </button>
-          <button type="button" className="portal-ui_btn portal-ui_btn--primary" onClick={() => onNotify("Annual tax statement downloaded.")}>
+          <button type="button" className="portal-ui_btn portal-ui_btn--primary" onClick={() => {
+            downloadTaxStatementPdf(transactions);
+            onNotify("Annual tax statement downloaded.");
+          }}>
             <span className="material-symbols-outlined">download</span>
             Annual Tax Statement (PDF)
           </button>
@@ -98,14 +107,16 @@ function PaymentsComponent({
             <article className="portal-ui_card payments_kpi payments_kpi--due">
               <div className="payments_kpi-top">
                 <div>
-                  <span className="payments_kpi-label">Upcoming Installment</span>
+                  <span className="payments_kpi-label">Amount Due</span>
                   <div className="payments_kpi-value payments_kpi-value--warn">{money(stats.dueTotal)}</div>
                 </div>
                 <span className="payments_kpi-icon payments_kpi-icon--warn"><span className="material-symbols-outlined">pending_actions</span></span>
               </div>
               <div className="payments_kpi-foot">
                 <span className="material-symbols-outlined">event</span>
-                {nextDue ? `Due ${nextDue.date}` : "All paid"}
+                {stats.dueCount > 0
+                  ? `${stats.dueCount} application${stats.dueCount === 1 ? "" : "s"} awaiting payment`
+                  : "All paid"}
               </div>
             </article>
 
@@ -135,33 +146,66 @@ function PaymentsComponent({
             </article>
           </section>
 
-          {/* Pending banner */}
-          {nextDue && (
-            <section className="payments_banner">
-              <div className="payments_banner-main">
+          {/* Awaiting payment: real applications, real fees */}
+          <section className="portal-ui_card payments_due" aria-label="Awaiting payment">
+            <div className="payments_due-head">
+              <div className="payments_due-title">
                 <span className="payments_banner-icon"><span className="material-symbols-outlined">credit_score</span></span>
                 <div>
-                  <div className="payments_banner-title">
-                    <strong>{nextDue.installment} Due Soon</strong>
-                    <span className="portal-ui_pill portal-ui_pill--warning">Action Required</span>
-                  </div>
-                  <p>
-                    Your installment for <strong>{nextDue.course}</strong> matures on {nextDue.date}.
-                    Pay securely by card, bank transfer or 0% installments.
-                  </p>
+                  <h2>Awaiting payment</h2>
+                  <p>Pay securely by card to confirm your seat. Your enrollment starts as soon as the payment clears.</p>
                 </div>
               </div>
-              <div className="payments_banner-actions">
-                <button type="button" className="portal-ui_btn portal-ui_btn--outline" onClick={() => onSelect(nextDue.id)}>
-                  View Breakdown
-                </button>
-                <button type="button" className="portal-ui_btn portal-ui_btn--primary" onClick={() => onPay(nextDue.id)}>
-                  <span className="material-symbols-outlined">lock</span>
-                  Pay {money(nextDue.amount, nextDue.currency)} Now
-                </button>
+              {payable.length > 0 && (
+                <span className="portal-ui_pill portal-ui_pill--warning">Action Required</span>
+              )}
+            </div>
+
+            {payable.length === 0 ? (
+              <div className="payments_due-empty">
+                <span className="material-symbols-outlined">task_alt</span>
+                <div>
+                  <strong>Nothing to pay right now</strong>
+                  <p>Apply to a course or program and it will show up here, ready to pay.</p>
+                </div>
+                <Link to="/courses" className="portal-ui_btn portal-ui_btn--outline portal-ui_btn--sm">Browse courses</Link>
               </div>
-            </section>
-          )}
+            ) : (
+              <ul className="payments_due-list">
+                {payable.map((a) => {
+                  const starting = startingId === a.applicationId;
+                  const noFee = a.amount <= 0;
+                  return (
+                    <li key={a.applicationId} className="payments_due-item">
+                      <div className="payments_due-info">
+                        <div className="payments_due-name">
+                          <strong>{a.title}</strong>
+                          <span className="portal-ui_pill portal-ui_pill--muted">{a.itemType}</span>
+                        </div>
+                        <div className="payments_sub">
+                          {a.applicationRef} • Submitted {a.submitted}
+                          {a.scheduleLabel ? ` • ${a.scheduleLabel}` : ""}
+                          {a.startDate ? ` • Starts ${a.startDate}` : ""}
+                        </div>
+                      </div>
+                      <div className="payments_due-amount">
+                        {noFee ? "Fee to be announced" : money(a.amount, a.currency)}
+                      </div>
+                      <button
+                        type="button"
+                        className="portal-ui_btn portal-ui_btn--primary"
+                        disabled={noFee || startingId !== null}
+                        onClick={() => onPayApplication(a.applicationId)}
+                      >
+                        <span className="material-symbols-outlined">{starting ? "progress_activity" : "lock"}</span>
+                        {starting ? "Preparing..." : a.pendingPaymentId ? "Continue Payment" : "Pay Now"}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
 
           {/* Toolbar */}
           <section className="payments_toolbar">
@@ -265,7 +309,10 @@ function PaymentsComponent({
                             <button
                               type="button"
                               className="portal-ui_btn portal-ui_btn--outline portal-ui_btn--sm"
-                              onClick={() => onNotify(`Generating receipt for ${t.invoice}...`)}
+                              onClick={() => {
+                                downloadReceiptPdf(t);
+                                onNotify(`Receipt downloaded for ${t.invoice}.`);
+                              }}
                               title="Download receipt"
                             >
                               <span className="material-symbols-outlined">picture_as_pdf</span>
@@ -277,9 +324,9 @@ function PaymentsComponent({
                               <button type="button" className="portal-ui_btn portal-ui_btn--outline portal-ui_btn--sm" onClick={() => onSelect(t.id)}>
                                 {t.status === "paid" ? "View Receipt" : "Details"}
                               </button>
-                              {t.status !== "paid" && (
-                                <button type="button" className="portal-ui_btn portal-ui_btn--primary portal-ui_btn--sm" onClick={() => onPay(t.id)}>
-                                  Pay Now
+                              {canPay(t) && (
+                                <button type="button" className="portal-ui_btn portal-ui_btn--primary portal-ui_btn--sm" disabled={startingId !== null} onClick={() => onPay(t.id)}>
+                                  {t.status === "failed" ? "Retry" : "Pay Now"}
                                 </button>
                               )}
                             </div>
@@ -371,6 +418,7 @@ function PaymentsComponent({
       {selected && (
         <TransactionDialog
           transaction={selected}
+          canPay={canPay(selected)}
           studentName={getStoredUser()?.name ?? "Learner"}
           onClose={onCloseDialog}
           onPay={onPay}

@@ -6,6 +6,7 @@ import EditProfileDialog from "./EditProfileDialog";
 import ChangePasswordDialog from "./ChangePasswordDialog";
 import { NOTIFICATION_OPTIONS } from "./constants";
 import { initials, resolveAssetUrl } from "../../../utils/format";
+import { downloadPdf } from "../../../utils/pdf";
 import type {
   ChangePasswordValues,
   EditableProfile,
@@ -120,7 +121,18 @@ function ProfileComponent({
                 <button
                   type="button"
                   className="portal-ui_btn portal-ui_btn--outline"
-                  onClick={() => onNotify("Preparing your digital Student ID...")}
+                  onClick={() => {
+                    if (!profile) return;
+                    downloadPdf(`student-id-${profile.studentId || "card"}.pdf`, "Andalusia Academy - Student ID", [
+                      `Name: ${profile.firstName} ${profile.lastName}`,
+                      `Student ID: ${profile.studentId}`,
+                      `Title: ${profile.title}`,
+                      `Campus: ${profile.campus}`,
+                      `Email: ${profile.email}`,
+                      `Member since: ${profile.memberSince}`,
+                    ]);
+                    onNotify("Student ID downloaded.");
+                  }}
                 >
                   <span className="material-symbols-outlined">badge</span>
                   Download Student ID
@@ -248,7 +260,18 @@ function ProfileComponent({
                 <button
                   type="button"
                   className="portal-ui_btn portal-ui_btn--outline"
-                  onClick={() => onNotify("Syllabus download started.")}
+                  onClick={() => {
+                    downloadPdf("course-syllabus.pdf", `${enrollment.degree} - Syllabus`, [
+                      `Status: ${enrollment.status}`,
+                      `Accreditation: ${enrollment.accreditation}`,
+                      `Current module: ${enrollment.module}`,
+                      `Progress: ${enrollment.progress}%`,
+                      `Mentor: ${enrollment.mentor}`,
+                      `Next session: ${enrollment.nextSession}`,
+                      `Next deliverable: ${enrollment.deliverable} (${enrollment.deliverableDue})`,
+                    ]);
+                    onNotify("Syllabus downloaded.");
+                  }}
                 >
                   <span className="material-symbols-outlined">description</span>
                   View Course Syllabus

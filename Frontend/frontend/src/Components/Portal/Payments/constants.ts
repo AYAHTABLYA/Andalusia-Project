@@ -5,6 +5,7 @@ const STATUS_FILTERS: { value: PaymentFilter; label: string }[] = [
   { value: "paid", label: "Paid" },
   { value: "pending", label: "Pending" },
   { value: "failed", label: "Failed" },
+  { value: "refunded", label: "Refunded" },
 ];
 
 // ⚠️ SAMPLE DATA – replace with the academy's real bank / billing details
