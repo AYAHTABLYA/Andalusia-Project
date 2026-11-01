@@ -20,6 +20,20 @@ public class MyPaymentSpecification : BaseSpecification<Payment>
     }
 }
 
+public class PayableApplicationsSpecification : BaseSpecification<Application>
+{
+    public PayableApplicationsSpecification(long userId)
+        : base(a => a.UserId == userId
+                    && a.Status != ApplicationStatus.Rejected
+                    && a.Status != ApplicationStatus.Cancelled)
+    {
+        AddInclude(a => a.Course!);
+        AddInclude(a => a.Program!);
+        AddInclude(a => a.Schedule!);
+        AddOrderByDescending(a => a.SubmissionDate);
+    }
+}
+
 public class PaymentsByApplicationSpecification : BaseSpecification<Payment>
 {
     public PaymentsByApplicationSpecification(long applicationId)

@@ -22,6 +22,14 @@ public class PaymentsController(IPaymentService svc) : ControllerBase
         return Ok(await svc.GetMyPaymentsAsync(userId, ct));
     }
 
+    // GET /api/payments/payable  -> applications the learner can still pay for (real course/program fee)
+    [HttpGet("payable")]
+    public async Task<ActionResult<IReadOnlyList<PayableApplicationDto>>> GetPayable(CancellationToken ct)
+    {
+        if (!TryGetUserId(out var userId)) return Unauthorized();
+        return Ok(await svc.GetPayableApplicationsAsync(userId, ct));
+    }
+
     // GET /api/payments/{id}
     [HttpGet("{id:long}")]
     public async Task<ActionResult<PaymentDto>> GetById(long id, CancellationToken ct)

@@ -43,6 +43,58 @@ public sealed class PaymentService(IUnitOfWork uow, INotificationService notific
         return ToDto(payment, app);
     }
 
+    public async Task<IReadOnlyList<PayableApplicationDto>> GetPayableApplicationsAsync(long userId, CancellationToken ct = default)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        var apps = (await uow.GetRepository<Application>()
+            .GetAllAsync(new PayableApplicationsSpecification(userId))).ToList();
+        if (apps.Count == 0) return [];
+
+        var payments = (await uow.GetRepository<Payment>()
+            .GetAllAsync(new MyPaymentsSpecification(userId))).ToList();
+        var enrollments = (await uow.GetRepository<Enrollment>()
+            .GetAllAsync(new MyEnrollmentsSpecification(userId)))
+            .Where(e => e.Status != EnrollmentStatus.Cancelled)
+            .ToList();
+
+        var paidApplicationIds = payments
+            .Where(p => p.Status == PaymentStatus.Success && p.ApplicationId != null)
+            .Select(p => p.ApplicationId!.Value)
+            .ToHashSet();
+
+        var result = new List<PayableApplicationDto>();
+        foreach (var app in apps)
+        {
+            if (paidApplicationIds.Contains(app.ApplicationId)) continue;
+
+            var enrolled = enrollments.Any(e =>
+                e.ApplicationId == app.ApplicationId
+                || (e.CourseId == app.CourseId && e.ProgramId == app.ProgramId && e.ScheduleId == app.ScheduleId));
+            if (enrolled) continue;
+
+            var pending = payments
+                .Where(p => p.ApplicationId == app.ApplicationId && p.Status == PaymentStatus.Initiated)
+                .OrderByDescending(p => p.PaymentId)
+                .FirstOrDefault();
+
+            result.Add(new PayableApplicationDto(
+                app.ApplicationId,
+                app.Status.ToString(),
+                app.Course is not null ? "Course" : "Program",
+                app.Course?.Title ?? app.Program?.Title ?? $"Application #{app.ApplicationId}",
+                AmountFor(app),
+                Currency,
+                app.SubmissionDate,
+                app.ScheduleId,
+                app.Schedule is null ? null : $"{app.Schedule.BatchCode} - {app.Schedule.VenueName}",
+                app.Schedule?.StartDate,
+                pending?.PaymentId));
+        }
+
+        return result;
+    }
+
     public async Task<PaymentDto?> InitiateAsync(long userId, CreatePaymentDto dto, CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
@@ -73,11 +125,15 @@ public sealed class PaymentService(IUnitOfWork uow, INotificationService notific
             .FirstOrDefault();
         if (pending is not null) return ToDto(pending, app);
 
+        var amount = AmountFor(app);
+        if (amount <= 0)
+            throw new InvalidOperationException("The fee for this item has not been announced yet, so it cannot be paid online.");
+
         var payment = new Payment
         {
             UserId = userId,
             ApplicationId = app.ApplicationId,
-            Amount = app.Course?.Tuition ?? app.Program?.Price ?? 0m,
+            Amount = amount,
             Currency = Currency,
             GatewayName = Gateway,
             TransactionRef = $"SIM-{Guid.NewGuid():N}",
@@ -168,6 +224,8 @@ public sealed class PaymentService(IUnitOfWork uow, INotificationService notific
 
         return ToDto(payment, app);
     }
+
+    private static decimal AmountFor(Application app) => app.Course?.Tuition ?? app.Program?.Price ?? 0m;
 
     private static PaymentDto ToDto(Payment p, Application? app) => new(
         p.PaymentId, p.ApplicationId, p.EnrollmentId,

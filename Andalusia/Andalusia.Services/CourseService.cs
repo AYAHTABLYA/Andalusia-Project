@@ -192,11 +192,28 @@ public class CourseService(IUnitOfWork uow) : ICourseService
         var spec = new CourseDetailsBySlugSpecification(slug);
         var course = await repo.GetAsync(spec, trackChanges: false);
 
-        if (course is null || string.IsNullOrWhiteSpace(course.SyllabusPath) || !File.Exists(course.SyllabusPath))
-            return null;
+        if (course is null) return null;
 
-        var bytes = await File.ReadAllBytesAsync(course.SyllabusPath, ct);
-        return (bytes, "application/pdf", $"{slug}-syllabus.pdf");
+        if (!string.IsNullOrWhiteSpace(course.SyllabusPath) && File.Exists(course.SyllabusPath))
+        {
+            var bytes = await File.ReadAllBytesAsync(course.SyllabusPath, ct);
+            return (bytes, "application/pdf", $"{slug}-syllabus.pdf");
+        }
+
+        // No stored file: generate a syllabus PDF from the course data.
+        var lines = new List<string>
+        {
+            $"Category: {course.Category}",
+            $"Level: {course.Level}",
+            $"Duration: {course.DurationLabel}",
+            $"Delivery: {course.DeliveryMode}",
+            $"Accreditation: {course.Accreditation}",
+        };
+        if (course.Tuition > 0) lines.Add($"Tuition: EGP {course.Tuition:N0}");
+        lines.Add("");
+        lines.Add("# Description");
+        lines.Add(course.Description);
+        return (SimplePdf.Build($"{course.Title} - Course Syllabus", lines), "application/pdf", $"{slug}-syllabus.pdf");
     }
 
 

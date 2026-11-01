@@ -1,4 +1,4 @@
-﻿using Andalusia.Domain.Contracts;
+using Andalusia.Domain.Contracts;
 using Andalusia.Domain.Enums;
 using Andalusia.Services.Specification;
 using Andalusia.Shared;
@@ -238,10 +238,21 @@ public class ProgramService(IUnitOfWork uow) : IProgramService
         string slug,
         CancellationToken ct = default)
     {
-        // The current Program model/database does not contain a syllabus file path yet.
-        // The endpoint is kept so the frontend contract is ready when storage is added.
-        await Task.CompletedTask;
-        return null;
+        var d = await GetBySlugAsync(slug, ct);
+        if (d is null) return null;
+
+        var lines = new List<string> { $"Status: {d.Status}", $"Category: {d.Category?.Name}" };
+        if (d.Tuition > 0) lines.Add($"Tuition: {d.Currency} {d.Tuition:N0}");
+        lines.Add("");
+        lines.Add("# Overview");
+        lines.Add(d.Overview);
+        if (!string.IsNullOrWhiteSpace(d.Requirements)) { lines.Add(""); lines.Add("# Requirements"); lines.Add(d.Requirements); }
+        if (!string.IsNullOrWhiteSpace(d.Structure)) { lines.Add(""); lines.Add("# Structure"); lines.Add(d.Structure); }
+        lines.Add("");
+        lines.Add("# Courses");
+        foreach (var c in d.Courses.OrderBy(x => x.OrderIndex))
+            lines.Add($"{c.OrderIndex}. {c.Title} {(string.IsNullOrWhiteSpace(c.Duration) ? "" : $"[{c.Duration}]")}");
+        return (SimplePdf.Build($"{d.Title} - Program Syllabus", lines), "application/pdf", $"{slug}-syllabus.pdf");
     }
 
     private static ProgramListItemDto ToListItem(

@@ -1,4 +1,4 @@
-﻿using Andalusia.Domain.Contracts;
+using Andalusia.Domain.Contracts;
 using Andalusia.Shared;
 using Andalusia.Shared.Dtos.CareerPathDtos;
 using AndalusiaApp.Models;
@@ -65,10 +65,30 @@ public class CareerPathService(IUnitOfWork uow) : ICareerPathService
         string slug,
         CancellationToken ct = default)
     {
-        // The current CareerPath model/database does not contain a syllabus file path yet.
-        // Keep the endpoint ready for storage integration without inventing a DB field.
-        await Task.CompletedTask;
-        return null;
+        var d = await GetBySlugAsync(slug, ct);
+        if (d is null) return null;
+
+        var lines = new List<string> { $"Status: {d.Status}", $"Duration: {d.Duration}" };
+        if (d.Tuition > 0) lines.Add($"Tuition: {d.Currency} {d.Tuition:N0}");
+        if (!string.IsNullOrWhiteSpace(d.Roles)) lines.Add($"Target Roles / Skills: {d.Roles}");
+        lines.Add("");
+        lines.Add("# Overview");
+        lines.Add(d.Summary);
+        lines.Add("");
+        lines.Add("# Roadmap");
+        foreach (var p in d.Programs.OrderBy(x => x.OrderIndex))
+        {
+            lines.Add($"Program: {p.Title} ({p.Duration})");
+            if (!string.IsNullOrWhiteSpace(p.Description)) lines.Add(p.Description);
+            foreach (var c in p.Courses) lines.Add($"   - {c.Title} {(string.IsNullOrWhiteSpace(c.Duration) ? "" : $"[{c.Duration}]")}");
+            lines.Add("");
+        }
+        if (d.Guarantees.Count > 0)
+        {
+            lines.Add("# Guarantees");
+            foreach (var g in d.Guarantees) lines.Add($"   - {g}");
+        }
+        return (SimplePdf.Build($"{d.Title} - Career Path Syllabus", lines), "application/pdf", $"{slug}-syllabus.pdf");
     }
 
     public async Task<CareerPathDetailDto?> GetBySlugAsync(

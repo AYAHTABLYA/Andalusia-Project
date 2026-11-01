@@ -38,7 +38,7 @@ public sealed class MessageService(IUnitOfWork uow, INotificationService notific
                 var last = thread.FirstOrDefault();
                 var unread = thread.Count(m => m.SenderId == p.Key && m.ReadAt is null);
                 return new MessageContactDto(
-                    p.Key, p.Value.Name, p.Value.Subtitle, unread, last?.Body, last?.SentAt);
+                    p.Key, p.Value.Name, p.Value.Subtitle, unread, last?.Body, last is null ? (DateTime?)null : AsUtc(last.SentAt));
             })
             .OrderByDescending(c => c.LastMessageAt ?? DateTime.MinValue)
             .ThenBy(c => c.FullName)
@@ -139,21 +139,57 @@ public sealed class MessageService(IUnitOfWork uow, INotificationService notific
             var mySchedules = (await StaffScope.InstructorScheduleIdsAsync(uow, userId)).ToList();
             if (mySchedules.Count == 0) return result;
 
+            var mine = (await uow.GetRepository<Schedule>().GetAllAsync(
+                new QuerySpecification<Schedule>(s => mySchedules.Contains(s.ScheduleId)))).ToList();
+            var courseIds = mine.Where(s => s.CourseId.HasValue).Select(s => s.CourseId!.Value).Distinct().ToList();
+            var programIds = mine.Where(s => s.ProgramId.HasValue).Select(s => s.ProgramId!.Value).Distinct().ToList();
+
+            // Learners in one of my batches, plus learners enrolled in my course/program but not yet placed in a batch
+            // (paying for an application creates the enrollment without a batch). Both sides use the same rule.
             var enrollments = await uow.GetRepository<Enrollment>().GetAllAsync(
                 new QuerySpecification<Enrollment>(e =>
-                    e.ScheduleId != null && mySchedules.Contains(e.ScheduleId.Value) && e.Status != EnrollmentStatus.Cancelled));
-            pairs.AddRange(enrollments.Select(e => (e.UserId, e.ScheduleId!.Value)));
+                    e.Status != EnrollmentStatus.Cancelled &&
+                    ((e.ScheduleId != null && mySchedules.Contains(e.ScheduleId.Value)) ||
+                     (e.ScheduleId == null &&
+                      ((e.CourseId != null && courseIds.Contains(e.CourseId.Value)) ||
+                       (e.ProgramId != null && programIds.Contains(e.ProgramId.Value)))))));
+
+            foreach (var e in enrollments)
+            {
+                var scheduleId = e.ScheduleId
+                    ?? mine.FirstOrDefault(s =>
+                        (e.CourseId != null && s.CourseId == e.CourseId) ||
+                        (e.ProgramId != null && s.ProgramId == e.ProgramId))?.ScheduleId;
+                if (scheduleId is { } sid) pairs.Add((e.UserId, sid));
+            }
         }
         else
         {
             var enrollments = (await uow.GetRepository<Enrollment>().GetAllAsync(
                 new QuerySpecification<Enrollment>(e =>
-                    e.UserId == userId && e.ScheduleId != null && e.Status != EnrollmentStatus.Cancelled))).ToList();
-            var scheduleIds = enrollments.Select(e => e.ScheduleId!.Value).Distinct().ToList();
+                    e.UserId == userId && e.Status != EnrollmentStatus.Cancelled))).ToList();
+
+            var scheduleIds = enrollments.Where(e => e.ScheduleId != null).Select(e => e.ScheduleId!.Value).ToHashSet();
+
+            // Enrollments without a batch: use the open batches of the same course / program.
+            var unplaced = enrollments.Where(e => e.ScheduleId == null).ToList();
+            if (unplaced.Count > 0)
+            {
+                var courseIds = unplaced.Where(e => e.CourseId != null).Select(e => e.CourseId!.Value).Distinct().ToList();
+                var programIds = unplaced.Where(e => e.ProgramId != null).Select(e => e.ProgramId!.Value).Distinct().ToList();
+                var open = await uow.GetRepository<Schedule>().GetAllAsync(
+                    new QuerySpecification<Schedule>(s =>
+                        s.Status != ScheduleStatus.Cancelled &&
+                        ((s.CourseId != null && courseIds.Contains(s.CourseId.Value)) ||
+                         (s.ProgramId != null && programIds.Contains(s.ProgramId.Value)))));
+                foreach (var s in open) scheduleIds.Add(s.ScheduleId);
+            }
+
             if (scheduleIds.Count == 0) return result;
 
+            var idList = scheduleIds.ToList();
             var links = await uow.GetRepository<ScheduleInstructor>().GetAllAsync(
-                new QuerySpecification<ScheduleInstructor>(l => scheduleIds.Contains(l.ScheduleId)));
+                new QuerySpecification<ScheduleInstructor>(l => idList.Contains(l.ScheduleId)));
             pairs.AddRange(links.Select(l => (l.InstructorId, l.ScheduleId)));
         }
 
@@ -178,6 +214,11 @@ public sealed class MessageService(IUnitOfWork uow, INotificationService notific
         return result;
     }
 
+    // SQL Server returns datetime2 with Kind=Unspecified, which serializes without a "Z" and makes browsers
+    // read the UTC time as local time. Always mark stored timestamps as UTC.
+    private static DateTime AsUtc(DateTime d) => DateTime.SpecifyKind(d, DateTimeKind.Utc);
+
     private static MessageDto ToDto(DirectMessage m, long viewerId)
-        => new(m.DirectMessageId, m.SenderId, m.Body, m.SentAt, m.SenderId == viewerId, m.ReadAt);
+        => new(m.DirectMessageId, m.SenderId, m.Body, AsUtc(m.SentAt), m.SenderId == viewerId,
+               m.ReadAt is { } read ? AsUtc(read) : (DateTime?)null);
 }
