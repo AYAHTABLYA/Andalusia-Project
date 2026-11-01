@@ -61,7 +61,7 @@
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 9999px;
-  background-color: #fff;
+  background-color: var(--surface-white, #fff);
   animation: academy-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
@@ -259,7 +259,7 @@
 
 .career-path-detail_text-10 {
   font-size: 11px;
-  background-color: color-mix(in srgb, #fff 20%, transparent);
+  background-color: color-mix(in srgb, var(--surface-white, #fff) 20%, transparent);
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   padding-top: 0.125rem;
@@ -689,15 +689,15 @@
   color: #fff;
 }
 .career-path-detail_tone--amber {
-  background-color: #fef3c7;
-  color: #78350f;
+  background-color: var(--tint-amber, #fef3c7);
+  color: var(--on-amber, #78350f);
 }
 .career-path-detail_tone--neutral {
   background-color: var(--color-surface-container);
 }
 .career-path-detail_tone--slate {
-  background-color: #e5e7e7;
-  color: #334246;
+  background-color: var(--tint-neutral, #e5e7e7);
+  color: var(--text-strong, #334246);
 }
 
 .career-path-detail_roles {

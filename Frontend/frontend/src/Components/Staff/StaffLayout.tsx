@@ -9,6 +9,7 @@ import { ROLES } from "../../utils/roles";
 import { STAFF_TABS } from "./constants";
 import StaffSearch from "./StaffSearch";
 import { LanguageSwitcher } from "../LanguageSwitcher";
+import { ThemeSwitcher } from "../ThemeSwitcher";
 import { NotificationBell } from "../NotificationBell";
 import logo from "../../assets/andalusia-logo.png";
 import "../Academy/theme.css";
@@ -174,6 +175,7 @@ function StaffLayout() {
           <StaffSearch tabs={tabs} />
           <div className="staff-topbar_actions">
             <LanguageSwitcher />
+            <ThemeSwitcher />
             <NotificationBell />
             {(role === ROLES.admin || role === ROLES.coordinator) && (
               <Link

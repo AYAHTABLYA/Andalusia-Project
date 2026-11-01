@@ -59,8 +59,8 @@
   font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 700;
-  background-color: #f6ebe6;
-  color: #5a3427;
+  background-color: var(--tint-brand, #f6ebe6);
+  color: var(--on-brand, #5a3427);
 }
 
 .programs_text-2 {

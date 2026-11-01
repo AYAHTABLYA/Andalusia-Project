@@ -3,7 +3,7 @@
 .ws_content { min-width: 0; }
 
 /* ---- Sidebar ---- */
-.ws_side { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.1rem; padding: 1.25rem; min-height: 32rem; border: 1px solid var(--color-outline-variant); border-radius: 1rem; background: rgba(255, 255, 255, 0.86); }
+.ws_side { position: sticky; top: 1rem; display: flex; flex-direction: column; gap: 1.1rem; padding: 1.25rem; min-height: 32rem; border: 1px solid var(--color-outline-variant); border-radius: 1rem; background: rgb(var(--glass-rgb, 255 255 255) / 0.86); }
 .ws_side-label { padding: 0 0.5rem; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.14em; color: var(--color-on-surface-variant); }
 .ws_side-nav { display: flex; flex-direction: column; gap: 0.25rem; }
 .ws_side-link { display: flex; align-items: center; gap: 0.7rem; padding: 0.4rem 0.55rem; border-radius: 0.65rem; font-size: 0.984rem; font-weight: 600; color: var(--color-on-surface-variant); transition: background 0.2s ease, color 0.2s ease; }
@@ -26,7 +26,7 @@
 .ws_avatar { display: inline-grid; place-items: center; flex-shrink: 0; width: 2.6rem; height: 2.6rem; border-radius: 50%; font-size: 0.84rem; font-weight: 800; color: var(--brand-700); background: var(--brand-100); }
 .ws_avatar--sm { width: 1.8rem; height: 1.8rem; font-size: 0.78rem; }
 
-.ws_demo { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding: 0.55rem 0.8rem; border-radius: 0.65rem; font-size: 0.888rem; color: #92400e; background: var(--color-warning-soft); }
+.ws_demo { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding: 0.55rem 0.8rem; border-radius: 0.65rem; font-size: 0.888rem; color: var(--on-amber, #92400e); background: var(--color-warning-soft); }
 .ws_demo .material-symbols-outlined { font-size: 1.2rem; }
 
 /* ---- Headings ---- */
@@ -34,7 +34,7 @@
 .ws_head h1, .ws_hello h1 { margin: 0.2rem 0 0.3rem; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 800; line-height: 1.2; }
 .ws_head p, .ws_hello p { font-size: 1.02rem; color: var(--color-on-surface-variant); }
 .ws_hello { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-.ws_clock { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.8rem; border: 1px solid var(--color-outline-variant); border-radius: 0.65rem; background: rgba(255, 255, 255, 0.86); font-size: 0.96rem; white-space: nowrap; }
+.ws_clock { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.8rem; border: 1px solid var(--color-outline-variant); border-radius: 0.65rem; background: rgb(var(--glass-rgb, 255 255 255) / 0.86); font-size: 0.96rem; white-space: nowrap; }
 .ws_clock small { color: var(--color-on-surface-variant); }
 .ws_clock .material-symbols-outlined { font-size: 1.2rem; color: var(--color-primary); }
 
@@ -75,9 +75,9 @@
 .ws_join .material-symbols-outlined { font-size: 1.2rem; }
 
 .ws_tag { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.22rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 750; color: var(--color-on-surface-variant); background: var(--color-surface-container-low); }
-.ws_tag--live, .ws_tag--graded { color: #166534; background: var(--color-success-soft); }
+.ws_tag--live, .ws_tag--graded { color: var(--on-green, #166534); background: var(--color-success-soft); }
 .ws_tag--live::before { content: ""; width: 0.38rem; height: 0.38rem; border-radius: 50%; background: var(--color-success); }
-.ws_tag--pending { color: #92400e; background: var(--color-warning-soft); }
+.ws_tag--pending { color: var(--on-amber, #92400e); background: var(--color-warning-soft); }
 .ws_tag--submitted { color: var(--brand-700); background: var(--brand-100); }
 
 .ws_update { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.65rem; padding: 0.75rem 0; font-size: 0.9rem; }
@@ -137,7 +137,7 @@
 .ws_comments p { margin: 0.1rem 0; line-height: 1.35; }
 .ws_comments div > small { font-size: 0.78rem; color: var(--color-on-surface-variant); }
 .ws_compose { display: flex; align-items: flex-end; gap: 0.5rem; margin-top: 0.6rem; }
-.ws_compose textarea, .ws_submit textarea { flex: 1; width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--color-outline); border-radius: 0.65rem; background: #fff; font-size: 0.936rem; resize: vertical; }
+.ws_compose textarea, .ws_submit textarea { flex: 1; width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--color-outline); border-radius: 0.65rem; background: var(--surface-white, #fff); font-size: 0.936rem; resize: vertical; }
 .ws_send { min-width: 2.5rem; padding: 0.5rem !important; }
 .ws_send[disabled], .ws_submit .portal-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
 .ws_send .material-symbols-outlined { font-size: 1.32rem; }
@@ -169,13 +169,13 @@
 .ws_chat-head strong { font-size: 0.984rem; }
 .ws_chat-head small { font-size: 0.792rem; color: var(--color-on-surface-variant); }
 .ws_chat-body { display: flex; flex-direction: column; gap: 0.7rem; flex: 1; max-height: 24rem; padding: 1rem; overflow-y: auto; }
-.ws_msg { max-width: min(26rem, 80%); padding: 0.65rem 0.85rem; border: 1px solid var(--color-outline-variant); border-radius: 0.85rem; background: #fff; font-size: 0.9rem; align-self: flex-start; }
+.ws_msg { max-width: min(26rem, 80%); padding: 0.65rem 0.85rem; border: 1px solid var(--color-outline-variant); border-radius: 0.85rem; background: var(--surface-white, #fff); font-size: 0.9rem; align-self: flex-start; }
 .ws_msg p { margin: 0.15rem 0; line-height: 1.4; }
 .ws_msg small { font-size: 0.78rem; color: var(--color-on-surface-variant); }
 .ws_msg.is-me { align-self: flex-end; border-color: transparent; color: #fff; background: var(--color-primary); }
 .ws_msg.is-me small { color: rgba(255, 255, 255, 0.75); }
 .ws_chat-compose { display: flex; gap: 0.5rem; padding: 0.75rem 1rem; border-top: 1px solid var(--color-outline-variant); }
-.ws_chat-compose input { flex: 1; min-width: 0; height: 2.5rem; padding: 0 0.85rem; border: 1px solid var(--color-outline); border-radius: 0.65rem; background: #fff; font-size: 0.96rem; }
+.ws_chat-compose input { flex: 1; min-width: 0; height: 2.5rem; padding: 0 0.85rem; border: 1px solid var(--color-outline); border-radius: 0.65rem; background: var(--surface-white, #fff); font-size: 0.96rem; }
 
 /* ---- RTL ---- */
 [dir="rtl"] .ws_session-main { border-left: 0; border-right: 3px solid var(--color-primary); padding-left: 0; padding-right: 0.7rem; }

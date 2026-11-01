@@ -175,7 +175,7 @@
 }
 /* "Enrolling" badge has a light background, so it needs dark text */
 .academy div:has(> h1) .program-detail_text-1 {
-  color: #5a3427 !important;
+  color: var(--on-brand, #5a3427) !important;
 }
 
 /* Stat boxes inside the dark hero: translucent glass so the white text is readable */
@@ -270,7 +270,7 @@
 /* Toolbar + enroll card become frosted glass */
 .catalog-toolbar_box-1,
 .enroll-card_box-2 {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgb(var(--glass-rgb, 255 255 255) / 0.82);
   backdrop-filter: blur(12px);
   border-radius: 1rem;
   box-shadow: var(--shadow-md);

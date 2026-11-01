@@ -1,4 +1,4 @@
-.portal-header { position: sticky; top: 0; z-index: 40; background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--color-outline-variant); box-shadow: var(--shadow-sm); }
+.portal-header { position: sticky; top: 0; z-index: 40; background-color: rgb(var(--glass-rgb, 255 255 255) / 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--color-outline-variant); box-shadow: var(--shadow-sm); }
 .portal-header_inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: 4rem; max-width: 80rem; margin: 0 auto; padding: 0 1.5rem; }
 .portal-header_brand { display: flex; align-items: center; }
 .portal-header_logo { height: 2.25rem; width: auto; }

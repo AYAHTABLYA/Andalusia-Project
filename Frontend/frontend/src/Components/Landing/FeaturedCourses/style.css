@@ -48,7 +48,7 @@
 .featured-courses_pill {
   padding: 6px 14px;
   border-radius: 999px;
-  background-color: #fff;
+  background-color: var(--surface-white, #fff);
   border: 1px solid var(--color-warm-border);
   color: var(--color-slate-800);
   cursor: pointer;
@@ -129,15 +129,15 @@
 }
 
 .course-card_mode--offline {
-  background-color: #fffbeb;
-  color: #92400e;
-  border: 1px solid #fde68a;
+  background-color: var(--tint-amber, #fffbeb);
+  color: var(--on-amber, #92400e);
+  border: 1px solid var(--bd-amber, #fde68a);
 }
 
 .course-card_mode--blended {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border: 1px solid #bfdbfe;
+  background-color: var(--tint-blue, #eff6ff);
+  color: var(--on-blue, #1e40af);
+  border: 1px solid var(--bd-blue, #bfdbfe);
 }
 
 .course-card_body h3 {
@@ -258,6 +258,6 @@
 }
 
 .featured-courses_view-all a:hover {
-  background-color: var(--color-slate-800);
+  background-color: var(--panel-3, var(--color-slate-800));
   color: #fff;
 }

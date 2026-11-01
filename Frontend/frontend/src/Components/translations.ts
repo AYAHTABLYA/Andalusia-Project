@@ -1,5 +1,7 @@
 // Extra Arabic strings for the page-wide LanguageSwitcher (exact-text match).
 export const extraTranslations: Record<string, string> = {
+  "Switch to dark mode": "التبديل إلى الوضع الداكن",
+  "Switch to light mode": "التبديل إلى الوضع الفاتح",
   // Schedule calendar
   "Upcoming week": "الأسبوع القادم",
   "Broadcasting": "بث مباشر",

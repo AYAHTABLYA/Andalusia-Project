@@ -73,3 +73,8 @@ body { margin: 0; background: var(--canvas); font-family: var(--font-body); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* =====================================================================
+   Theme tokens. Light mode needs no values here (every use carries its own
+   light fallback); the dark values live in styles/dark-mode.css.
+   ===================================================================== */

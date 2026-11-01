@@ -6,8 +6,8 @@
   gap: 16px;
   padding: 12px clamp(16px, 4vw, 40px);
   margin: 0;
-  background: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid #e5e7e7;
+  background: rgb(var(--glass-rgb, 255 255 255) / 0.95);
+  border-bottom: 1px solid var(--line-soft, #e5e7e7);
 }
 
 .header_brand {
@@ -26,8 +26,8 @@
     Georgia,
     serif;
   color: #b07963;
-  background: #fff;
-  border: 1px solid #e5e7e7;
+  background: var(--surface-white, #fff);
+  border: 1px solid var(--line-soft, #e5e7e7);
   border-radius: 8px;
 }
 
@@ -39,7 +39,7 @@
 
 .header_brand-text strong {
   font-size: 15px;
-  color: #334246;
+  color: var(--text-strong, #334246);
 }
 
 .header_brand-text small {
@@ -57,7 +57,7 @@
 .header_side h2 {
   font-size: 16px;
   font-weight: 600;
-  color: #334246;
+  color: var(--text-strong, #334246);
   margin: 0;
 }
 

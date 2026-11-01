@@ -1,5 +1,5 @@
 .landing-footer {
-  background-color: var(--color-slate-950);
+  background-color: var(--panel-1, var(--color-slate-950));
   color: #9aa6a9;
   font-size: 12px;
   padding: 64px 0 48px;

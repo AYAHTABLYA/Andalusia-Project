@@ -76,7 +76,7 @@
   gap: 8px;
   margin-top: 16px;
   padding: 12px;
-  background-color: #fff;
+  background-color: var(--surface-white, #fff);
   border: 1px solid var(--color-warm-border);
   border-radius: 12px;
   font-size: 12px;
@@ -97,7 +97,7 @@
 
 .contact-campus_form-wrap {
   padding: 28px;
-  background-color: #fff;
+  background-color: var(--surface-white, #fff);
   border-radius: 16px;
   box-shadow: var(--shadow-md);
   transition:
@@ -214,9 +214,9 @@
   margin-bottom: 12px;
   padding: 10px 14px;
   border-radius: 8px;
-  border: 1px solid #bbf7d0;
-  background: #f0fdf4;
-  color: #15803d;
+  border: 1px solid var(--bd-green, #bbf7d0);
+  background: var(--tint-green, #f0fdf4);
+  color: var(--on-green, #15803d);
   font-size: 13px;
   font-weight: 500;
 }
@@ -245,8 +245,8 @@
 }
 
 .contact-campus_notice--error {
-  border-color: #fecaca;
-  background: #fef2f2;
+  border-color: var(--bd-red, #fecaca);
+  background: var(--tint-red, #fef2f2);
   color: #b91c1c;
 }
 

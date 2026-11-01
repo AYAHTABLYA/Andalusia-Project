@@ -1,6 +1,7 @@
 import logo from "../../../assets/andalusia-logo.png";
 import { Link } from "react-router-dom";
 import { LanguageSwitcher } from "../../LanguageSwitcher";
+import { ThemeSwitcher } from "../../ThemeSwitcher";
 import "./style.css";
 
 type Props = {
@@ -29,6 +30,7 @@ function NavbarComponent({ signedIn, menuOpen, onToggleMenu, onCloseMenu }: Prop
 
         <div className="navbar_actions">
           <LanguageSwitcher />
+          <ThemeSwitcher />
           <Link className="btn btn-outline navbar_signin" to={signedIn ? "/profile" : "/login"}>
             My Portal
           </Link>

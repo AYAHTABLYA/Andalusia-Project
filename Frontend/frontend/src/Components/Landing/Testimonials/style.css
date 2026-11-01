@@ -52,7 +52,7 @@
   justify-content: space-between;
   padding: 24px;
   text-align: left;
-  background-color: #fff;
+  background-color: var(--surface-white, #fff);
   border: 1px solid var(--color-warm-border);
   border-radius: 16px;
   box-shadow: var(--shadow-md);
@@ -122,7 +122,7 @@
 }
 
 .testimonials_avatar--charcoal {
-  background-color: var(--color-slate-800);
+  background-color: var(--panel-3, var(--color-slate-800));
 }
 
 .testimonials_avatar--sand {
@@ -132,7 +132,7 @@
 }
 
 .testimonials_avatar--slate {
-  background-color: var(--color-slate-950);
+  background-color: var(--panel-1, var(--color-slate-950));
 }
 
 .testimonials_name {

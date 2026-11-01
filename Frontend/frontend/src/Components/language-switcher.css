@@ -3,7 +3,7 @@
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
-  color: #233b4d;
+  color: var(--text-strong, #233b4d);
   font: inherit;
   z-index: 100;
 }
@@ -15,10 +15,10 @@
   gap: 8px;
   min-height: 40px;
   padding: 0 11px;
-  border: 1px solid #d8e0e5;
+  border: 1px solid var(--line-soft, #d8e0e5);
   border-radius: 10px;
-  background: #fff;
-  color: #23445b;
+  background: var(--surface-white, #fff);
+  color: var(--text-strong, #23445b);
   font-size: 13px;
   font-weight: 650;
   white-space: nowrap;
@@ -28,7 +28,7 @@
 .language-switcher .language-switcher_trigger:hover,
 .language-switcher .language-switcher_trigger[aria-expanded="true"] {
   border-color: #b07963;
-  background: #fffaf7;
+  background: var(--tint-brand, #fffaf7);
   box-shadow: 0 4px 12px rgba(22, 43, 58, .09);
 }
 .language-switcher_globe { width: 19px; height: 19px; flex: 0 0 auto; }
@@ -39,9 +39,9 @@
   right: 0;
   min-width: 164px;
   padding: 5px;
-  border: 1px solid #e0e6ea;
+  border: 1px solid var(--line-soft, #e0e6ea);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface-white, #fff);
   box-shadow: 0 12px 32px rgba(21, 40, 52, .16);
   z-index: 1000;
 }
@@ -56,21 +56,21 @@ html[dir="rtl"] .language-switcher_menu { right: auto; left: 0; }
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: #2d414e;
+  color: var(--text-strong, #2d414e);
   text-align: left;
   font-size: 13px;
 }
 html[dir="rtl"] .language-switcher .language-switcher_menu button { text-align: right; }
 .language-switcher .language-switcher_menu button:hover,
-.language-switcher .language-switcher_menu button.is-selected { background: #f7f0ec; color: #8f5d49; }
+.language-switcher .language-switcher_menu button.is-selected { background: var(--tint-brand, #f7f0ec); color: var(--on-brand, #8f5d49); }
 .language-switcher_option-code {
   display: grid;
   place-items: center;
   width: 25px;
   height: 25px;
   border-radius: 7px;
-  background: #eef2f5;
-  color: #345267;
+  background: var(--tint-neutral, #eef2f5);
+  color: var(--text-strong, #345267);
   font-size: 11px;
   font-weight: 800;
 }

@@ -77,7 +77,7 @@
 .portal-card {
   border: 1px solid var(--color-outline-variant);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.86);
+  background: rgb(var(--glass-rgb, 255 255 255) / 0.86);
   box-shadow: 0 5px 20px rgba(52, 37, 28, 0.035);
 }
 .portal-stat {
@@ -182,36 +182,36 @@
   font-weight: 750;
 }
 .status-accepted {
-  color: #166534;
-  background: #e8f5ec;
-  border-color: #c7e7d0;
+  color: var(--on-green, #166534);
+  background: var(--tint-green, #e8f5ec);
+  border-color: var(--bd-green, #c7e7d0);
 }
 .status-approved {
-  color: #166534;
-  background: #e8f5ec;
-  border-color: #c7e7d0;
+  color: var(--on-green, #166534);
+  background: var(--tint-green, #e8f5ec);
+  border-color: var(--bd-green, #c7e7d0);
 }
 .status-rejected {
   color: #991b1b;
-  background: #fdeaea;
-  border-color: #f4c7c7;
+  background: var(--tint-red, #fdeaea);
+  border-color: var(--bd-red, #f4c7c7);
 }
 .status-cancelled,
 .status-submitted {
-  color: #57534e;
-  background: #f4f2ef;
-  border-color: #e2ded8;
+  color: var(--text-strong, #57534e);
+  background: var(--tint-neutral, #f4f2ef);
+  border-color: var(--line-soft, #e2ded8);
 }
 .status-under_review,
 .status-review {
-  color: #92400e;
-  background: #fdf3dc;
-  border-color: #f4d99d;
+  color: var(--on-amber, #92400e);
+  background: var(--tint-amber, #fdf3dc);
+  border-color: var(--bd-amber, #f4d99d);
 }
 .status-draft {
-  color: #57534e;
-  background: #f4f2ef;
-  border-color: #e2ded8;
+  color: var(--text-strong, #57534e);
+  background: var(--tint-neutral, #f4f2ef);
+  border-color: var(--line-soft, #e2ded8);
 }
 .application-date {
   color: var(--color-on-surface-variant);

@@ -3,6 +3,7 @@ import { PILLARS } from "./constants";
 import "./Style.css";
 import logo from "../../assets/andalusia-logo.png";
 import { LanguageSwitcher } from "../LanguageSwitcher";
+import { ThemeSwitcher } from "../ThemeSwitcher";
 
 function AuthLayoutComponent({
   title,
@@ -23,6 +24,7 @@ function AuthLayoutComponent({
         </div>
         <div className="auth_header_side">
           <LanguageSwitcher />
+          <ThemeSwitcher />
           <span className="auth_phone">Support: +20 3 584-9020</span>
           {headerAction}
         </div>

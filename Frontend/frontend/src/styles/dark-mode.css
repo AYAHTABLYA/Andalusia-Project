@@ -1,0 +1,190 @@
+/* =====================================================================
+   Andalusia Academy — Dark mode.
+   Switched by <html data-theme="dark"> (see utils/theme.ts + ThemeSwitcher).
+   Light mode is untouched: every token below is only defined here and every
+   place that uses one also carries its original light value as a fallback.
+   ===================================================================== */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Brand: text/accents lifted so they read on dark, fills stay rose-bronze */
+  --brand-50: #2a2220;
+  --brand-100: #3a2c27;
+  --brand-300: #7d5a4b;
+  --brand-400: #c2907b;
+  --brand-500: #b07963;
+  --brand-600: #c58b75;
+  --brand-700: #e3bba8;
+  --amber: #d99a73;
+
+  /* Ink flips to light so every text use becomes readable */
+  --ink-950: #f5f0ea;
+  --ink-900: #ece6de;
+  --ink-800: #ddd6cd;
+  --ink-700: #c4bdb4;
+  --muted: #a6b1b4;
+  --faint: #7f8c8f;
+
+  /* Surfaces */
+  --canvas: #111719;
+  --surface-low: #172023;
+  --surface-mid: #1e292c;
+  --surface: #182124;
+  --line: #2b373a;
+
+  --grad-ink: linear-gradient(145deg, #243033, #141b1d);
+  --grad-text: linear-gradient(100deg, #e3bba8, #c2907b 60%, #d99a73);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 28px 60px -24px rgba(0, 0, 0, 0.7);
+  --ring: 0 0 0 4px rgba(194, 144, 123, 0.25);
+
+  /* Tokens used by the hard-coded-colour replacements */
+  --surface-white: #1a2326;
+  --glass-rgb: 20 28 31;
+  --line-soft: #2d3a3d;
+  --text-strong: #e4ded6;
+  --tint-brand: #2a2220;
+  --tint-neutral: #1f292c;
+  --tint-green: rgba(74, 222, 128, 0.14);
+  --tint-amber: rgba(245, 180, 70, 0.15);
+  --tint-red: rgba(248, 113, 113, 0.15);
+  --tint-blue: rgba(96, 165, 250, 0.15);
+  --bd-green: rgba(74, 222, 128, 0.3);
+  --bd-amber: rgba(245, 180, 70, 0.32);
+  --bd-red: rgba(248, 113, 113, 0.32);
+  --bd-blue: rgba(96, 165, 250, 0.32);
+  --on-green: #86e0a6;
+  --on-amber: #f2c879;
+  --on-blue: #a5c0ff;
+  --on-brand: #e3bba8;
+
+  /* Panels that stay dark in both themes (footer, toasts, dark cards) */
+  --panel-1: #0c1112;
+  --panel-2: #1a2427;
+  --panel-3: #263338;
+
+  /* Header controls (language / theme / bell / select) */
+  --ctl-border: #34444a;
+  --ctl-text: #e0d9d0;
+  --ctl-hover: #243034;
+}
+
+/* Landing defines its own slate palette with literal hex: flip it too */
+html[data-theme="dark"] .landing-page {
+  --color-slate-700: #c4bdb4;
+  --color-slate-800: #ddd6cd;
+  --color-slate-900: #ece6de;
+  --color-slate-950: #f5f0ea;
+  --shadow-elevated: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.35);
+  --shadow-premium: 0 18px 36px -12px rgba(0, 0, 0, 0.55);
+}
+
+/* Portal soft status tokens */
+html[data-theme="dark"] .portal {
+  --color-success-soft: rgba(74, 222, 128, 0.14);
+  --color-warning-soft: rgba(245, 180, 70, 0.15);
+  --color-success: #4ade80;
+  --color-error: #f87171;
+}
+html[data-theme="dark"] .academy {
+  --color-success: #4ade80;
+  --color-error: #f87171;
+}
+
+html[data-theme="dark"] body { background: var(--canvas); color: var(--ink-800); }
+html[data-theme="dark"] ::selection { background: var(--brand-300); color: #fff; }
+
+/* Backdrop grid lines/glow were tuned for light paper */
+html[data-theme="dark"] .ds-backdrop {
+  background-image:
+    radial-gradient(900px 420px at 6% -10%, rgba(176, 121, 99, 0.14), transparent 70%),
+    radial-gradient(760px 380px at 100% 0%, rgba(160, 104, 74, 0.1), transparent 70%),
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+}
+html[data-theme="dark"] .academy,
+html[data-theme="dark"] .portal {
+  background-image:
+    radial-gradient(900px 420px at 6% -10%, rgba(176, 121, 99, 0.14), transparent 70%),
+    radial-gradient(760px 380px at 100% 0, rgba(160, 104, 74, 0.1), transparent 70%);
+}
+
+/* Primary buttons: keep white text readable on hover */
+html[data-theme="dark"] .landing-page .btn-primary:hover,
+html[data-theme="dark"] .btn-primary:hover { background-color: var(--brand-600); }
+html[data-theme="dark"] .landing-page .btn-dark { color: #fff; }
+
+/* Hero slide 1 is a light, washed-out cover: tint it dark instead */
+html[data-theme="dark"] .hero-slider { background-color: #131a1c; }
+html[data-theme="dark"] .hero-slide--cover .hero-slide_glass {
+  background: linear-gradient(90deg, rgba(17, 23, 25, 0.9) 0%, rgba(17, 23, 25, 0.72) 55%, rgba(17, 23, 25, 0.3) 100%);
+}
+html[data-theme="dark"][dir="rtl"] .hero-slide--cover .hero-slide_glass,
+html[data-theme="dark"]:root[dir="rtl"] .hero-slide--cover .hero-slide_glass {
+  background: linear-gradient(270deg, rgba(17, 23, 25, 0.9) 0%, rgba(17, 23, 25, 0.72) 55%, rgba(17, 23, 25, 0.3) 100%);
+}
+@media (max-width: 767px) {
+  html[data-theme="dark"] .hero-slide--cover .hero-slide_glass,
+  html[data-theme="dark"]:root[dir="rtl"] .hero-slide--cover .hero-slide_glass {
+    background: rgba(17, 23, 25, 0.8);
+  }
+}
+html[data-theme="dark"] .hero-slider_play { color: #141b1d; background: #fff; }
+html[data-theme="dark"] .hero-slider_dot.is-active::after { background: #fff; }
+
+/* Staff dashboard welcome banners use light gradients */
+html[data-theme="dark"] .instructor-dashboard .instructor-welcome, html[data-theme="dark"] .instructor-welcome,
+html[data-theme="dark"] .admin-dashboard .admin-welcome {
+  background: linear-gradient(110deg, #2a2220, #1d2629 58%, #1a2927);
+}
+
+/* Header controls */
+html[data-theme="dark"] .language-switcher { color: var(--ctl-text); }
+html[data-theme="dark"] .language-switcher .language-switcher_trigger,
+html[data-theme="dark"] .notification-bell .notification-bell_trigger {
+  background: var(--surface-white);
+  border-color: var(--ctl-border);
+  color: var(--ctl-text);
+}
+html[data-theme="dark"] .language-switcher .language-switcher_trigger:hover,
+html[data-theme="dark"] .language-switcher .language-switcher_trigger[aria-expanded="true"],
+html[data-theme="dark"] .notification-bell .notification-bell_trigger:hover,
+html[data-theme="dark"] .notification-bell .notification-bell_trigger[aria-expanded="true"] {
+  background: var(--ctl-hover);
+  border-color: var(--brand-500);
+}
+html[data-theme="dark"] .language-switcher_menu,
+html[data-theme="dark"] .notification-bell_menu {
+  background: var(--surface-white);
+  border-color: var(--ctl-border);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+html[data-theme="dark"] .language-switcher .language-switcher_menu button { color: var(--ctl-text); }
+html[data-theme="dark"] .language-switcher .language-switcher_menu button:hover,
+html[data-theme="dark"] .language-switcher .language-switcher_menu button.is-selected {
+  background: var(--tint-brand);
+  color: var(--brand-700);
+}
+html[data-theme="dark"] .language-switcher_option-code { background: var(--tint-neutral); color: var(--ctl-text); }
+html[data-theme="dark"] .notification-bell_badge { border-color: var(--surface-white); }
+
+/* Form fields & native controls */
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  color-scheme: dark;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder { color: var(--faint); }
+
+/* Smooth switch, but not for people who asked for less motion */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease !important;
+  }
+}

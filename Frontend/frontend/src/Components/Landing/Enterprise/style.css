@@ -1,6 +1,6 @@
 .enterprise {
   padding: 64px 0;
-  background-color: var(--color-slate-900);
+  background-color: var(--panel-2, var(--color-slate-900));
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -98,7 +98,7 @@
 }
 
 .enterprise_dashboard {
-  background-color: var(--color-slate-800);
+  background-color: var(--panel-3, var(--color-slate-800));
   border-color: #4a5a5e;
   padding: 24px;
   display: flex;
@@ -134,7 +134,7 @@
   align-items: flex-start;
   gap: 12px;
   padding: 14px;
-  background-color: var(--color-slate-900);
+  background-color: var(--panel-2, var(--color-slate-900));
   border-radius: 10px;
   border: 1px solid rgba(74, 90, 94, 0.6);
 }
