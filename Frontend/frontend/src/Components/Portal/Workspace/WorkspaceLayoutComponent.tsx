@@ -5,6 +5,7 @@ import EmptyState from "./EmptyState";
 import { initials } from "./helpers";
 import "../Applications/style.css";
 import "./style.css";
+import "./workspace.css";
 
 type Props = {
   links: WorkspaceLink[];

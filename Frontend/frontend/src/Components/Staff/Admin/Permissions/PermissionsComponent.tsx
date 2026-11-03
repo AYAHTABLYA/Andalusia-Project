@@ -1,5 +1,6 @@
-import { memo } from "react";
+import { memo, useMemo, useState } from "react";
 import type { AdminRole } from "../../../../Types/Admin";
+import "./permissions.css";
 
 type PermissionItem = { code: string; action: string; description: string };
 type PermissionGroup = { key: string; title: string; items: PermissionItem[] };
@@ -36,6 +37,26 @@ function PermissionsComponent({
   const dirty = added.length + removed.length > 0;
   const totalPermissions = groups.reduce((n, g) => n + g.items.length, 0);
   const users = roles.reduce((n, r) => n + r.usersCount, 0);
+
+  // Long catalog -> groups are collapsed accordions with a search box (search opens every group that matches).
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState<string[]>([]);
+  const q = query.trim().toLowerCase();
+  const visible = useMemo(
+    () =>
+      groups
+        .map((g) => ({
+          ...g,
+          items: q ? g.items.filter((p) => `${p.code} ${p.action} ${p.description}`.toLowerCase().includes(q)) : g.items,
+        }))
+        .filter((g) => g.items.length > 0),
+    [groups, q],
+  );
+  const isOpen = (key: string) => Boolean(q) || open.includes(key);
+  const flip = (key: string) => setOpen((o) => (o.includes(key) ? o.filter((k) => k !== key) : [...o, key]));
+  const allOpen = visible.length > 0 && visible.every((g) => isOpen(g.key));
+  // Select all / none for one group: flip only the switches that differ (toggle uses functional updates).
+  const setGroup = (codes: string[], on: boolean) => codes.filter((c) => selected.includes(c) !== on).forEach(onToggle);
 
   return (
     <div className="staff-dashboard staff-workspace-page perm">
@@ -87,35 +108,89 @@ function PermissionsComponent({
 
             {notice && <p className="perm_notice" role="status">{notice}</p>}
 
-            {groups.map((g) => (
-              <div className="perm_group" key={g.key}>
-                <h3>{g.title}</h3>
-                <ul>
-                  {g.items.map((p) => {
-                    const on = selected.includes(p.code);
-                    const changed = added.includes(p.code) || removed.includes(p.code);
-                    return (
-                      <li key={p.code} className={changed ? "is-changed" : ""}>
-                        <div>
-                          <strong>{p.action || p.code}</strong>
-                          <small>{p.description || p.code}</small>
-                        </div>
+            <div className="perm_tools">
+              <label className="perm_search">
+                <span className="material-symbols-outlined" aria-hidden="true">search</span>
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search permissions"
+                  aria-label="Search permissions"
+                />
+              </label>
+              <button
+                type="button"
+                className="staff-btn staff-btn--ghost"
+                disabled={Boolean(q)}
+                onClick={() => setOpen(allOpen ? [] : visible.map((g) => g.key))}
+              >
+                {allOpen ? "Collapse all" : "Expand all"}
+              </button>
+            </div>
+          </section>
+
+          {visible.length === 0 ? (
+            <p className="staff-card perm_state" role="status">No permissions match “{query}”.</p>
+          ) : (
+            <div className="perm_groups">
+              {visible.map((g) => {
+                const full = groups.find((x) => x.key === g.key)?.items ?? g.items;
+                const codes = full.map((p) => p.code);
+                const onCount = codes.filter((c) => selected.includes(c)).length;
+                const changes = codes.filter((c) => added.includes(c) || removed.includes(c)).length;
+                const expanded = isOpen(g.key);
+                const panel = `perm-panel-${g.key}`;
+                return (
+                  <section className={`perm_g${expanded ? " is-open" : ""}`} key={g.key}>
+                    <div className="perm_g-head">
+                      <button type="button" className="perm_g-toggle" aria-expanded={expanded} aria-controls={panel} onClick={() => flip(g.key)} disabled={Boolean(q)}>
+                        <span className="material-symbols-outlined" aria-hidden="true">expand_more</span>
+                        <strong>{g.title}</strong>
+                        <span className="perm_g-count">{onCount}/{codes.length}</span>
+                        {changes > 0 && <span className="perm_g-changed">{changes} changed</span>}
+                      </button>
+                      {!locked && (
                         <button
                           type="button"
-                          role="switch"
-                          aria-checked={on}
-                          aria-label={`${label(role.name)}: ${p.code}`}
-                          disabled={locked || saving}
-                          className={`staff-switch${on ? " is-on" : ""}`}
-                          onClick={() => onToggle(p.code)}
-                        />
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-          </section>
+                          className="perm_g-all"
+                          disabled={saving}
+                          onClick={() => setGroup(codes, onCount !== codes.length)}
+                        >
+                          {onCount === codes.length ? "Clear" : "Select all"}
+                        </button>
+                      )}
+                    </div>
+                    {expanded && (
+                      <ul id={panel} className="perm_g-list">
+                        {g.items.map((p) => {
+                          const on = selected.includes(p.code);
+                          const changed = added.includes(p.code) || removed.includes(p.code);
+                          return (
+                            <li key={p.code} className={changed ? "is-changed" : ""}>
+                              <div>
+                                <strong>{p.action || p.code}</strong>
+                                <small>{p.description || p.code}</small>
+                              </div>
+                              <button
+                                type="button"
+                                role="switch"
+                                aria-checked={on}
+                                aria-label={`${label(role.name)}: ${p.code}`}
+                                disabled={locked || saving}
+                                className={`staff-switch${on ? " is-on" : ""}`}
+                                onClick={() => onToggle(p.code)}
+                              />
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </section>
+                );
+              })}
+            </div>
+          )}
 
           {dirty && !locked && (
             <div className="perm_bar" role="region" aria-label="Unsaved changes">

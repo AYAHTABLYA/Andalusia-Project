@@ -1,38 +1,41 @@
 /* =====================================================================
    Hero slider
-   Slide 1 ("cover") keeps the original light, washed-out look.
+   Slide 1 ("cover"): light hero, text on the start side, artwork on the end side.
    Slides 2+ ("photo") show a full photo: blurred panel on the start side
    (where the text sits), clear on the end side.
    ===================================================================== */
 .hero-slider {
-  --hero-autoplay: 6000ms;
+  --hero-autoplay: 4500ms;
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: clamp(520px, 78vh, 720px);
-  background-color: #f1f1f1;
+  display: grid;
+  min-height: clamp(400px, 40vw, 540px);
+  background-color: #fff;
   border-bottom: 1px solid var(--color-warm-border);
 }
 
-/* ---------- Slides (cross-fade) ---------- */
+/* ---------- Slides (cross-fade) ----------
+   All slides share one grid cell, so the slider is as tall as the tallest slide. */
 .hero-slide {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  grid-area: 1 / 1;
+  min-width: 0;
   display: flex;
   align-items: center;
-  padding: 56px 0 120px; /* bottom room for the controls */
+  padding: 40px 0 96px; /* bottom room for the controls */
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity 0.8s ease,
-    visibility 0s linear 0.8s;
+    opacity 0.5s ease,
+    visibility 0s linear 0.5s;
 }
 .hero-slide.is-active {
   opacity: 1;
   visibility: visible;
   z-index: 1;
   transition:
-    opacity 0.8s ease,
+    opacity 0.5s ease,
     visibility 0s;
 }
 
@@ -51,27 +54,84 @@
   width: 100%;
 }
 
-/* ---------- Slide 1: original cover look (unchanged) ---------- */
+/* ---------- Slide 1: light cover, artwork already on the end side of the picture ---------- */
+.hero-slide--cover {
+  background-color: #faf6f2;
+}
+/* Zoomed out: the whole picture is shown (full height) on the end side and its
+   start edge fades into the page, instead of being cropped to fill the hero. */
 .hero-slide--cover .hero-slide_bg {
-  background-position: right center;
-}
-/* Cover slide: same blurred start side as the photo slides, but light-tinted
-   because the text on it is dark. The end side stays clear. */
-.hero-slide--cover .hero-slide_glass {
-  background: linear-gradient(
+  inset: auto 2.5% 0 auto;
+  width: auto;
+  height: 100%;
+  aspect-ratio: 922 / 512;
+  background-size: 100% 100%;
+  -webkit-mask-image: linear-gradient(
     90deg,
-    rgba(241, 241, 241, 0.88) 0%,
-    rgba(241, 241, 241, 0.7) 55%,
-    rgba(241, 241, 241, 0.25) 100%
+    transparent 0,
+    #000 16%,
+    #000 94%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 16%,
+    #000 94%,
+    transparent 100%
   );
 }
-:root[dir="rtl"] .hero-slide--cover .hero-slide_glass {
-  background: linear-gradient(
+:root[dir="rtl"] .hero-slide--cover .hero-slide_bg {
+  inset: auto auto 0 2.5%;
+  -webkit-mask-image: linear-gradient(
     270deg,
-    rgba(241, 241, 241, 0.88) 0%,
-    rgba(241, 241, 241, 0.7) 55%,
-    rgba(241, 241, 241, 0.25) 100%
+    transparent 0,
+    #000 16%,
+    #000 94%,
+    transparent 100%
   );
+  mask-image: linear-gradient(
+    270deg,
+    transparent 0,
+    #000 16%,
+    #000 94%,
+    transparent 100%
+  );
+}
+.hero-slide--cover .hero_content {
+  max-width: min(520px, 48%);
+  gap: 14px;
+}
+.hero-slide--cover .hero_title {
+  font-size: clamp(24px, 2.7vw, 40px);
+}
+.hero-slide--cover .hero_description {
+  font-size: clamp(14px, 1.1vw, 16px);
+}
+
+.hero_features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hero_features li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-800, #243033);
+}
+.hero_features li::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
 }
 
 /* ---------- Blurred start side, clear end side (all slides) ---------- */
@@ -87,7 +147,12 @@
     rgba(20, 27, 29, 0.5) 55%,
     rgba(20, 27, 29, 0.2) 100%
   );
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 40%, transparent 72%);
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    #000 0%,
+    #000 40%,
+    transparent 72%
+  );
   mask-image: linear-gradient(90deg, #000 0%, #000 40%, transparent 72%);
 }
 :root[dir="rtl"] .hero-slide_glass {
@@ -97,7 +162,12 @@
     rgba(20, 27, 29, 0.5) 55%,
     rgba(20, 27, 29, 0.2) 100%
   );
-  -webkit-mask-image: linear-gradient(270deg, #000 0%, #000 40%, transparent 72%);
+  -webkit-mask-image: linear-gradient(
+    270deg,
+    #000 0%,
+    #000 40%,
+    transparent 72%
+  );
   mask-image: linear-gradient(270deg, #000 0%, #000 40%, transparent 72%);
 }
 
@@ -140,10 +210,11 @@
 
 .hero_title {
   margin: 0;
-  font-size: clamp(30px, 4.2vw, 48px);
+  font-size: clamp(28px, 3.4vw, 42px);
   font-weight: 800;
   line-height: 1.15;
   text-transform: uppercase;
+  overflow-wrap: break-word;
 }
 
 .hero_title-accent {
@@ -318,16 +389,22 @@
 /* ---------- Responsive ---------- */
 @media (min-width: 1024px) {
   .hero-slide {
-    padding-top: 72px;
+    padding-top: 48px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .hero-slide--cover .hero_content {
+    max-width: min(480px, 46%);
   }
 }
 
 @media (max-width: 767px) {
   .hero-slider {
-    min-height: 560px;
+    min-height: 0;
   }
   .hero-slide {
-    padding: 40px 0 110px;
+    padding-bottom: 104px;
   }
   .hero-slider_controls {
     padding: 0 16px;
@@ -337,18 +414,69 @@
     width: 40px;
     height: 40px;
   }
-  /* Text spans the whole width on phones, so blur everything */
+  .hero_content,
+  .hero-slide--cover .hero_content,
+  .hero-slide--photo .hero_content {
+    max-width: 100%;
+    gap: 16px;
+  }
+  .hero-slide--cover .hero_title {
+    font-size: clamp(26px, 7.4vw, 34px);
+  }
+  .hero-slide--photo .hero_title {
+    font-size: clamp(26px, 7vw, 32px);
+  }
+  .hero_description,
+  .hero-slide--cover .hero_description {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  /* Phones: the picture gets its own band on top and the text sits below it,
+     so the photo is always visible (it used to be hidden under a full-screen blur). */
+  .hero-slide--cover {
+    padding-top: min(55.5vw, 260px);
+  }
+  .hero-slide--photo {
+    padding-top: 240px;
+    background-color: #141b1d;
+  }
+  .hero-slide--cover .hero-slide_bg,
+  :root[dir="rtl"] .hero-slide--cover .hero-slide_bg {
+    inset: 0 0 auto 0;
+    width: 100%;
+    height: min(55.5vw, 260px);
+    aspect-ratio: auto;
+    background-size: cover;
+    background-position: right top;
+    -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
+  }
+  .hero-slide--photo .hero-slide_bg {
+    inset: 0 0 auto 0;
+    height: 270px;
+  }
+  .hero-slide--photo .hero-slide_bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(20, 27, 29, 0) 45%, #141b1d 100%);
+  }
   .hero-slide--photo .hero-slide_glass,
   :root[dir="rtl"] .hero-slide--photo .hero-slide_glass {
-    background: rgba(20, 27, 29, 0.58);
-    -webkit-mask-image: none;
-    mask-image: none;
+    display: none;
   }
-  .hero-slide--cover .hero-slide_glass,
-  :root[dir="rtl"] .hero-slide--cover .hero-slide_glass {
-    background: rgba(241, 241, 241, 0.8);
-    -webkit-mask-image: none;
-    mask-image: none;
+}
+
+@media (max-width: 400px) {
+  .hero-slider_pill {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .hero-slider_dot.is-active {
+    width: 32px;
+  }
+  .hero_features {
+    gap: 6px 16px;
   }
 }
 
@@ -360,5 +488,32 @@
   .hero-slider_dot.is-active::after {
     animation: none;
     transform: scaleX(1);
+  }
+}
+
+/* Arabic, slide 1: the artwork (and the "ANDALUSIA HEALTH" logo inside the picture) must not be mirrored,
+   so the picture stays on the right exactly as in English and the Arabic text sits in the free space on the left.
+   Without this the picture was moved to the left edge and ran into the right-aligned text. */
+@media (min-width: 768px) {
+  :root[dir="rtl"] .hero-slide--cover .hero-slide_bg {
+    inset: auto 2.5% 0 auto;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 16%,
+      #000 94%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 16%,
+      #000 94%,
+      transparent 100%
+    );
+  }
+  :root[dir="rtl"] .hero-slide--cover .hero_content {
+    margin-left: 0;
+    margin-right: auto;
   }
 }

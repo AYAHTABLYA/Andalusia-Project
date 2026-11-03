@@ -6,9 +6,11 @@ import {
   createAdminInstructor,
   createStaffAssignment,
   createStaffSession,
+  getAdminInstructor,
   getAssignmentSubmissions,
   getPermissionCatalog,
   gradeSubmission,
+  updateAdminInstructor,
   updateRolePermissions,
 } from "../../../apis/staffAdminApi";
 import type { AdminScheduleDto, PermissionDto, StaffSubmissionDto } from "../../../apis/staffAdminApi";
@@ -95,7 +97,9 @@ export function AddPersonDialog({ kind, onClose, onDone }: {
     <Dialog
       icon={isInstructor ? "school" : "groups"}
       title={isInstructor ? "Add instructor" : "Add student"}
-      subtitle="The person signs in with this email and the temporary password."
+      subtitle={isInstructor
+        ? "New accounts sign in with this email and the temporary password. If the email already belongs to a learner, that account becomes an instructor and keeps its current password."
+        : "The person signs in with this email and the temporary password."}
       onClose={onClose}
       footer={<Footer formId="staff-person-form" onClose={onClose} saving={saving} submitLabel={isInstructor ? "Add instructor" : "Add student"} />}
     >
@@ -129,6 +133,82 @@ export function AddPersonDialog({ kind, onClose, onDone }: {
             </Field>
           </>
         )}
+        {error && <div style={errorBox} role="alert">{error}</div>}
+      </form>
+    </Dialog>
+  );
+}
+
+// ------------------------------------------------------------------ Edit instructor
+export function EditInstructorDialog({ instructorId, onClose, onDone }: {
+  instructorId: number; onClose: () => void; onDone: (message: string) => void;
+}) {
+  const [f, setF] = useState({ firstName: "", lastName: "", mobileNumber: "", jobTitle: "", bio: "", avatarUrl: "" });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getAdminInstructor(instructorId, controller.signal)
+      .then((d) => setF({
+        firstName: d.firstName, lastName: d.lastName, mobileNumber: d.mobileNumber ?? "",
+        jobTitle: d.jobTitle ?? "", bio: d.bio ?? "", avatarUrl: d.avatarUrl ?? "",
+      }))
+      .catch((err) => { if (!controller.signal.aborted) setError(messageOf(err, "Could not load this instructor.")); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [instructorId]);
+
+  const change = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setF((p) => ({ ...p, [e.target.name]: e.target.value }));
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSaving(true);
+    try {
+      await updateAdminInstructor(instructorId, {
+        firstName: f.firstName.trim(),
+        lastName: f.lastName.trim(),
+        mobileNumber: f.mobileNumber.trim(),
+        jobTitle: f.jobTitle.trim(),
+        bio: f.bio.trim(),
+        avatarUrl: f.avatarUrl, // kept as it was: the API clears it when omitted
+      });
+      onDone(`${f.firstName.trim()} ${f.lastName.trim()} was updated.`);
+    } catch (err) {
+      setError(messageOf(err, "Could not save this instructor."));
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog
+      icon="school"
+      title="Edit instructor"
+      subtitle="Update the profile shown on the academy. Email and password are not changed here."
+      onClose={onClose}
+      footer={<Footer formId="staff-edit-instructor-form" onClose={onClose} saving={saving} disabled={loading} submitLabel="Save changes" />}
+    >
+      <form id="staff-edit-instructor-form" style={stack} onSubmit={submit} aria-busy={loading}>
+        <div style={row}>
+          <Field id="ei-first" label="First name">
+            <input id="ei-first" className="portal-ui_input" name="firstName" required maxLength={50} value={f.firstName} onChange={change} disabled={loading} />
+          </Field>
+          <Field id="ei-last" label="Last name">
+            <input id="ei-last" className="portal-ui_input" name="lastName" required maxLength={50} value={f.lastName} onChange={change} disabled={loading} />
+          </Field>
+        </div>
+        <Field id="ei-mobile" label="Mobile number">
+          <input id="ei-mobile" className="portal-ui_input" type="tel" name="mobileNumber" required maxLength={20} value={f.mobileNumber} onChange={change} disabled={loading} />
+        </Field>
+        <Field id="ei-job" label="Job title / specialization">
+          <input id="ei-job" className="portal-ui_input" name="jobTitle" maxLength={100} value={f.jobTitle} onChange={change} disabled={loading} />
+        </Field>
+        <Field id="ei-bio" label="Bio">
+          <textarea id="ei-bio" className="portal-ui_input" name="bio" rows={3} value={f.bio} onChange={change} disabled={loading} />
+        </Field>
         {error && <div style={errorBox} role="alert">{error}</div>}
       </form>
     </Dialog>

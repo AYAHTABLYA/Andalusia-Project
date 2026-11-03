@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { initials } from "../../../utils/format";
 import { OverviewHero, OverviewProfile, type Tile } from "./OverviewHero";
+import useTilt from "../../Shared/Constellation/useTilt";
+import OpsBar, { type OpsAction } from "./OpsBar";
 
 type Stat = { label: string; value?: string | number; icon: string; hint?: string; pct?: number; note?: string };
 type SessionRow = { id: number | string; time: string; date?: string; title: string; meta?: string; person?: string; students?: number; live?: boolean; done?: boolean; joinUrl?: string | null };
@@ -14,6 +16,8 @@ type Props = {
   photoUrl?: string | null;
   workspace: string;
   tiles: Tile[]; // two real figures for the profile card
+  actions?: OpsAction[]; // quick-action buttons shown at the bottom
+  scene?: ReactNode; // 3D constellation card shown between the banner and the stat cards
   charts?: ReactNode; // chart cards rendered under the stat cards
   subtitle: string;
   stats: Stat[];
@@ -24,7 +28,8 @@ type Props = {
 };
 
 // AHA-style overview: greeting, 4 stat cards, today's schedule and recent activity.
-function OverviewView({ name, email, role, photoUrl, workspace, tiles, charts, subtitle, stats, sessions, activity, scheduleLink, loading }: Props) {
+function OverviewView({ name, email, role, photoUrl, workspace, tiles, scene, actions, charts, subtitle, stats, sessions, activity, scheduleLink, loading }: Props) {
+  const tiltRef = useTilt<HTMLDivElement>(".staff-stat");
   const upcoming = sessions.filter((s) => !s.done).length;
   const live = sessions.filter((s) => s.live).length;
   const pulse = loading ? undefined : live ? `${live} live session${live === 1 ? "" : "s"} right now` : upcoming ? `${upcoming} session${upcoming === 1 ? "" : "s"} still to go today` : "No sessions left today";
@@ -35,7 +40,9 @@ function OverviewView({ name, email, role, photoUrl, workspace, tiles, charts, s
         <OverviewProfile name={name} email={email} role={role} photoUrl={photoUrl} tiles={tiles} loading={loading} />
       </div>
 
-      <div className="staff-stats">
+      {scene}
+
+      <div className="staff-stats tilt-scope" ref={tiltRef}>
         {stats.map((s) => (
           <div key={s.label} className="staff-stat">
             <span className="staff-stat_icon material-symbols-outlined">{s.icon}</span>
@@ -89,6 +96,8 @@ function OverviewView({ name, email, role, photoUrl, workspace, tiles, charts, s
           )}
         </section>
       </div>
+
+      <OpsBar actions={actions ?? []} />
     </>
   );
 }

@@ -48,7 +48,7 @@ export default function InstructorEarnings() {
     <div className="staff-dashboard staff-workspace-page">
       <header className="staff-page_head">
         <div>
-          <div className="staff-eyebrow">AHA ACADEMY</div>
+          <div className="staff-eyebrow">MY FINANCES</div>
           <h1 className="staff-page_title">Instructor earnings</h1>
           <p className="staff-page_sub">A transparent view of approved and pending compensation.</p>
         </div>

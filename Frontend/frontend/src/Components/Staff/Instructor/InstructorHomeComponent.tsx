@@ -8,6 +8,9 @@ import {
 import { payoutSegments, settle, submissionBars, weekBars } from "../Shared/overviewData";
 import { OverviewHero, OverviewProfile } from "../Shared/OverviewHero";
 import { BarChart, ChartCard, DonutChart } from "../../Charts/Charts";
+import Constellation, { type SceneNode } from "../../Shared/Constellation/Constellation";
+import useTilt from "../../Shared/Constellation/useTilt";
+import OpsBar from "../Shared/OpsBar";
 import { resolveAssetUrl } from "../../../utils/format";
 import "../style.css";
 
@@ -38,6 +41,7 @@ type Activity = { key: string; icon: string; title: string; detail: string; at: 
 
 function InstructorHomeComponent() {
   const user = getStoredUser();
+  const tiltRef = useTilt<HTMLElement>(".instructor-metric");
   const [stats, setStats] = useState<StaffDashboardDto | null>(null);
   const [today, setToday] = useState<StaffSessionDto[]>([]);
   const [week, setWeek] = useState<StaffSessionDto[]>([]);
@@ -101,6 +105,22 @@ function InstructorHomeComponent() {
     return { metrics, activity, upcoming, nowT };
   }, [stats, today, week, students, assignments, payouts]);
 
+  // My courses as nodes; the dots around each one are its enrolled students (real counts from /staff/students).
+  const sceneNodes = useMemo<SceneNode[]>(() => {
+    const byCourse = new Map<string, Set<number>>();
+    students.forEach((s) => {
+      const key = s.courseTitle || "Course";
+      byCourse.set(key, (byCourse.get(key) ?? new Set()).add(s.id));
+    });
+    const rows = [...byCourse.entries()].map(([title, ids]) => ({ title, count: ids.size })).sort((a, b) => b.count - a.count).slice(0, 8);
+    const max = Math.max(1, ...rows.map((r) => r.count));
+    return rows.map((r) => ({
+      id: r.title, label: r.title, value: `${r.count} ${r.count === 1 ? "student" : "students"}`,
+      satellites: r.count, weight: Math.max(0.3, Math.sqrt(r.count / max)), to: "/instructor/students",
+    }));
+  }, [students]);
+  const myStudents = new Set(students.map((s) => s.id)).size;
+
   const joinHref = (s: StaffSessionDto) => (/^https?:\/\//i.test(s.roomDetails ?? "") ? s.roomDetails : null);
 
   return <div className="instructor-dashboard">
@@ -124,8 +144,18 @@ function InstructorHomeComponent() {
         ]}
       />
     </div>
+    <Constellation
+      title="Your classes at a glance"
+      subtitle="Each node is one of your courses. Drag to rotate."
+      centerLabel="students"
+      centerValue={loading ? undefined : stats?.totalStudents ?? myStudents}
+      nodes={sceneNodes}
+      loading={loading}
+      empty="Your courses and students will appear here once learners are enrolled."
+      footnote="Dot clouds are scaled to each course's student count."
+    />
     {loadError && <p className="staff-workspace-notice" role="alert">Some teaching data could not be loaded ({loadError}). Check that the API is running and that your role has access.</p>}
-    <section className="instructor-metrics" aria-busy={loading}>{view.metrics.map(m => <article className="instructor-metric" key={m.label}>
+    <section className="instructor-metrics tilt-scope" ref={tiltRef} aria-busy={loading}>{view.metrics.map(m => <article className="instructor-metric" key={m.label}>
       <span className={`instructor-metric_icon ${m.tone} material-symbols-outlined`}>{m.icon}</span>
       <span className="instructor-metric_label">{m.label}</span>
       <strong>{m.value}</strong>
@@ -174,6 +204,11 @@ function InstructorHomeComponent() {
         <Link to="/instructor/assignments" className="instructor-see-all">See all activity <span className="material-symbols-outlined">arrow_forward</span></Link>
       </section>
     </div>
+    <OpsBar actions={[
+      { label: "My students", to: "/instructor/students", icon: "groups" },
+      { label: "Attendance", to: "/instructor/attendance", icon: "fact_check" },
+      { label: "Assignments", to: "/instructor/assignments", icon: "assignment", primary: true },
+    ]} />
   </div>;
 }
 export default InstructorHomeComponent;

@@ -11,6 +11,7 @@ import { getStoredUser } from "../../../utils/session";
 import OverviewView, { type Stat } from "../Shared/OverviewView";
 import { payoutSegments, settle, submissionBars, toActivityRows, toSessionRows, weekBars } from "../Shared/overviewData";
 import { BarChart, ChartCard, DonutChart } from "../../Charts/Charts";
+import Constellation, { type SceneNode } from "../../Shared/Constellation/Constellation";
 import { resolveAssetUrl } from "../../../utils/format";
 import { cairoDate, cairoWeek } from "../time";
 import "../style.css";
@@ -68,6 +69,29 @@ function AdminHomeComponent() {
     { label: "Upcoming sessions", value: stats?.upcomingSessions, icon: "calendar_month", note: `${week.length} this week` },
   ];
 
+  const sceneNodes: SceneNode[] = [
+    { id: "students", label: "Students", value: cards[0].value, satellites: cards[0].value as number | undefined, to: "/admin/students" },
+    { id: "instructors", label: "Instructors", value: cards[1].value, satellites: cards[1].value as number | undefined, to: "/admin/instructors" },
+    { id: "courses", label: "Courses", value: cards[2].value, satellites: cards[2].value as number | undefined, to: "/admin/courses" },
+    { id: "sessions", label: "Upcoming sessions", value: cards[3].value, satellites: cards[3].value as number | undefined, to: "/admin/schedule" },
+  ]
+    .filter((n) => n.value !== undefined)
+    .map((n, _i, all) => {
+      const max = Math.max(1, ...all.map((x) => Number(x.value) || 0));
+      return { ...n, weight: Math.max(0.3, Math.sqrt((Number(n.value) || 0) / max)) };
+    });
+  const scene = (
+    <Constellation
+      title="Your academy at a glance"
+      subtitle="Drag to rotate. Select a node to open it."
+      centerLabel="Academy"
+      nodes={sceneNodes}
+      loading={loading}
+      empty="Figures will appear here once the API responds."
+      footnote="Dot clouds are scaled to the totals."
+    />
+  );
+
   const charts = (
     <>
       <ChartCard title="Sessions this week" subtitle="Per day, Cairo time" empty={!loading && week.length === 0 ? "No sessions scheduled this week." : undefined}>
@@ -98,6 +122,12 @@ function AdminHomeComponent() {
         tiles={[
           { label: "Pending assignments", value: stats?.pendingAssignments },
           { label: "Pending payouts", value: stats?.pendingPayouts },
+        ]}
+        scene={scene}
+        actions={[
+          { label: "Manage students", to: "/admin/students", icon: "groups" },
+          { label: "Manage courses", to: "/admin/courses", icon: "menu_book" },
+          { label: "Open schedule", to: "/admin/schedule", icon: "calendar_month", primary: true },
         ]}
         charts={charts}
         subtitle="Here's what's happening across your academy today."

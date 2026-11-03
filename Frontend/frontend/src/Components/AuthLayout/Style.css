@@ -795,3 +795,11 @@
 .auth .notice .notice_close .material-symbols-outlined {
   font-size: 16px;
 }
+
+/* ================= Small phones: header must wrap instead of running off-screen ================= */
+.auth_header { flex-wrap: wrap; row-gap: 8px; }
+.auth_header_side { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+@media (max-width: 520px) {
+  .auth_header_side { gap: 8px; margin-inline-start: auto; }
+  .auth_header_pill { padding: 4px 4px 4px 10px; gap: 6px; font-size: 12px; }
+}

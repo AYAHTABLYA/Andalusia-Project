@@ -26,3 +26,20 @@
 .portal-header_user-text strong { font-size: 0.75rem; max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .portal-header_user-text small { font-size: 0.6875rem; font-weight: 600; color: var(--color-primary); }
 @media (min-width: 1280px) { .portal-header_user-text { display: flex; } }
+
+/* Phones & tablets: the header used to keep a fixed 4rem height and 1.5rem gaps,
+   so logo + language + theme + bell + log out + avatar overflowed the screen. */
+@media (max-width: 767px) {
+  .portal-header_inner { height: auto; min-height: 3.5rem; gap: 0.5rem; padding: 0.4rem 0.75rem; }
+  .portal-header_brand { min-width: 0; }
+  .portal-header_logo { height: 1.75rem; max-width: 7rem; object-fit: contain; }
+  .portal-header_actions { gap: 0.4rem; min-width: 0; }
+  .portal-header_logout { padding: 0.5rem; }
+  .portal-header_logout span:last-child { display: none; }
+  .portal-header_user { padding-left: 0; padding-inline-start: 0; border-left: 0; border-inline-start: 0; }
+  .portal-header_avatar { width: 2rem; height: 2rem; }
+}
+@media (max-width: 520px) {
+  .portal-header .language-switcher_trigger > span { display: none; }
+  .portal-header .language-switcher .language-switcher_trigger { padding: 0 8px; }
+}

@@ -7,7 +7,7 @@ type WorkspaceLink = {
 
 // Order = order in the workspace sidebar.
 const WORKSPACE_LINKS: WorkspaceLink[] = [
-  { to: "/workspace", label: "Overview", icon: "dashboard", end: true },
+  { to: "/workspace", label: "Overview", icon: "grid_view", end: true },
   { to: "/workspace/courses", label: "My courses", icon: "menu_book" },
   { to: "/workspace/schedule", label: "My schedule", icon: "calendar_month" },
   { to: "/workspace/assignments", label: "Assignments", icon: "assignment_turned_in" },

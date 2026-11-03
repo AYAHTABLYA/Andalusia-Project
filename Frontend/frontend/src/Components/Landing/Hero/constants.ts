@@ -1,10 +1,10 @@
 import type { HeroSlide } from "../../../Types/HeroSlide";
-import coverImage from "../../../assets/andalusiahealth_cover.jpg";
+import coverImage from "../../../assets/andalusia-health-cover.webp";
 import hospitalImage from "../../../assets/andalusia-hospital.webp";
 import campusImage from "../../../assets/andalusia-2.webp";
 
 /** Time each slide stays on screen before moving to the next one. */
-const HERO_AUTOPLAY_MS = 6000;
+const HERO_AUTOPLAY_MS = 4500;
 
 /** Minimum horizontal swipe (px) on touch screens to change slide. */
 const HERO_SWIPE_THRESHOLD = 50;
@@ -23,6 +23,7 @@ const HERO_SLIDES: HeroSlide[] = [
     ],
     description:
       "Andalusia Academy bridges executive acumen with rigorous hands-on technical bootcamps. Access accredited blended programs, peer-driven offline studios at Alexandria Campus, and mentor-verified portfolios.",
+    features: ["1:12 Mentor Ratio", "Pearson Assured", "Gleem District Campus"],
   },
   {
     id: 2,
@@ -34,8 +35,7 @@ const HERO_SLIDES: HeroSlide[] = [
       { text: "Andalusia Health", accent: true },
     ],
     description:
-      "Andalusia Academy is part of the Andalusia Health family, bringing real healthcare expertise into every program.",
-    cta: { label: "Explore Programs", to: "/programs" },
+      "Andalusia Academy delivers practical, industry-driven education across diverse fields, from technology and creative industries to healthcare and beyond. Through hands-on training, expert mentorship, and career-focused programs, we equip learners with the skills and confidence to thrive in an evolving professional world.",
   },
   {
     id: 3,
@@ -43,12 +43,11 @@ const HERO_SLIDES: HeroSlide[] = [
     image: campusImage,
     kicker: "Andalusia Campus",
     title: [
-      { text: "A Campus Built Around" },
-      { text: "Wellbeing", accent: true },
+      { text: "A Legacy of Excellence." },
+      { text: "A Vision for Growth.", accent: true },
     ],
     description:
-      "Modern, welcoming spaces designed for focused learning and hands-on practice.",
-    cta: { label: "Contact Us", to: "#contact-campus" },
+      "Established in 1984, Andalusia Group has grown into a leading regional healthcare provider across Egypt and Saudi Arabia. Built on decades of experience, innovation, and a commitment to excellence, the Group continues to expand its impact and create opportunities that shape a better future.",
   },
 ];
 

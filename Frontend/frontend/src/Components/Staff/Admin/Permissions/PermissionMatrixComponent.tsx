@@ -5,7 +5,7 @@ function PermissionMatrixComponent({ roles }: { roles: AdminRole[] }) {
   const keys = [...new Set(roles.flatMap((r) => r.permissions))].sort();
   return (
     <div className="staff-table-wrap staff-matrix">
-      <table className="staff-table">
+      <table className="staff-table staff-table--keep">
         <thead>
           <tr>
             <th>Permission key</th>

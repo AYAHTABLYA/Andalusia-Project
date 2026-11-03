@@ -71,6 +71,41 @@ function StaffLayout() {
   }, [lang]);
   useEffect(() => setOpen(false), [pathname]);
 
+  // Mobile drawer: close on Escape and keep the page behind it from scrolling.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  // Phones show every table row as a small card. The CSS needs each cell's column title,
+  // so copy it from the header into data-label (also re-run when rows are re-rendered).
+  useEffect(() => {
+    const main = document.querySelector(".staff-main");
+    if (!main) return;
+    const label = () => {
+      main.querySelectorAll<HTMLTableElement>("table.staff-table").forEach((table) => {
+        const heads = Array.from(table.querySelectorAll("thead th")).map((th) => th.textContent?.trim() ?? "");
+        table.querySelectorAll("tbody tr").forEach((tr) => {
+          Array.from(tr.children).forEach((td, i) => {
+            if (td.hasAttribute("colspan")) return;
+            if (td.getAttribute("data-label") !== heads[i]) td.setAttribute("data-label", heads[i] ?? "");
+          });
+        });
+      });
+    };
+    label();
+    const observer = new MutationObserver(label);
+    observer.observe(main, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [pathname]);
+
   const tabs = STAFF_TABS.filter(
     (tab) =>
       tab.roles.includes(role) &&
@@ -104,7 +139,15 @@ function StaffLayout() {
 
   return (
     <div className="portal staff-shell">
-      <aside className={`staff-side${open ? " staff-side--open" : ""}`}>
+      <aside className={`staff-side${open ? " staff-side--open" : ""}`} aria-label={workspace}>
+        <button
+          type="button"
+          className="staff-side_close"
+          aria-label="Close menu"
+          onClick={() => setOpen(false)}
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
         <Link to="/" className="staff-side_logo" aria-label="Andalusia Academy">
           <img src={logo} alt="Andalusia Academy" />
         </Link>

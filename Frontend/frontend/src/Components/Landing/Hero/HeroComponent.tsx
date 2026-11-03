@@ -13,8 +13,6 @@ type Props = {
   onNext: () => void;
   onGoTo: (index: number) => void;
   onTogglePlay: () => void;
-  onPointerEnter: () => void;
-  onPointerLeave: () => void;
   onTouchStart: (e: TouchEvent) => void;
   onTouchEnd: (e: TouchEvent) => void;
 };
@@ -28,8 +26,6 @@ function HeroComponent({
   onNext,
   onGoTo,
   onTogglePlay,
-  onPointerEnter,
-  onPointerLeave,
   onTouchStart,
   onTouchEnd,
 }: Props) {
@@ -40,8 +36,6 @@ function HeroComponent({
       aria-roledescription="carousel"
       aria-label="Andalusia Academy highlights"
       style={{ "--hero-autoplay": `${autoplayMs}ms` } as CSSProperties}
-      onMouseEnter={onPointerEnter}
-      onMouseLeave={onPointerLeave}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -61,7 +55,7 @@ function HeroComponent({
               className="hero-slide_bg"
               style={{ backgroundImage: `url(${slide.image})` }}
             />
-            <div className="hero-slide_glass" />
+            {slide.variant === "photo" && <div className="hero-slide_glass" />}
 
             <div className="section-wrap hero-slide_wrap">
               <div className="hero_content">
@@ -86,6 +80,14 @@ function HeroComponent({
                 </Title>
 
                 <p className="hero_description">{slide.description}</p>
+
+                {slide.features && (
+                  <ul className="hero_features">
+                    {slide.features.map((feature) => (
+                      <li key={feature}>{feature}</li>
+                    ))}
+                  </ul>
+                )}
 
                 {slide.cta &&
                   (slide.cta.to.startsWith("#") ? (

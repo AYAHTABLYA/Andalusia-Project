@@ -23,6 +23,7 @@ type HeroProps = {
 function OverviewHero({ workspace, name, subtitle, pulse, cta }: HeroProps) {
   return (
     <section className="ov-hero">
+      <span className="ov-hero_mark material-symbols-outlined" aria-hidden="true">school</span>
       <p className="ov-hero_eyebrow">{workspace} · {dateLine()}</p>
       <h1>{greeting()}, {name.split(/\s+/)[0] || "there"} <span aria-hidden="true">✷</span></h1>
       <p className="ov-hero_sub">{subtitle}</p>

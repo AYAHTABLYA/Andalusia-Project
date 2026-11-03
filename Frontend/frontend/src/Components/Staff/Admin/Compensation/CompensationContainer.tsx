@@ -56,7 +56,7 @@ function CompensationContainer() {
 
   return (
     <WorkspaceTableComponent
-      eyebrow="AHA ACADEMY"
+      eyebrow="FINANCE"
       title="Compensation & payouts"
       subtitle="Review instructor earnings, approvals, and payout history."
       icon="payments"

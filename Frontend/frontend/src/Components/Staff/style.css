@@ -1965,3 +1965,273 @@ html[dir="rtl"] .staff-shell * {
 .staff-side_link--active .material-symbols-outlined { background: var(--brand-500); color: #fff; }
 .staff-side_badge { margin-left: auto; min-width: 1.35rem; padding: 0.05rem 0.4rem; border-radius: 999px; background: var(--brand-50); color: var(--muted); font-size: 0.72rem; font-weight: 700; text-align: center; }
 .staff-side_link--active .staff-side_badge { background: var(--surface-white, #fff); color: var(--brand-700); }
+
+/* =====================================================================
+   Andalusia Academy: Dashboard skin for the Admin / Coordinator / Instructor dashboards.
+   Restyle only: same palette tokens, same markup, same features. Every colour comes from
+   the design tokens (or a token with a fallback), so dark mode keeps working.
+   Selectors are prefixed with .staff-shell.portal so they win over style.css regardless of import order.
+   ===================================================================== */
+
+/* ---------- Shell ---------- */
+.staff-shell.portal { background-color: var(--canvas); }
+.staff-shell.portal .staff-side { width: 16.25rem; background: var(--surface-low); border-right: 0; padding: 1.25rem 1rem; }
+.staff-shell.portal .staff-side_label { margin: 0.4rem 0 0.7rem 0.8rem; font-size: 0.66rem; letter-spacing: 0.14em; color: var(--brand-600); }
+.staff-shell.portal .staff-side_link { gap: 0.9rem; padding: 0.7rem 0.9rem; border-radius: 0.9rem; font-family: Georgia, "Times New Roman", serif; font-size: 0.98rem; font-weight: 500; color: var(--ink-700); }
+html[lang="ar"] .staff-shell.portal .staff-side_link { font-family: var(--font-arabic); }
+.staff-shell.portal .staff-side_link .material-symbols-outlined { width: auto; height: auto; border-radius: 0; background: transparent; font-size: 1.5rem; color: var(--ink-800); font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24; }
+.staff-shell.portal .staff-side_link:hover { background: var(--surface-mid); }
+.staff-shell.portal .staff-side_link:hover .material-symbols-outlined { background: transparent; }
+.staff-shell.portal .staff-side_link--active { background: var(--surface-mid); color: var(--brand-700); font-weight: 700; box-shadow: none; }
+.staff-shell.portal .staff-side_link--active .material-symbols-outlined { background: transparent; color: var(--ink-800); }
+.staff-shell.portal .staff-side_badge { min-width: 1.6rem; padding: 0.15rem 0.55rem; background: var(--surface-mid); color: var(--ink-800); font-family: Georgia, "Times New Roman", serif; font-size: 0.72rem; font-weight: 700; }
+.staff-shell.portal .staff-side_link:hover .staff-side_badge { background: var(--surface-low); }
+.staff-shell.portal .staff-side_link--active .staff-side_badge { background: var(--surface-low); color: var(--brand-700); }
+.staff-shell.portal .staff-side_help { border: 0; border-radius: 1rem; background: var(--surface-mid); }
+.staff-shell.portal .staff-side_user { border: 0; border-radius: 0.9rem; background: var(--surface-mid); }
+
+.staff-shell.portal .staff-topbar { height: 4.25rem; background: transparent; border-bottom: 0; }
+.staff-shell.portal .staff-back-home { background: var(--surface-mid); border: 0; color: var(--ink-800); }
+.staff-shell.portal .staff-clock { display: inline-flex; align-items: center; gap: 0.6rem; margin-left: 0; margin-inline-start: auto; padding: 0.3rem 1rem 0.3rem 0.35rem; padding-inline: 0.35rem 1rem; border: 0; border-radius: 999px; background: var(--surface-mid); white-space: nowrap; line-height: 1; }
+.staff-shell.portal .staff-clock .material-symbols-outlined { display: grid; place-items: center; flex: none; width: 2rem; height: 2rem; border-radius: 50%; background: var(--brand-100); color: var(--brand-600); font-size: 1.15rem; font-variation-settings: "FILL" 1; }
+.staff-shell.portal .staff-clock strong { font-size: 0.95rem; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; color: var(--ink-950); }
+.staff-shell.portal .staff-clock small { padding: 0; padding-inline-start: 0.6rem; border-left: 0; border-inline-start: 1px solid var(--line); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+.staff-shell.portal .staff-main { max-width: 90rem; padding: 1.5rem 2rem 2.5rem; }
+
+/* ---------- Page headings (serif) ---------- */
+.staff-shell.portal .staff-eyebrow { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand-600); }
+.staff-shell.portal .staff-page_title { font-family: var(--font-display); font-size: clamp(1.7rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; letter-spacing: 0.01em; text-transform: uppercase; }
+.staff-shell.portal .staff-page_sub { color: var(--muted); }
+
+/* ---------- Cards ---------- */
+.staff-shell.portal .staff-card,
+.staff-shell.portal .ov-profile,
+.staff-shell.portal .chart-card,
+.staff-shell.portal .instructor-panel,
+.staff-shell.portal .instructor-metric {
+  background: var(--surface-white, #fff);
+  border: 1px solid var(--line);
+  border-radius: 1.1rem;
+  box-shadow: 0 2px 8px -2px rgba(125, 79, 62, 0.07), 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+.staff-shell.portal .staff-card_head { margin-bottom: 0.9rem; padding-bottom: 0; border-bottom: 0; }
+.staff-shell.portal .staff-card_head h2,
+.staff-shell.portal .chart-card_head h2,
+.staff-shell.portal .instructor-panel_header h2 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: 0.01em; color: var(--ink-950); }
+.staff-shell.portal .chart-card_head p { color: var(--muted); font-size: 0.8rem; }
+.staff-shell.portal .staff-link { color: var(--brand-600); }
+
+/* ---------- Hero + profile ---------- */
+.staff-shell.portal .ov-hero {
+  position: relative; overflow: hidden; border-radius: 1.4rem; padding: 2rem 2.25rem;
+  background: linear-gradient(135deg, #7d4f3e, #99634f 62%, #b07963);
+  box-shadow: 0 18px 36px -18px rgba(125, 79, 62, 0.55);
+}
+.staff-shell.portal .ov-hero > * { position: relative; z-index: 1; }
+.staff-shell.portal .ov-hero .ov-hero_mark { position: absolute; z-index: 0; inset-inline-end: 1.5rem; bottom: -1.2rem; font-size: 9rem; line-height: 1; opacity: 0.13; pointer-events: none; font-variation-settings: "FILL" 1; }
+.staff-shell.portal .ov-hero h1 { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; }
+.staff-shell.portal .ov-hero_eyebrow { align-self: flex-start; padding: 0.3rem 0.75rem; border-radius: 999px; background: rgba(255, 255, 255, 0.14); text-transform: uppercase; letter-spacing: 0.12em; opacity: 1; }
+.staff-shell.portal .ov-hero_cta { background: #fff; color: #7d4f3e; }
+.staff-shell.portal .ov-profile { border-radius: 1.4rem; }
+.staff-shell.portal .ov-profile_tiles > div { background: var(--surface-low); }
+.staff-shell.portal .ov-profile_tiles strong { font-family: var(--font-display); color: var(--ink-950); }
+.staff-shell.portal .ov-profile_role { background: var(--brand-100); color: var(--brand-700); }
+
+/* ---------- KPI cards (overview, list pages, instructor) ---------- */
+.staff-shell.portal .staff-stats,
+.staff-shell.portal .staff-workspace-stats,
+.staff-shell.portal .instructor-metrics { gap: 1.1rem; }
+.staff-shell.portal .staff-stat,
+.staff-shell.portal .staff-workspace-stat {
+  position: relative; display: flex; flex-direction: column; gap: 0.2rem; min-height: 8.4rem;
+  padding: 1.2rem 1.3rem 1.3rem; border-radius: 1.1rem;
+  background: var(--surface-white, #fff); border: 1px solid var(--line);
+  box-shadow: 0 2px 8px -2px rgba(125, 79, 62, 0.07), 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+.staff-shell.portal .staff-stat small,
+.staff-shell.portal .staff-workspace-stat small,
+.staff-shell.portal .instructor-metric_label { padding-inline-end: 3.2rem; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.staff-shell.portal .staff-stat strong,
+.staff-shell.portal .staff-workspace-stat strong,
+.staff-shell.portal .instructor-metric strong { margin-top: 0.35rem; font-family: var(--font-display); font-size: 2.15rem; font-weight: 700; line-height: 1.1; letter-spacing: 0; color: var(--ink-950); }
+.staff-shell.portal .staff-stat .staff-stat_icon,
+.staff-shell.portal .staff-workspace-stat > .material-symbols-outlined,
+.staff-shell.portal .instructor-metric .instructor-metric_icon {
+  position: absolute; top: 1rem; inset-inline-end: 1rem; display: grid; place-items: center;
+  width: 2.6rem; height: 2.6rem; border-radius: 0.8rem; font-size: 1.35rem;
+  background: var(--brand-100); color: var(--brand-600);
+}
+.staff-shell.portal .staff-stat em,
+.staff-shell.portal .staff-workspace-stat em { align-self: flex-start; margin: 0.35rem 0 0; padding: 0.15rem 0.6rem; border-radius: 999px; background: var(--tint-green, #e7f3ea); color: var(--on-green, #2f7d4f); font-size: 0.7rem; font-weight: 700; font-style: normal; }
+.staff-shell.portal .staff-stat_note,
+.staff-shell.portal .instructor-metric small { color: var(--muted); font-size: 0.76rem; }
+.staff-shell.portal .staff-stat i { height: 4px; margin-top: auto; border-radius: 999px; }
+.staff-shell.portal .instructor-metric { position: relative; padding: 1.2rem 1.3rem 1.3rem; }
+
+/* ---------- Schedule rows + activity timeline ---------- */
+.staff-shell.portal .staff-session,
+.staff-shell.portal .instructor-session { align-items: center; gap: 0.9rem; margin-bottom: 0.6rem; padding: 0.8rem 0.9rem; border: 0; border-radius: 1rem; background: var(--surface-low); }
+.staff-shell.portal .staff-session_time,
+.staff-shell.portal .instructor-session_time { display: grid; place-items: center; min-width: 3.7rem; padding: 0.45rem 0.55rem; border-radius: 0.8rem; background: var(--brand-100); color: var(--brand-700); text-align: center; }
+.staff-shell.portal .staff-session_time strong { font-family: var(--font-display); font-size: 1.05rem; }
+.staff-shell.portal .staff-activity { position: relative; display: flex; gap: 0.8rem; padding: 0 0 0.9rem; border: 0; }
+.staff-shell.portal .staff-activity > .material-symbols-outlined { z-index: 1; display: grid; place-items: center; flex: none; width: 2.1rem; height: 2.1rem; border-radius: 50%; background: #99634f; color: #fff; font-size: 1.05rem; }
+.staff-shell.portal .staff-activity::before { content: ""; position: absolute; inset-inline-start: 1.05rem; top: 2.1rem; bottom: 0; width: 2px; background: var(--line); }
+.staff-shell.portal .staff-activity:last-child::before { display: none; }
+.staff-shell.portal .staff-activity > div { flex: 1; min-width: 0; padding: 0.65rem 0.85rem; border-radius: 0.9rem; background: var(--surface-low); }
+.staff-shell.portal .instructor-tool { border: 0; border-radius: 1rem; background: var(--surface-low); }
+.staff-shell.portal .instructor-tool_icon { background: var(--brand-100); color: var(--brand-600); }
+
+/* ---------- Tables ---------- */
+.staff-shell.portal .staff-table-wrap { border: 1px solid var(--line); border-radius: 1rem; }
+.staff-shell.portal .staff-table thead th { padding: 0.85rem 1rem; background: var(--surface-low); border-bottom: 1px solid var(--line); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.staff-shell.portal .staff-table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--line-soft, var(--line)); }
+.staff-shell.portal .staff-table tbody tr:hover { background: var(--surface-low); }
+.staff-shell.portal .staff-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.7rem; border: 0; border-radius: 999px; background: var(--tint-green, #e7f3ea); color: var(--on-green, #2f7d4f); font-size: 0.74rem; font-weight: 700; }
+.staff-shell.portal .staff-pill::before { content: ""; width: 0.4rem; height: 0.4rem; border-radius: 50%; background: currentColor; }
+.staff-shell.portal .staff-pill--off { background: var(--tint-neutral, #f1ece6); color: var(--muted); }
+.staff-shell.portal .staff-workspace-table-card { border-radius: 1.2rem; }
+.staff-shell.portal .staff-workspace-card-icon { background: var(--brand-100); color: var(--brand-600); border-radius: 0.8rem; }
+.staff-shell.portal .staff-toolbar .staff-input { border-radius: 0.8rem; background: var(--surface-low); border: 1px solid var(--line); }
+
+/* ---------- Buttons ---------- */
+.staff-shell.portal .staff-workspace-primary,
+.staff-shell.portal .staff-quick-add { background: #99634f; border-color: #99634f; color: #fff; border-radius: 0.8rem; }
+.staff-shell.portal .staff-workspace-primary:hover,
+.staff-shell.portal .staff-quick-add:hover { background: #7d4f3e; border-color: #7d4f3e; }
+.staff-shell.portal .staff-workspace-secondary { border: 0; border-radius: 0.8rem; background: var(--surface-mid); color: var(--ink-800); }
+.staff-shell.portal .staff-workspace-secondary:hover { background: var(--brand-100); }
+
+/* ---------- Quick-actions bar (bottom of every overview) ---------- */
+.ov-ops { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1.25rem; padding: 1.1rem 1.4rem; border: 1px solid var(--line); border-radius: 1.2rem; background: var(--surface-white, #fff); box-shadow: 0 2px 8px -2px rgba(125, 79, 62, 0.07); }
+.ov-ops_icon { display: grid; place-items: center; flex: none; width: 2.9rem; height: 2.9rem; border-radius: 0.9rem; background: var(--brand-100); color: var(--brand-600); font-size: 1.5rem; }
+.ov-ops_copy { min-width: 0; flex: 1 1 14rem; }
+.ov-ops_copy h2 { margin: 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--ink-950); }
+.ov-ops_copy p { margin: 0.15rem 0 0; font-size: 0.82rem; color: var(--muted); }
+.ov-ops_actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-inline-start: auto; }
+.ov-ops_btn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.6rem 1rem; border-radius: 0.8rem; background: var(--surface-mid); color: var(--ink-800); font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: background 0.2s; }
+.ov-ops_btn .material-symbols-outlined { font-size: 1.15rem; }
+.ov-ops_btn:hover { background: var(--brand-100); }
+.ov-ops_btn--primary { background: #99634f; color: #fff; }
+.ov-ops_btn--primary:hover { background: #7d4f3e; }
+.ov-ops_btn:focus-visible { outline: 2px solid var(--brand-400); outline-offset: 2px; }
+
+@media (max-width: 900px) {
+  .staff-shell.portal .staff-main { padding: 1.1rem 1rem 2rem; }
+  .staff-shell.portal .staff-clock { padding-inline: 0.3rem 0.7rem; }
+  .staff-shell.portal .ov-hero { padding: 1.5rem; }
+  .ov-ops_actions { margin-inline-start: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .ov-ops_btn { transition: none; } }
+
+/* Phones: the top bar grows with its content (it used to keep a fixed height,
+   so the language / theme / bell row spilled over the hero card below it). */
+@media (max-width: 600px) {
+  .staff-shell.portal .staff-topbar { position: relative; z-index: 20; height: auto; min-height: 4.25rem; padding: 0.6rem 1rem; gap: 0.6rem; flex-wrap: wrap; }
+  .staff-shell.portal .staff-topbar_actions { flex: 1 1 100%; flex-wrap: wrap; justify-content: flex-start; gap: 0.5rem; margin: 0; }
+  .staff-shell.portal .staff-back-home { margin-inline-start: auto; }
+  .staff-shell.portal .staff-clock { margin-inline-start: auto; }
+}
+
+/* =====================================================================
+   Responsive hardening (phones / tablets / RTL)
+   Kept last on purpose: same specificity as the AHA overrides above, so it wins.
+   ===================================================================== */
+.staff-side_close { display: none; }
+
+/* Help card is a nice-to-have: drop it on short screens so the user block + sign-out stay visible. */
+@media (max-height: 760px) {
+  .staff-side_help { display: none; }
+}
+
+@media (max-width: 1024px) {
+  /* Off-canvas drawer. Logical properties + dir-aware transform => correct in English and Arabic. */
+  .staff-shell.portal .staff-side {
+    position: fixed;
+    inset-block: 0;
+    inset-inline: 0 auto;
+    height: 100vh;
+    height: 100dvh;                       /* 100vh is taller than the visible area on mobile browsers */
+    width: min(17rem, 86vw);
+    transform: translateX(-105%);
+    visibility: hidden;
+    overscroll-behavior: contain;
+    box-shadow: none;
+    transition: transform 0.25s var(--ease), visibility 0s linear 0.25s, box-shadow 0.25s;
+  }
+  html[dir="rtl"] .staff-shell.portal .staff-side { transform: translateX(105%); }
+  .staff-shell.portal .staff-side.staff-side--open,
+  html[dir="rtl"] .staff-shell.portal .staff-side.staff-side--open {
+    transform: none;
+    visibility: visible;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.25s var(--ease), visibility 0s, box-shadow 0.25s;
+  }
+  .staff-side_close {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    inset-block-start: 0.9rem;
+    inset-inline-end: 0.8rem;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 0;
+    border-radius: 0.7rem;
+    background: var(--surface-mid);
+    color: var(--ink-800);
+    cursor: pointer;
+  }
+  .staff-shell.portal .staff-side_logo img { max-width: calc(100% - 3.2rem); }
+  .staff-scrim { z-index: 35; border: 0; padding: 0; width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .staff-shell.portal .staff-side { transition: none; }
+}
+
+/* Never let a card / chart grid force a minimum width wider than the screen. */
+.ov-charts { grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr)); }
+
+/* ---- Tables become stacked cards on phones (the permission matrix keeps its horizontal scroll) ---- */
+@media (max-width: 640px) {
+  .staff-shell.portal .staff-table:not(.staff-table--keep) { min-width: 0; }
+  .staff-shell.portal .staff-table:not(.staff-table--keep),
+  .staff-shell.portal .staff-table:not(.staff-table--keep) tbody,
+  .staff-shell.portal .staff-table:not(.staff-table--keep) tr,
+  .staff-shell.portal .staff-table:not(.staff-table--keep) td { display: block; width: 100%; box-sizing: border-box; }
+  .staff-shell.portal .staff-table:not(.staff-table--keep) thead {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .staff-shell.portal .staff-table:not(.staff-table--keep) tbody tr { padding: 0.55rem 0; border-bottom: 1px solid var(--line); }
+  .staff-shell.portal .staff-table:not(.staff-table--keep) tbody tr:last-child { border-bottom: 0; }
+  .staff-shell.portal .staff-table:not(.staff-table--keep) td {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 0.4rem 0.75rem; border: 0; text-align: end; overflow-wrap: anywhere;
+  }
+  .staff-shell.portal .staff-table:not(.staff-table--keep) td[data-label]:not([data-label=""])::before {
+    content: attr(data-label); flex: none; max-width: 40%;
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); text-align: start;
+  }
+  .staff-shell.portal .staff-table:not(.staff-table--keep) td:first-child { justify-content: flex-start; text-align: start; padding-top: 0.6rem; }
+  .staff-shell.portal .staff-table:not(.staff-table--keep) td:first-child::before { display: none; }
+  .staff-shell.portal .staff-table:not(.staff-table--keep) td[colspan] { display: block; text-align: center; }
+}
+
+/* RTL: material-symbols sets direction:ltr on the icon itself, and logical insets resolve against the
+   element's OWN direction, so these corner icons stayed on the right and covered the Arabic text. */
+html[dir="rtl"] .staff-shell.portal .staff-stat .staff-stat_icon,
+html[dir="rtl"] .staff-shell.portal .staff-workspace-stat > .material-symbols-outlined,
+html[dir="rtl"] .staff-shell.portal .instructor-metric .instructor-metric_icon {
+  inset-inline-end: auto;
+  right: auto;
+  left: 1rem;
+}
+
+/* Tablets: the top bar (menu, back, search, language, theme, bell, quick add, clock) is wider than the
+   screen between 600px and ~1150px, so let it wrap instead of clipping the clock. */
+@media (max-width: 1150px) {
+  .staff-shell.portal .staff-topbar { height: auto; min-height: 4.25rem; padding: 0.6rem 1rem; flex-wrap: wrap; gap: 0.6rem; }
+  .staff-shell.portal .staff-search { flex: 1 1 12rem; min-width: 0; width: auto; }
+  .staff-shell.portal .staff-topbar_actions { flex-wrap: wrap; min-width: 0; }
+}

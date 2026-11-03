@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import type { WorkspaceMaterial, WorkspaceSession } from "../../../Types/Workspace";
 import { BarChart, ChartCard, DonutChart, type BarDatum, type Segment } from "../../Charts/Charts";
 import EmptyState from "./EmptyState";
+import Constellation, { type SceneNode } from "../../Shared/Constellation/Constellation";
+import useTilt from "../../Shared/Constellation/useTilt";
 import { fmtDate, fmtTime, initials } from "./helpers";
 
 type StatCard = { label: string; value: string; note: string; icon: string; pct: number };
@@ -21,9 +23,12 @@ type Props = {
   courseBars: BarDatum[];
   assignmentSegments: Segment[];
   attendanceSegments: Segment[];
+  sceneNodes: SceneNode[];
+  overall: number; // overall course progress, shown in the middle of the 3D scene
 };
 
-function OverviewComponent({ loading, hasCourses, greeting, weekday, clock, cards, upcoming, materials, courseBars, assignmentSegments, attendanceSegments }: Props) {
+function OverviewComponent({ loading, hasCourses, greeting, weekday, clock, cards, upcoming, materials, courseBars, assignmentSegments, attendanceSegments, sceneNodes, overall }: Props) {
+  const tiltRef = useTilt<HTMLDivElement>(".portal-stat");
   if (loading) return <div className="portal-card ws_pad">Loading your workspace…</div>;
 
   if (!hasCourses) {
@@ -56,7 +61,16 @@ function OverviewComponent({ loading, hasCourses, greeting, weekday, clock, card
         </div>
       </header>
 
-      <div className="portal-stat-grid">
+      <Constellation
+        title="Your learning universe"
+        subtitle="Each node is a course and the ring shows your progress. Drag to rotate."
+        centerLabel="overall progress"
+        centerValue={`${overall}%`}
+        nodes={sceneNodes}
+        footnote="Dots around a course are its sessions."
+      />
+
+      <div className="portal-stat-grid tilt-scope" ref={tiltRef}>
         {cards.map((c) => (
           <article className="portal-stat ws_stat" key={c.label}>
             <span className="ws_stat-icon material-symbols-outlined">{c.icon}</span>

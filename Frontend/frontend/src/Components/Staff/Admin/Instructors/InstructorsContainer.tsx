@@ -6,7 +6,7 @@ import useIsCoordinator from "../../../../hooks/staffHooks/useIsCoordinator";
 import useStaffData from "../../../../hooks/staffHooks/useStaffData";
 import useStaffTable from "../../../../hooks/staffHooks/useStaffTable";
 import WorkspaceTableComponent from "../../Shared/WorkspaceTable/WorkspaceTableComponent";
-import { AddPersonDialog } from "../../Shared/StaffActionDialogs";
+import { AddPersonDialog, EditInstructorDialog } from "../../Shared/StaffActionDialogs";
 
 const COLUMNS = ["Instructor", "Specialization", "Teaching load", "Email", "Status"];
 const EMPTY: Paginated<AdminInstructorDto> = { pageIndex: 1, pageSize: 100, count: 0, data: [] };
@@ -25,6 +25,7 @@ function InstructorsContainer() {
   const isCoordinator = useIsCoordinator();
   const [notice, setNotice] = useState("");
   const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
 
   const { data, loading, error, reload } = useStaffData(
@@ -79,6 +80,7 @@ function InstructorsContainer() {
               const instructor = table.visible[i];
               return (
                 <span className="staff-row-actions">
+                  <button className="staff-workspace-secondary" onClick={() => { setNotice(""); setEditingId(instructor.id); }}>Edit</button>
                   <button className="staff-workspace-secondary" disabled={busyId === instructor.id} onClick={() => void toggleStatus(instructor)}>
                     {instructor.isActive ? "Deactivate" : "Activate"}
                   </button>
@@ -87,6 +89,13 @@ function InstructorsContainer() {
             }
       }
     >
+      {editingId !== null && (
+        <EditInstructorDialog
+          instructorId={editingId}
+          onClose={() => setEditingId(null)}
+          onDone={(message) => { setEditingId(null); setNotice(message); reload(); }}
+        />
+      )}
       {adding && (
         <AddPersonDialog
           kind="instructor"

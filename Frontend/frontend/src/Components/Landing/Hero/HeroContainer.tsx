@@ -7,19 +7,10 @@ import {
   HERO_SWIPE_THRESHOLD,
 } from "./constants";
 
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-}
-
 function HeroContainer() {
   const total = HERO_SLIDES.length;
   const [current, setCurrent] = useState(0);
-  const [playing, setPlaying] = useState(() => !prefersReducedMotion());
-  const [hovered, setHovered] = useState(false);
+  const [playing, setPlaying] = useState(true);
   const touchStartX = useRef<number | null>(null);
 
   const goTo = useCallback(
@@ -34,10 +25,10 @@ function HeroContainer() {
 
   // One timer per slide: changing slide (auto or manual) restarts the countdown.
   useEffect(() => {
-    if (!playing || hovered || total < 2) return;
+    if (!playing || total < 2) return;
     const timer = window.setTimeout(next, HERO_AUTOPLAY_MS);
     return () => window.clearTimeout(timer);
-  }, [current, playing, hovered, total, next]);
+  }, [current, playing, total, next]);
 
   const handleTouchStart = (e: TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -59,14 +50,12 @@ function HeroContainer() {
     <HeroComponent
       slides={HERO_SLIDES}
       current={current}
-      playing={playing && !hovered}
+      playing={playing}
       autoplayMs={HERO_AUTOPLAY_MS}
       onPrev={prev}
       onNext={next}
       onGoTo={goTo}
       onTogglePlay={() => setPlaying((p) => !p)}
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     />

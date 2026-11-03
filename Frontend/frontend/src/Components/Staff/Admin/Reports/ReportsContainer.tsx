@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { getAdminReports } from "../../../../apis/staffAdminApi";
+import { getStaffAssignments, getStaffPayouts, getStaffSchedule } from "../../../../apis/staffApi";
+import type { StaffAssignmentDto, StaffPayoutDto, StaffSessionDto } from "../../../../apis/staffApi";
+import { BarChart, ChartCard, DonutChart } from "../../../Charts/Charts";
+import { payoutSegments, submissionBars, weekBars } from "../../Shared/overviewData";
 import type { AdminReportRecord, AdminReportsDto } from "../../../../apis/staffAdminApi";
 import useDebouncedValue from "../../../../hooks/academyHooks/useDebouncedValue";
 import useIsCoordinator from "../../../../hooks/staffHooks/useIsCoordinator";
@@ -47,6 +51,17 @@ function ReportsContainer() {
     [period, debounced],
   );
   const table = useStaffTable(data?.records ?? [], toRow);
+
+  // Charts use the same real endpoints as the overviews. Each one is independent: if one fails its card just shows empty.
+  const sessions = useStaffData<StaffSessionDto[]>(
+    (signal) => { const r = rangeFor(period); return getStaffSchedule({ from: r?.from, to: r?.to }, signal); },
+    [], "Could not load sessions.", [period],
+  );
+  const assignments = useStaffData<StaffAssignmentDto[]>((signal) => getStaffAssignments(signal), [], "Could not load assignments.");
+  const payouts = useStaffData<StaffPayoutDto[]>(
+    (signal) => (isCoordinator ? Promise.resolve([]) : getStaffPayouts(signal)), [], "Could not load payouts.",
+  );
+  const bars = submissionBars(assignments.data);
   const onQueryChange = (value: string) => { table.setQuery(value); setSearch(value); };
 
   const stats: Stat[] = [
@@ -61,7 +76,7 @@ function ReportsContainer() {
 
   return (
     <WorkspaceTableComponent
-      eyebrow="AHA ACADEMY"
+      eyebrow="INSIGHTS"
       title="Academy reports"
       subtitle="Operational, learning, and financial performance in one place."
       icon="analytics"
@@ -80,6 +95,21 @@ function ReportsContainer() {
             {PERIODS.map((p) => <option key={p} value={p}>{p}</option>)}
           </Select>
         </label>
+      }
+      afterStats={
+        <div className="ov-charts">
+          <ChartCard title="Sessions by weekday" subtitle={`Delivered and scheduled, ${period.toLowerCase()}`} empty={!sessions.loading && sessions.data.length === 0 ? "No sessions in this period." : undefined}>
+            <BarChart data={weekBars(sessions.data)} ariaLabel="Sessions per weekday in the selected period" />
+          </ChartCard>
+          <ChartCard title="Assignment submissions" subtitle="Busiest assignments" empty={!assignments.loading && bars.length === 0 ? "No submissions yet." : undefined}>
+            <BarChart data={bars} ariaLabel="Submissions per assignment" />
+          </ChartCard>
+          {!isCoordinator && (
+            <ChartCard title="Instructor payouts" subtitle="By status, all time" empty={!payouts.loading && payouts.data.length === 0 ? "No payouts recorded." : undefined}>
+              <DonutChart segments={payoutSegments(payouts.data)} centerValue={payouts.data.length} centerLabel="payouts" ariaLabel="Payouts by status" />
+            </ChartCard>
+          )}
+        </div>
       }
       footerExtra={<span>Period: {period}</span>}
       notice={notice}

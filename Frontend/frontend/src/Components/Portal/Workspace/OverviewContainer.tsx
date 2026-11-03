@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import useWorkspace from "../../../hooks/workspaceHooks/useWorkspace";
 import OverviewComponent, { type StatCard, type UpcomingItem, type UpdateItem } from "./OverviewComponent";
 import type { BarDatum, Segment } from "../../Charts/Charts";
+import type { SceneNode } from "../../Shared/Constellation/Constellation";
 import { TZ, fmtTime, greeting, sessionStatus } from "./helpers";
 
 function useClock() {
@@ -35,6 +36,16 @@ function OverviewContainer() {
     value: sessions.filter((s) => s.attendance === status).length,
   }));
 
+  const sceneNodes: SceneNode[] = courses.map((c) => ({
+    id: String(c.id),
+    label: c.title,
+    value: `${c.progress}%`,
+    progress: c.progress,
+    weight: 0.4 + c.progress / 170,
+    satellites: sessions.filter((s) => s.courseTitle === c.title).length,
+    to: "/workspace/courses",
+  }));
+
   const cairoHour = Number(new Intl.DateTimeFormat("en-GB", { hour: "2-digit", hour12: false, timeZone: TZ }).format(now));
   const weekday = new Intl.DateTimeFormat("en-US", { weekday: "long", day: "numeric", month: "long", timeZone: TZ }).format(now);
 
@@ -58,6 +69,8 @@ function OverviewContainer() {
       courseBars={courseBars}
       assignmentSegments={assignmentSegments}
       attendanceSegments={attendanceSegments}
+      sceneNodes={sceneNodes}
+      overall={Math.round(stats.courseProgress)}
     />
   );
 }

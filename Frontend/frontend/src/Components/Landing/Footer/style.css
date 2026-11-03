@@ -135,6 +135,24 @@
   transition: transform 0.2s, filter 0.2s;
 }
 
+.landing-footer_socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.landing-footer_social--facebook {
+  background-color: #1877f2;
+}
+
+.landing-footer_social--instagram {
+  background: linear-gradient(45deg, #f09433 0%, #dc2743 55%, #bc1888 100%);
+}
+
+.landing-footer_social--youtube {
+  background-color: #ff0000;
+}
+
 .landing-footer_social--linkedin {
   background-color: #0a66c2;
 }

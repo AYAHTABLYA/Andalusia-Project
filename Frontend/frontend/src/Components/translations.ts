@@ -448,6 +448,15 @@ export const extraTranslations: Record<string, string> = {
   Wellbeing: "الرفاهية",
   "Modern, welcoming spaces designed for focused learning and hands-on practice.":
     "مساحات حديثة ومرحّبة مصمّمة للتعلّم المركّز والتطبيق العملي.",
+  "Andalusia Academy delivers practical, industry-driven education across diverse fields, from technology and creative industries to healthcare and beyond. Through hands-on training, expert mentorship, and career-focused programs, we equip learners with the skills and confidence to thrive in an evolving professional world.":
+    "تقدّم أكاديمية أندلسية تعليمًا عمليًا مرتبطًا بالصناعة في مجالات متنوعة، من التكنولوجيا والصناعات الإبداعية إلى الرعاية الصحية وما بعدها. ومن خلال التدريب العملي والإرشاد على يد الخبراء والبرامج الموجّهة للمسار المهني، نمنح المتعلمين المهارات والثقة اللازمة للتميّز في عالم مهني متغيّر.",
+  "A Legacy of Excellence.": "إرث من التميّز.",
+  "A Vision for Growth.": "رؤية للنمو.",
+  "Established in 1984, Andalusia Group has grown into a leading regional healthcare provider across Egypt and Saudi Arabia. Built on decades of experience, innovation, and a commitment to excellence, the Group continues to expand its impact and create opportunities that shape a better future.":
+    "تأسست مجموعة أندلسية عام 1984، وأصبحت اليوم مزوّدًا رائدًا للرعاية الصحية في مصر والمملكة العربية السعودية. وبفضل عقود من الخبرة والابتكار والالتزام بالتميّز، تواصل المجموعة توسيع أثرها وصناعة فرص ترسم مستقبلًا أفضل.",
+  "1:12 Mentor Ratio": "نسبة مرشد لكل 12 متعلمًا",
+  "Pearson Assured": "معتمد من بيرسون",
+  "Gleem District Campus": "حرم منطقة جليم",
   "Previous slide": "الشريحة السابقة",
   "Next slide": "الشريحة التالية",
   "Pause slideshow": "إيقاف العرض مؤقتًا",
@@ -1124,7 +1133,6 @@ export const extraTranslations: Record<string, string> = {
     "تعلّم مدمج · عطلات نهاية أسبوع متبادلة",
 
   // Admin and instructor dashboard localization
-  "AHA ACADEMY · ADMINISTRATION": "أكاديمية أندلسية · الإدارة",
   "Good day,": "نهارك سعيد،",
   "Your academy at a glance. Review activity, manage access, and keep teaching operations moving.":
     "نظرة عامة على الأكاديمية. راجع النشاط، وأدر صلاحيات الوصول، وتابع سير العملية التعليمية.",

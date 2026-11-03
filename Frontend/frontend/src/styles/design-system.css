@@ -78,3 +78,11 @@ body { margin: 0; background: var(--canvas); font-family: var(--font-body); }
    Theme tokens. Light mode needs no values here (every use carries its own
    light fallback); the dark values live in styles/dark-mode.css.
    ===================================================================== */
+
+/* =====================================================================
+   Responsive safety net (applies to every page)
+   ===================================================================== */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { overflow-x: clip; }
+img, video { max-width: 100%; height: auto; }
+input, select, textarea { max-width: 100%; }

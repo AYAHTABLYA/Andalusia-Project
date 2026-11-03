@@ -307,8 +307,8 @@ const ADMIN_HEADINGS: Record<string, { eyebrow: string; title: string; sub: stri
   "/admin/instructors": { eyebrow: "ACADEMY MANAGEMENT", title: "Instructors", sub: "Manage, review, and keep every record up to date." },
   "/admin/students": { eyebrow: "ACADEMY MANAGEMENT", title: "Students", sub: "Manage, review, and keep every record up to date." },
   "/admin/schedule": { eyebrow: "CLASSES & MEETINGS", title: "Schedule", sub: "Everything you need for the academy's learning sessions." },
-  "/admin/compensation": { eyebrow: "AHA ACADEMY", title: "Compensation & payouts", sub: "Review instructor earnings, approvals, and payout history." },
-  "/admin/reports": { eyebrow: "AHA ACADEMY", title: "Academy reports", sub: "Operational, learning, and financial performance in one place." },
+  "/admin/compensation": { eyebrow: "FINANCE", title: "Compensation & payouts", sub: "Review instructor earnings, approvals, and payout history." },
+  "/admin/reports": { eyebrow: "INSIGHTS", title: "Academy reports", sub: "Operational, learning, and financial performance in one place." },
   "/admin/permissions": { eyebrow: "SECURITY & ACCESS", title: "Roles & permissions", sub: "Control exactly what every role can see and change." },
 };
 // Pages whose first column is a person (shown with an avatar).

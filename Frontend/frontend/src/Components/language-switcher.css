@@ -85,3 +85,16 @@ html[dir="rtl"] .navbar_drawer, html[dir="rtl"] .academy-navbar_drawer { text-al
   .language-switcher .language-switcher_trigger { gap: 5px; padding: 0 8px; font-size: 12px; }
   .language-switcher_globe { width: 17px; height: 17px; }
 }
+
+/* Phones: inside the portal header / staff top bar the menu is anchored to the
+   whole bar (not the small button), so it can never be cut off by the screen edge. */
+@media (max-width: 600px) {
+  .portal-header .language-switcher,
+  .staff-topbar .language-switcher { position: static; }
+  .portal-header .language-switcher_menu,
+  .staff-topbar .language-switcher_menu { top: calc(100% + 6px); right: auto; left: 0.75rem; max-width: calc(100vw - 1.5rem); }
+  html[dir="rtl"] .portal-header .language-switcher_menu,
+  html[dir="rtl"] .staff-topbar .language-switcher_menu { left: auto; right: 0.75rem; }
+  .staff-topbar .language-switcher_trigger > span { display: none; }
+  .staff-topbar .language-switcher .language-switcher_trigger { padding: 0 8px; }
+}

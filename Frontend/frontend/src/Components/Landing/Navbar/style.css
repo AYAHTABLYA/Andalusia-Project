@@ -61,10 +61,10 @@
   gap: 8px;
   flex-shrink: 0;
 }
-.landing-page .navbar_signin {
-  display: none; /* يكسب على .landing-page .btn */
+.landing-page .navbar_actions .navbar_signin {
+  display: none; /* higher specificity than .landing-page .btn, so CSS order cannot bring it back */
 }
-.landing-page .navbar_apply {
+.landing-page .navbar_actions .navbar_apply {
   padding: 10px 14px;
   font-size: 12px;
   white-space: nowrap;
@@ -134,9 +134,10 @@
   }
 }
 
-/* Very small phones: Apply Now moves into the drawer only */
-@media (max-width: 359px) {
-  .landing-page .navbar_apply {
+/* Phones: logo + language + theme + menu already fill the bar,
+   so Apply Now / My Portal live in the drawer only */
+@media (max-width: 479px) {
+  .landing-page .navbar_actions .navbar_apply {
     display: none;
   }
 }
@@ -146,10 +147,10 @@
   .navbar_links {
     display: flex;
   }
-  .landing-page .navbar_signin {
+  .landing-page .navbar_actions .navbar_signin {
     display: inline-flex;
   }
-  .landing-page .navbar_apply {
+  .landing-page .navbar_actions .navbar_apply {
     padding: 12px 20px;
     font-size: 13px;
   }
@@ -246,7 +247,7 @@
     background-color: var(--color-surface-low);
     font-size: 14px;
   }
-  .landing-page .navbar_apply {
+  .landing-page .navbar_actions .navbar_apply {
     padding: 14px 24px;
   }
 }

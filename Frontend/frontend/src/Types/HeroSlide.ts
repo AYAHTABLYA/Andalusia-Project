@@ -13,13 +13,16 @@ export type HeroSlideCta = {
 export type HeroSlide = {
   id: number;
   /**
-   * cover = the original light, washed-out hero (unchanged).
+   * cover = light hero: text on the start side, the artwork already sits on the end side of the picture.
    * photo = a full photo with a blurred panel on the start side and a clear end side.
    */
   variant: "cover" | "photo";
+  /** Background picture: the full cover art (cover) or a photo behind the blurred panel (photo). */
   image: string;
   kicker: string;
   title: HeroTitlePart[];
   description: string;
+  /** Small dotted highlights under the description (cover slide). */
+  features?: string[];
   cta?: HeroSlideCta;
 };

@@ -26,6 +26,7 @@ type Props = {
   emptyNote: string;
   peopleColumn?: boolean; // first column is a person: show an avatar
   rowActions?: (rowIndex: number) => ReactNode; // when given, an "Actions" column is added
+  afterStats?: ReactNode; // e.g. a row of charts between the stat cards and the table
   beforeTable?: ReactNode; // e.g. the permission matrix
   hideTable?: boolean;
   children?: ReactNode; // dialogs
@@ -38,7 +39,7 @@ const POSITIVE = /^(active|enrolled|approved|paid|configured|yes|completed|live|
 function WorkspaceTableComponent({
   eyebrow, title, subtitle, icon, stats, columns, rows, query, onQueryChange, onReset,
   primaryAction, secondaryActions = [], headerExtras, footerExtra, notice, error, loading,
-  emptyNote, peopleColumn, rowActions, beforeTable, hideTable, children,
+  emptyNote, peopleColumn, rowActions, afterStats, beforeTable, hideTable, children,
 }: Props) {
   return (
     <div className="staff-dashboard staff-workspace-page">
@@ -69,6 +70,8 @@ function WorkspaceTableComponent({
           </article>
         ))}
       </section>
+
+      {afterStats}
 
       <section className="staff-card staff-workspace-table-card">
         <div className="staff-card_head">
