@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Link, Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
 import AuthNotice from "../AuthLayout/AuthNotice";
 import type { Feedback } from "../../Types/Feedback";
 import { confirmEmail, resendConfirmation } from "../../apis/authApi";
 import { ApiError, getErrorMessage, isLoggedIn } from "../../apis/academyApi";
+import OtpInput from "./OtpInput";
+import type { OtpStatus } from "./OtpInput";
 import "../Register/Style.css";
 
-type ConfirmLocationState = { email?: string; from?: string; notice?: string } | null;
+type ConfirmLocationState = {
+  email?: string;
+  from?: string;
+  notice?: string;
+} | null;
 
 const RESEND_COOLDOWN_SECONDS = 60;
+const OTP_LENGTH = 6;
 
 // Email confirmation page (/confirm-email).
 // Login sends users here when the backend answers 403 EMAIL_NOT_CONFIRMED; the backend has
@@ -24,6 +37,7 @@ function ConfirmEmailContainer() {
   const email = (state?.email ?? searchParams.get("email") ?? "").trim();
 
   const [otp, setOtp] = useState("");
+  const [otpStatus, setOtpStatus] = useState<OtpStatus>("idle");
   const [loading, setLoading] = useState(false);
   const [verified, setVerified] = useState(false);
   const [cooldown, setCooldown] = useState(RESEND_COOLDOWN_SECONDS);
@@ -48,15 +62,16 @@ function ConfirmEmailContainer() {
       state: { from: state?.from, email, emailConfirmed: true },
     });
 
-  const handleVerify = async (e: FormEvent) => {
-    e.preventDefault();
-    if (otp.length !== 6 || loading) return;
+  const verify = async (code: string) => {
+    if (code.length !== OTP_LENGTH || loading) return;
     setFeedback(null);
     setLoading(true);
     try {
-      await confirmEmail({ email, otp });
+      await confirmEmail({ email, otp: code });
+      setOtpStatus("success");
       setVerified(true);
     } catch (error) {
+      setOtpStatus("error");
       setFeedback({
         type: "error",
         text: getErrorMessage(error, "The code is invalid or expired."),
@@ -66,23 +81,44 @@ function ConfirmEmailContainer() {
     }
   };
 
+  const handleVerify = (e: FormEvent) => {
+    e.preventDefault();
+    void verify(otp);
+  };
+
+  const handleOtpChange = (value: string) => {
+    setOtp(value);
+    // Editing after a wrong code clears the red state.
+    if (otpStatus === "error") setOtpStatus("idle");
+  };
+
   const handleResend = async () => {
     if (cooldown > 0 || loading) return;
     setFeedback(null);
     setLoading(true);
     try {
       await resendConfirmation({ email });
+      setOtp("");
+      setOtpStatus("idle");
       setCooldown(RESEND_COOLDOWN_SECONDS);
-      setFeedback({ type: "info", text: "A new confirmation code has been sent to your email." });
+      setFeedback({
+        type: "info",
+        text: "A new confirmation code has been sent to your email.",
+      });
     } catch (error) {
       // 429 = the backend cooldown is still running; sync our timer with it.
       if (error instanceof ApiError && error.status === 429) {
-        const secondsLeft = Number((error.data as { secondsLeft?: number } | undefined)?.secondsLeft);
+        const secondsLeft = Number(
+          (error.data as { secondsLeft?: number } | undefined)?.secondsLeft,
+        );
         if (secondsLeft > 0) setCooldown(secondsLeft);
       }
       setFeedback({
         type: "error",
-        text: getErrorMessage(error, "Could not resend the code. Please try again."),
+        text: getErrorMessage(
+          error,
+          "Could not resend the code. Please try again.",
+        ),
       });
     } finally {
       setLoading(false);
@@ -95,18 +131,22 @@ function ConfirmEmailContainer() {
       text="Confirm your email address to activate your account and access your learner workspace."
       headerAction={
         <Link to="/login" className="auth_back_link">
-          <span className="material-symbols-outlined">arrow_back</span>Back to Login
+          <span className="material-symbols-outlined">arrow_back</span>Back to
+          Login
         </Link>
       }
     >
       <div className="register_form_component">
         <div className="register_head">
           <h2>Confirm your email</h2>
-          <span lang="ar">تأكيد البريد الإلكتروني</span>
+          {/* <span lang="ar">تأكيد البريد الإلكتروني</span> */}
         </div>
 
         {verified ? (
           <div className="register_form">
+            <div className="otp_done" aria-hidden="true">
+              <span className="material-symbols-outlined">verified</span>
+            </div>
             <div className="notice success">
               <span className="material-symbols-outlined">check_circle</span>
               Email confirmed successfully. You can now sign in.
@@ -118,42 +158,67 @@ function ConfirmEmailContainer() {
         ) : (
           <>
             <p className="register_sub">
-              Your email is not confirmed yet. We sent a 6-digit code to <strong>{email}</strong>. Enter it
-              below to continue.
+              Your email is not confirmed yet. We sent a 6-digit code to{" "}
+              <strong>{email}</strong>. Enter it below to continue.
             </p>
 
-            <AuthNotice feedback={feedback} onDismiss={() => setFeedback(null)} />
+            <AuthNotice
+              feedback={feedback}
+              onDismiss={() => setFeedback(null)}
+            />
 
             <div className="register_form">
               <form onSubmit={handleVerify}>
                 <div className="field">
-                  <label htmlFor="emailOtp">Email confirmation code</label>
-                  <input
-                    id="emailOtp"
-                    className="input"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    maxLength={6}
-                    pattern="[0-9]{6}"
-                    required
-                    autoFocus
-                    placeholder="123456"
+                  <span id="otp-label" className="otp_label">
+                    Email confirmation code
+                  </span>
+                  <OtpInput
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    onChange={handleOtpChange}
+                    onComplete={(code) => void verify(code)}
+                    length={OTP_LENGTH}
+                    disabled={loading}
+                    status={otpStatus}
+                    autoFocus
+                    labelledBy="otp-label"
                   />
+                  <p className="otp_hint">
+                    <span className="material-symbols-outlined">schedule</span>
+                    {"The code expires in 10 minutes. Check your spam folder if you can't find it."}
+                  </p>
                 </div>
-                <button className="btn" type="submit" disabled={loading || otp.length !== 6}>
+                <button
+                  className="btn"
+                  type="submit"
+                  disabled={loading || otp.length !== OTP_LENGTH}
+                >
                   {loading ? "Please wait..." : "Confirm email"}
                 </button>
               </form>
-              <button
-                className="btn btn_secondary"
-                type="button"
-                onClick={handleResend}
-                disabled={loading || cooldown > 0}
-              >
-                {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
-              </button>
+
+              <div className="otp_resend">
+                <div className="otp_resend_row">
+                  <span>{"Didn't get the code?"}</span>
+                  <button
+                    className="otp_resend_btn"
+                    type="button"
+                    onClick={handleResend}
+                    disabled={loading || cooldown > 0}
+                  >
+                    <span className="material-symbols-outlined">refresh</span>
+                    <span>{cooldown > 0 ? "Resend code in" : "Resend code"}</span>
+                    {cooldown > 0 && <span>{cooldown}s</span>}
+                  </button>
+                </div>
+                <div className="otp_progress" aria-hidden="true">
+                  <span
+                    style={{
+                      transform: `scaleX(${Math.min(1, cooldown / RESEND_COOLDOWN_SECONDS)})`,
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </>
         )}

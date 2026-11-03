@@ -61,7 +61,7 @@ function OverviewContainer() {
       loading={loading}
       hasCourses={courses.length > 0}
       greeting={`${greeting(cairoHour)}, ${userName.split(" ")[0]}`}
-      weekday={weekday.toUpperCase()}
+      weekday={weekday}
       clock={fmtTime(now.toISOString())}
       cards={cards}
       upcoming={upcoming}

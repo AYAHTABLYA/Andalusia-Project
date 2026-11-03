@@ -5,6 +5,24 @@ import { extraTranslations, patternRules } from "./translations";
 export type SiteLanguage = "en" | "ar";
 
 const STORAGE_KEY = "andalusia-language";
+const LANGUAGE_EVENT = "andalusia-language-changed";
+
+// Current language as applied to the page. Canvas drawings (the 3D scenes) are not part of the
+// DOM text the switcher walks, so they read this and translate their own labels.
+export const getSiteLanguage = (): SiteLanguage =>
+  typeof document !== "undefined" && document.documentElement.lang === "ar" ? "ar" : "en";
+
+// Re-renders the caller whenever the language is switched.
+export function useSiteLanguage(): SiteLanguage {
+  const [language, setLanguage] = useState<SiteLanguage>(getSiteLanguage);
+  useEffect(() => {
+    const sync = () => setLanguage(getSiteLanguage());
+    sync();
+    window.addEventListener(LANGUAGE_EVENT, sync);
+    return () => window.removeEventListener(LANGUAGE_EVENT, sync);
+  }, []);
+  return language;
+}
 
 const baseTranslations: Record<string, string> = {
   "Welcome to Andalusia Academy": "مرحبًا بكم في أكاديمية أندلسية",
@@ -139,7 +157,7 @@ const TRANSLATABLE_ATTRIBUTES = ["placeholder", "aria-label", "title"] as const;
 const SKIP_SELECTOR =
   "script, style, textarea, input, [data-no-translate], .language-switcher";
 
-function translateText(value: string, language: SiteLanguage): string {
+export function translateText(value: string, language: SiteLanguage): string {
   if (language === "en" || !value.trim()) return value;
 
   const trimmed = value.trim();
@@ -158,6 +176,7 @@ function applyLanguage(language: SiteLanguage): void {
   if (typeof document === "undefined" || !document.body) return;
 
   const root = document.documentElement;
+  const changed = root.lang !== language;
   root.lang = language;
   root.dir = language === "ar" ? "rtl" : "ltr";
   document.body.classList.toggle("site-language-ar", language === "ar");
@@ -214,6 +233,8 @@ function applyLanguage(language: SiteLanguage): void {
         attrs.set(attribute, tracked);
       }
     });
+
+  if (changed) window.dispatchEvent(new Event(LANGUAGE_EVENT));
 }
 
 export function LanguageSwitcher() {

@@ -50,7 +50,7 @@ function OverviewComponent({ loading, hasCourses, greeting, weekday, clock, card
     <>
       <header className="ws_hello">
         <div>
-          <span className="portal-eyebrow">{weekday}</span>
+          <span className="portal-eyebrow" style={{ textTransform: "uppercase" }}>{weekday}</span>
           <h1>{greeting}</h1>
           <p>Ready for your next learning moment?</p>
         </div>

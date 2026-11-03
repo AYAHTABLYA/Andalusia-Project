@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { translateText, useSiteLanguage } from "../../LanguageSwitcher";
 import "./constellation.css";
 
 // One node of the scene. Everything shown must come from real data supplied by the dashboard.
@@ -79,6 +80,7 @@ const hexRgb = (hex: string) => {
 
 function Constellation({ title, subtitle, centerLabel, centerValue, nodes, loading, empty, footnote }: Props) {
   const navigate = useNavigate();
+  const lang = useSiteLanguage();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hoverRef = useRef<string | null>(null);
   const redrawRef = useRef<() => void>(() => undefined);
@@ -103,6 +105,9 @@ function Constellation({ title, subtitle, centerLabel, centerValue, nodes, loadi
     const display = style.getPropertyValue("--font-display") || "serif";
     const body = style.getPropertyValue("--font-body") || "sans-serif";
     const rgba = (c: number[], a: number) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+    // Canvas text is invisible to the page translator, so translate the labels here.
+    const tr = (text: string) => translateText(text, lang);
+    const centerText = tr(centerLabel);
 
     let w = 0, h = 0, dpr = 1;
     let yaw = 0.6, pitch = 0.32, vel = 0.0016; // radians; vel is the idle spin per frame at 60fps
@@ -168,7 +173,8 @@ function Constellation({ title, subtitle, centerLabel, centerValue, nodes, loadi
           if (alpha > 0.55 || on) {
             ctx!.font = `600 ${on ? 13 : 12}px ${body}`; ctx!.textAlign = "center"; ctx!.textBaseline = "top";
             ctx!.fillStyle = `rgba(255,255,255,${on ? 1 : 0.82 * alpha})`;
-            const t = m.node.label.length > 22 ? `${m.node.label.slice(0, 21)}…` : m.node.label;
+            const label = tr(m.node.label);
+            const t = label.length > 22 ? `${label.slice(0, 21)}…` : label;
             ctx!.fillText(t, p.x, p.y + r + (m.node.progress !== undefined ? 9 : 5));
           }
         } });
@@ -203,9 +209,9 @@ function Constellation({ title, subtitle, centerLabel, centerValue, nodes, loadi
         if (centerValue !== undefined && centerValue !== "") {
           ctx!.font = `700 ${Math.round(R * 0.62)}px ${display}`; ctx!.fillText(String(centerValue), c0.x, c0.y - R * 0.12);
           ctx!.font = `500 ${Math.max(9, Math.round(R * 0.26))}px ${body}`; ctx!.fillStyle = "rgba(255,255,255,0.7)";
-          ctx!.fillText(centerLabel, c0.x, c0.y + R * 0.42);
+          ctx!.fillText(centerText, c0.x, c0.y + R * 0.42);
         } else {
-          ctx!.font = `600 ${Math.max(10, Math.round(R * 0.3))}px ${body}`; ctx!.fillText(centerLabel, c0.x, c0.y);
+          ctx!.font = `600 ${Math.max(10, Math.round(R * 0.3))}px ${body}`; ctx!.fillText(centerText, c0.x, c0.y);
         }
       } });
 
@@ -289,7 +295,7 @@ function Constellation({ title, subtitle, centerLabel, centerValue, nodes, loadi
       document.removeEventListener("visibilitychange", onVis);
       redrawRef.current = () => undefined;
     };
-  }, [model, ready, centerLabel, centerValue, navigate, setHover]);
+  }, [model, ready, centerLabel, centerValue, navigate, setHover, lang]);
 
   return (
     <section className="cs-card" aria-label={title}>
