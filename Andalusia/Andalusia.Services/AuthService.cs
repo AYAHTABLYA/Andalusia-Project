@@ -85,10 +85,11 @@ public class AuthService(
         if (!user.IsEmailVerified)
         {
             // Send a fresh confirmation code so the user can confirm right away.
-            try { await IssueEmailOtpAsync(user, ct); }
+            var codeSent = true;
+            try { codeSent = await IssueEmailOtpAsync(user, ct); }
             catch (OtpCooldownException) { /* a code was sent recently, reuse it */ }
 
-            throw new EmailNotConfirmedException(user.Email);
+            throw new EmailNotConfirmedException(user.Email, codeSent);
         }
 
         var (roleName, permissions) = await GetRoleAccessAsync(user.UserId);
@@ -155,7 +156,10 @@ public class AuthService(
         if (user is null || user.IsEmailVerified)
             return false;
 
-        await IssueEmailOtpAsync(user, ct);
+        var sent = await IssueEmailOtpAsync(user, ct);
+        if (!sent)
+            throw new OtpDeliveryException();
+
         return true;
     }
 
@@ -253,7 +257,7 @@ public class AuthService(
 
         var otp = GenerateOtp();
 
-        await repo.AddAsync(new EmailVerificationToken
+        var newToken = new EmailVerificationToken
         {
             UserId = user.UserId,
             Token = HashOtp(
@@ -262,15 +266,26 @@ public class AuthService(
                 otp),
             ExpiresAt = DateTime.UtcNow.Add(OtpLifetime),
             CreatedAt = DateTime.UtcNow
-        });
+        };
 
+        await repo.AddAsync(newToken);
         await uow.SaveChangesAsync();
 
-        return await SendSafelyAsync(
+        var sent = await SendSafelyAsync(
             user,
             otp,
             OtpPurpose.EmailConfirmation,
             ct);
+
+        if (!sent)
+        {
+            // Nothing reached the user: drop the unusable code so the resend cooldown
+            // does not block an immediate retry once the mail problem is fixed.
+            repo.Remove(newToken);
+            await uow.SaveChangesAsync();
+        }
+
+        return sent;
     }
 
     // Create and send a password reset OTP.

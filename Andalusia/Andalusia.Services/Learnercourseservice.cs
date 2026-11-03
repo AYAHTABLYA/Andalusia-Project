@@ -65,14 +65,15 @@ public sealed class LearnerCourseService(IUnitOfWork uow) : ILearnerCourseServic
         var enrollment = access.Enrollment!;
 
         var courseId = enrollment.CourseId ?? enrollment.Schedule?.CourseId;
-        if (courseId is null) return Result<IReadOnlyList<LearnerMaterialDto>>.Ok([]);
-
-        var cid = courseId.Value;
         var scheduleId = enrollment.ScheduleId;
+        if (courseId is null && scheduleId is null) return Result<IReadOnlyList<LearnerMaterialDto>>.Ok([]);
+
         // Course-wide materials (ScheduleId == null) + materials attached to the learner's own batch. Never other batches'.
+        // A program enrollment has no single course, so it only sees the materials attached to its own batch.
         var materials = await uow.GetRepository<CourseMaterial>().GetAllAsync(
             new QuerySpecification<CourseMaterial>(m =>
-                    m.CourseId == cid && (m.ScheduleId == null || m.ScheduleId == scheduleId))
+                    (courseId != null && m.CourseId == courseId && (m.ScheduleId == null || m.ScheduleId == scheduleId))
+                    || (scheduleId != null && m.ScheduleId == scheduleId))
                 .OrderByDesc(m => m.MaterialId));
 
         IReadOnlyList<LearnerMaterialDto> dtos = materials

@@ -32,6 +32,7 @@ public class DataInitializer : IDataInitializer
         {
             await SeedDemoUsersAsync();
             await SeedDemoPortalRecordsAsync();
+            await SeedDemoLearnerWorkspaceAsync();
             await SeedLandingContentAsync();
         }
     }
@@ -748,6 +749,147 @@ public class DataInitializer : IDataInitializer
                 ApplicationId = approvedCourseApp.ApplicationId,
                 Status = EnrollmentStatus.Completed,
                 EnrolledAt = now.AddDays(-58)
+            });
+
+        await _db.SaveChangesAsync();
+    }
+
+    // =====================================================================
+    // 3c) Demo workspace data for the demo learner (Development only)
+    //     Without sessions / assignments / materials / attendance the learner's "Overview" has nothing to show.
+    // =====================================================================
+    private async Task SeedDemoLearnerWorkspaceAsync()
+    {
+        var learner = await _db.Users.FirstOrDefaultAsync(u => u.Email == "learner@andalusia.local");
+        if (learner is null) return;
+
+        // The batch of the learner's active enrollment (the seed above creates one on a program batch).
+        var enrollment = await _db.Enrollments
+            .Where(e => e.UserId == learner.UserId && e.Status == EnrollmentStatus.Active && e.ScheduleId != null)
+            .OrderByDescending(e => e.EnrolledAt)
+            .FirstOrDefaultAsync();
+        if (enrollment?.ScheduleId is not { } scheduleId) return;
+
+        // Idempotent: a batch that already has sessions (seeded earlier or created by staff) is left alone.
+        if (await _db.Sessions.AnyAsync(s => s.ScheduleId == scheduleId)) return;
+
+        var schedule = await _db.Schedules.FirstAsync(s => s.ScheduleId == scheduleId);
+        var now = DateTime.UtcNow;
+        var today = Today;
+
+        // --- Sessions: four held in the last two weeks + two coming up ---
+        var sessionPlan = new (string Title, int DayOffset)[]
+        {
+            ("Kick-off and program overview", -14),
+            ("Foundations workshop", -10),
+            ("Hands-on lab 1", -6),
+            ("Case study review", -2),
+            ("Hands-on lab 2", 2),
+            ("Capstone clinic", 6),
+        };
+        var sessions = sessionPlan.Select(x => new Session
+        {
+            ScheduleId = scheduleId,
+            Title = x.Title,
+            SessionDate = today.AddDays(x.DayOffset),
+            StartTime = new TimeOnly(18, 0),
+            EndTime = new TimeOnly(20, 0),
+            RoomDetails = string.IsNullOrWhiteSpace(schedule.RoomNumber) ? "Alexandria campus" : schedule.RoomNumber
+        }).ToList();
+        _db.Sessions.AddRange(sessions);
+
+        // --- Teacher of the batch (the demo instructor), when the batch has none yet ---
+        var instructorId = await _db.Users
+            .Where(u => u.Email == "instructor@andalusia.local" && u.Instructor != null)
+            .Select(u => (long?)u.UserId)
+            .FirstOrDefaultAsync();
+        if (instructorId is { } iid
+            && !await _db.ScheduleInstructors.AnyAsync(si => si.ScheduleId == scheduleId))
+        {
+            _db.ScheduleInstructors.Add(new ScheduleInstructor { ScheduleId = scheduleId, InstructorId = iid });
+        }
+
+        // --- Assignments: one graded, one waiting for a grade, one still to do ---
+        var graded = new Assignment
+        {
+            ScheduleId = scheduleId,
+            Title = "Program reflection",
+            Description = "Write a one-page reflection on what you expect to get out of the program.",
+            DueDate = now.AddDays(-5),
+            MaxScore = 100
+        };
+        var waiting = new Assignment
+        {
+            ScheduleId = scheduleId,
+            Title = "Case study brief",
+            Description = "Summarise the case study discussed in class and propose two improvements.",
+            DueDate = now.AddDays(5),
+            MaxScore = 100
+        };
+        var todo = new Assignment
+        {
+            ScheduleId = scheduleId,
+            Title = "Capstone proposal",
+            Description = "Outline the problem, approach and expected outcome of your capstone project.",
+            DueDate = now.AddDays(14),
+            MaxScore = 100
+        };
+        _db.Assignments.AddRange(graded, waiting, todo);
+
+        // --- Materials of the batch (CourseId is required: use a course of the learner's program) ---
+        var programId = enrollment.ProgramId ?? schedule.ProgramId;
+        long? materialCourseId = programId is { } pid
+            ? await _db.ProgramCourses.Where(pc => pc.ProgramId == pid).OrderBy(pc => pc.OrderIndex)
+                .Select(pc => (long?)pc.CourseId).FirstOrDefaultAsync()
+            : schedule.CourseId;
+        materialCourseId ??= await _db.Courses.OrderBy(c => c.CourseId).Select(c => (long?)c.CourseId).FirstOrDefaultAsync();
+        if (materialCourseId is { } courseId)
+        {
+            _db.CourseMaterials.AddRange(
+                new CourseMaterial { CourseId = courseId, ScheduleId = scheduleId, Title = "Week 1: program overview (slides)", FileUrl = "https://example.com/materials/week-1-overview.pdf", ResourceType = CourseMaterialResourceType.Slide, UploadedAt = now.AddDays(-12) },
+                new CourseMaterial { CourseId = courseId, ScheduleId = scheduleId, Title = "Learner handbook", FileUrl = "https://example.com/materials/learner-handbook.pdf", ResourceType = CourseMaterialResourceType.Document, UploadedAt = now.AddDays(-8) },
+                new CourseMaterial { CourseId = courseId, ScheduleId = scheduleId, Title = "Recommended reading list", FileUrl = "https://example.com/materials/reading-list", ResourceType = CourseMaterialResourceType.Reference_Link, UploadedAt = now.AddDays(-3) });
+        }
+
+        await _db.SaveChangesAsync(); // generates the Session / Assignment ids used below
+
+        // --- Attendance for the sessions already held ---
+        var held = sessions.Where(s => s.SessionDate < today).OrderBy(s => s.SessionDate).ToList();
+        var marks = new[] { AttendanceStatus.Present, AttendanceStatus.Present, AttendanceStatus.Late, AttendanceStatus.Present };
+        for (var i = 0; i < held.Count && i < marks.Length; i++)
+        {
+            _db.Attendances.Add(new Attendance
+            {
+                SessionId = held[i].SessionId,
+                LearnerId = learner.UserId,
+                Status = marks[i],
+                MarkedAt = now.AddDays(held[i].SessionDate.DayNumber - today.DayNumber)
+            });
+        }
+
+        // --- Submissions: the first assignment is graded, the second is waiting for a grade ---
+        _db.AssignmentSubmissions.AddRange(
+            new AssignmentSubmission
+            {
+                AssignmentId = graded.AssignmentId,
+                LearnerId = learner.UserId,
+                AttemptNumber = 1,
+                FileUrl = "https://example.com/submissions/program-reflection.pdf",
+                Status = AssignmentSubmissionStatus.Submitted,
+                SubmittedAt = now.AddDays(-6),
+                Score = 88,
+                Feedback = "Clear and well structured. Add one concrete goal for the capstone next time.",
+                GradedAt = now.AddDays(-4),
+                GradedBy = instructorId
+            },
+            new AssignmentSubmission
+            {
+                AssignmentId = waiting.AssignmentId,
+                LearnerId = learner.UserId,
+                AttemptNumber = 1,
+                FileUrl = "https://example.com/submissions/case-study-brief.pdf",
+                Status = AssignmentSubmissionStatus.Submitted,
+                SubmittedAt = now.AddDays(-1)
             });
 
         await _db.SaveChangesAsync();

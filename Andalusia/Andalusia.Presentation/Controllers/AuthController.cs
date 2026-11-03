@@ -48,8 +48,10 @@ public class AuthController(IAuthService authService) : ControllerBase
             return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails
             {
                 Title = "Email not confirmed",
-                Detail = "Your email is not confirmed. We sent a confirmation code to your email, please confirm it to continue.",
-                Extensions = { ["code"] = "EMAIL_NOT_CONFIRMED", ["email"] = ex.Email }
+                Detail = ex.CodeSent
+                    ? "Your email is not confirmed. We sent a confirmation code to your email, please confirm it to continue."
+                    : "Your email is not confirmed, but we couldn't send the confirmation code right now. Tap \"Resend code\" to try again.",
+                Extensions = { ["code"] = "EMAIL_NOT_CONFIRMED", ["email"] = ex.Email, ["codeSent"] = ex.CodeSent }
             });
         }
     }
@@ -74,6 +76,15 @@ public class AuthController(IAuthService authService) : ControllerBase
             return Ok(new { message = "If the email is eligible, a confirmation code has been resent." });
         }
         catch (OtpCooldownException ex) { return Cooldown(ex); }
+        catch (OtpDeliveryException ex)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new ProblemDetails
+            {
+                Title = "Email delivery failed",
+                Detail = ex.Message,
+                Extensions = { ["code"] = "EMAIL_SEND_FAILED" }
+            });
+        }
     }
 
     // POST /api/auth/forgot-password
