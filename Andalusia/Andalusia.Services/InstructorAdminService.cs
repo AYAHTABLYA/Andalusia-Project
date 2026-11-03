@@ -54,12 +54,14 @@ public sealed class InstructorAdminService(IUnitOfWork uow) : IInstructorAdminSe
     {
         var email = dto.Email.Trim().ToLowerInvariant();
         var userRepo = uow.GetRepository<User>();
-        if (await userRepo.GetAsync(new UserByEmailSpecification(email)) is not null)
-            return Result<AdminInstructorDetailDto>.Fail(Error.Conflict("Instructor.EmailTaken", "Email is already registered."));
+        var existing = await userRepo.GetAsync(new UserByEmailSpecification(email));
 
         var role = (await uow.GetRepository<Role>().GetAllAsync()).FirstOrDefault(r => r.Name == AppRoles.Instructor);
         if (role is null)
             return Result<AdminInstructorDetailDto>.Fail(Error.Failure("Instructor.RoleMissing", "The Instructor role is not configured."));
+
+        if (existing is not null)
+            return await PromoteExistingUserAsync(existing.UserId, role, dto);
 
         var user = new User
         {
@@ -118,6 +120,52 @@ public sealed class InstructorAdminService(IUnitOfWork uow) : IInstructorAdminSe
     }
 
     // ------------------------------------------------------------------ helpers
+
+    /// <summary>
+    /// The email already belongs to an account. A plain learner is turned into an instructor (their password and
+    /// personal details stay as they are); any other existing account is left alone so a staff role is never replaced by accident.
+    /// </summary>
+    private async Task<Result<AdminInstructorDetailDto>> PromoteExistingUserAsync(long userId, Role instructorRole, CreateInstructorDto dto)
+    {
+        var userRoleRepo = uow.GetRepository<UserRole>();
+        var current = (await userRoleRepo.GetAllAsync(new UserRolesByUsersSpecification([userId]), trackChanges: true)).ToList();
+
+        if (current.Any(ur => ur.RoleId == instructorRole.RoleId))
+            return Result<AdminInstructorDetailDto>.Fail(Error.Conflict("Instructor.AlreadyInstructor", "This email already belongs to an instructor."));
+
+        var other = current.FirstOrDefault(ur => ur.Role.Name != AppRoles.Learner);
+        if (other is not null)
+            return Result<AdminInstructorDetailDto>.Fail(Error.Conflict("Instructor.EmailTaken",
+                $"This email already belongs to a {other.Role.Name}. Change that account's role in Users & roles instead."));
+
+        foreach (var old in current) userRoleRepo.Remove(old);
+        await userRoleRepo.AddAsync(new UserRole { UserId = userId, RoleId = instructorRole.RoleId });
+
+        // Instructor rows are never deleted (schedules/payouts point to them), so reuse one if it is already there.
+        var instructorRepo = uow.GetRepository<Instructor>();
+        var profile = await instructorRepo.GetByIdAsync(userId);
+        if (profile is null)
+        {
+            await instructorRepo.AddAsync(new Instructor
+            {
+                InstructorId = userId,
+                JobTitle = dto.JobTitle?.Trim() ?? "",
+                Bio = dto.Bio?.Trim() ?? "",
+                AvatarUrl = dto.AvatarUrl?.Trim() ?? ""
+            });
+        }
+        else
+        {
+            profile.JobTitle = dto.JobTitle?.Trim() ?? profile.JobTitle;
+            profile.Bio = dto.Bio?.Trim() ?? profile.Bio;
+            profile.AvatarUrl = dto.AvatarUrl?.Trim() ?? profile.AvatarUrl;
+        }
+
+        await uow.SaveChangesAsync();
+
+        var promoted = await LoadAsync(userId, track: false);
+        return Result<AdminInstructorDetailDto>.Ok(await ToDetailAsync(promoted!));
+    }
 
     private async Task<Instructor?> LoadAsync(long id, bool track) =>
         await uow.GetRepository<Instructor>().GetAsync(

@@ -32,6 +32,7 @@ public class DataInitializer : IDataInitializer
         {
             await SeedDemoUsersAsync();
             await SeedDemoPortalRecordsAsync();
+            await SeedDemoTeachingAsync();
             await SeedLandingContentAsync();
         }
     }
@@ -749,6 +750,55 @@ public class DataInitializer : IDataInitializer
                 Status = EnrollmentStatus.Completed,
                 EnrolledAt = now.AddDays(-58)
             });
+
+        await _db.SaveChangesAsync();
+    }
+
+    // =====================================================================
+    // 3c) Demo teaching data: the demo instructor teaches the batch the demo learner is enrolled in (Development only)
+    // =====================================================================
+    private async Task SeedDemoTeachingAsync()
+    {
+        var instructor = await _db.Instructors.FirstOrDefaultAsync(i => i.User.Email == "instructor@andalusia.local");
+        if (instructor is null) return;
+
+        // Idempotent: nothing to do once the instructor teaches any batch (also keeps manual assignments untouched).
+        if (await _db.ScheduleInstructors.AnyAsync(l => l.InstructorId == instructor.InstructorId)) return;
+
+        var learner = await _db.Users.FirstOrDefaultAsync(u => u.Email == "learner@andalusia.local");
+        var scheduleId = learner is null
+            ? null
+            : await _db.Enrollments
+                .Where(e => e.UserId == learner.UserId && e.ScheduleId != null)
+                .Select(e => e.ScheduleId)
+                .FirstOrDefaultAsync();
+
+        var schedule = scheduleId.HasValue
+            ? await _db.Schedules.FirstOrDefaultAsync(s => s.ScheduleId == scheduleId.Value)
+            : await _db.Schedules.OrderBy(s => s.StartDate).FirstOrDefaultAsync();
+        if (schedule is null) return;
+
+        _db.ScheduleInstructors.Add(new ScheduleInstructor { ScheduleId = schedule.ScheduleId, InstructorId = instructor.InstructorId });
+
+        if (!await _db.Sessions.AnyAsync(s => s.ScheduleId == schedule.ScheduleId))
+        {
+            _db.Sessions.AddRange(
+                new Session { ScheduleId = schedule.ScheduleId, Title = "Kick-off workshop", SessionDate = Today.AddDays(-2), StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(12, 0), RoomDetails = schedule.RoomNumber },
+                new Session { ScheduleId = schedule.ScheduleId, Title = "Applied lab", SessionDate = Today.AddDays(1), StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(12, 30), RoomDetails = schedule.RoomNumber },
+                new Session { ScheduleId = schedule.ScheduleId, Title = "Case study review", SessionDate = Today.AddDays(3), StartTime = new TimeOnly(14, 0), EndTime = new TimeOnly(16, 0), RoomDetails = schedule.RoomNumber });
+        }
+
+        if (!await _db.Assignments.AnyAsync(a => a.ScheduleId == schedule.ScheduleId))
+        {
+            _db.Assignments.Add(new Assignment
+            {
+                ScheduleId = schedule.ScheduleId,
+                Title = "Week 1 case brief",
+                Description = "Summarise the case and propose next steps.",
+                DueDate = DateTime.UtcNow.AddDays(7),
+                MaxScore = 100
+            });
+        }
 
         await _db.SaveChangesAsync();
     }
