@@ -5,6 +5,8 @@ import Breadcrumb from "../Shared/Breadcrumb";
 import CatalogState from "../Shared/CatalogState";
 import ApplyDialog from "../Shared/ApplyDialog";
 import type { ApplyFormValues } from "../Shared/ApplyDialog";
+import { COURSE_IMAGES } from "../Courses/constants";
+import { getCatalogImage } from "../../../utils/catalogImage";
 import { ApiError, isLoggedIn } from "../../../apis/academyApi";
 import { applyToCourse, useCourse } from "../../../hooks/academyHooks/useCoursesApi";
 import useSyllabusDownload from "../../../hooks/academyHooks/useSyllabusDownload";
@@ -67,6 +69,7 @@ function CourseDetailContainer() {
     <>
       <CourseDetailComponent
         course={data}
+        image={getCatalogImage(COURSE_IMAGES, "courses", data.title, data.slug)}
         onApply={() => setDialogOpen(true)}
         onDownloadSyllabus={syllabus.download}
         syllabusLoading={syllabus.loading}

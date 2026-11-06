@@ -25,19 +25,22 @@
   border-style: solid;
   border-width: 1px;
   border-color: var(--color-outline-variant);
-  border-radius: 0.75rem;
+  border-radius: 1.5rem;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition-property: box-shadow;
-  transition-duration: 0.15s;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .programs_card-1:hover {
+  transform: translateY(-6px);
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    0 20px 30px -10px rgba(168, 111, 88, 0.15),
+    0 10px 15px -3px rgba(0, 0, 0, 0.05);
 }
 
 .programs_box-3 > * + * {
@@ -180,3 +183,28 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
+
+
+/* Card thumbnail - full-bleed banner with zoom on hover (matches the design) */
+.programs_image-wrap {
+  display: block;
+  margin: -1.5rem -1.5rem 1.5rem;
+  height: 13rem;
+  overflow: hidden;
+  background-color: var(--color-surface-container, #f5f5f4);
+}
+@media (min-width: 640px) {
+  .programs_image-wrap { height: 14rem; }
+}
+.programs_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.programs_card-1:hover .programs_image {
+  transform: scale(1.06);
+}
+
+.programs_card-1 > .programs_box-3 { flex: 1; }

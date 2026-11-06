@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import ProgramsComponent from "./ProgramsComponent";
-import { PROGRAMS_PAGE_SIZE } from "./constants";
+import { PROGRAMS_PAGE_SIZE, PROGRAM_IMAGES } from "./constants";
 import { toProgram } from "../../../apis/mappers";
 import { useProgramCategories, usePrograms } from "../../../hooks/academyHooks/useProgramsApi";
+import { getCatalogImage } from "../../../utils/catalogImage";
 import useDebouncedValue from "../../../hooks/academyHooks/useDebouncedValue";
 
 function ProgramsContainer() {
@@ -24,7 +25,14 @@ function ProgramsContainer() {
     () => ["All", ...(categoryData ?? []).map((c) => c.name)],
     [categoryData],
   );
-  const programs = useMemo(() => (data?.data ?? []).map(toProgram), [data]);
+  const programs = useMemo(
+    () =>
+      (data?.data ?? []).map(toProgram).map((program) => ({
+        ...program,
+        image: getCatalogImage(PROGRAM_IMAGES, "programs", program.title, program.slug),
+      })),
+    [data],
+  );
 
   function handleSearch(value: string) {
     setSearch(value);

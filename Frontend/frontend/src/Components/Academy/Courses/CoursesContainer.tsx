@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import CoursesComponent from "./CoursesComponent";
-import { COURSES_PAGE_SIZE } from "./constants";
+import { COURSES_PAGE_SIZE, COURSE_IMAGES } from "./constants";
 import { toCatalogCourse } from "../../../apis/mappers";
 import { useCourseCategories, useCourses } from "../../../hooks/academyHooks/useCoursesApi";
+import { getCatalogImage } from "../../../utils/catalogImage";
 import useDebouncedValue from "../../../hooks/academyHooks/useDebouncedValue";
 
 function CoursesContainer() {
@@ -21,7 +22,14 @@ function CoursesContainer() {
   const { data: categoryData } = useCourseCategories();
 
   const categories = useMemo(() => ["All", ...(categoryData ?? [])], [categoryData]);
-  const courses = useMemo(() => (data?.data ?? []).map(toCatalogCourse), [data]);
+  const courses = useMemo(
+    () =>
+      (data?.data ?? []).map(toCatalogCourse).map((course) => ({
+        ...course,
+        image: getCatalogImage(COURSE_IMAGES, "courses", course.title, course.slug),
+      })),
+    [data],
+  );
 
   function handleSearch(value: string) {
     setSearch(value);

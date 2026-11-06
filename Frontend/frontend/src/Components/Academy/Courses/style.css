@@ -5,8 +5,8 @@
 @media (min-width: 768px) { .courses_box-2 { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (min-width: 1024px) { .courses_box-2 { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 
-.courses_card-1 { background-color:var(--color-surface-bright); border-radius:.75rem; border-style:solid; border-width:1px; border-color:var(--color-outline); transition-property:all; transition-duration:.15s; transition-timing-function:cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; box-shadow:0 1px 2px 0 rgba(0,0,0,.05); }
-.courses_card-1:hover { border-color:var(--color-primary); }
+.courses_card-1 { background-color:var(--color-surface-bright); border-radius:1rem; border-style:solid; border-width:1px; border-color:var(--color-outline); transition:transform .3s ease-out, box-shadow .3s ease-out, border-color .15s; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; box-shadow:0 1px 2px 0 rgba(0,0,0,.05); }
+.courses_card-1:hover { border-color:var(--color-primary); transform:translateY(-6px); box-shadow:0 20px 25px -5px rgba(0,0,0,.1), 0 8px 10px -6px rgba(0,0,0,.1); }
 
 .courses_box-3 { padding:1.25rem; }
 .courses_box-3 > * + * { margin-top:0.75rem; }
@@ -42,3 +42,9 @@
 .courses_link-1:hover { text-decoration:underline; }
 
 .courses_text-5 { font-size:.875rem; line-height:1.25rem; }
+
+
+/* Card thumbnail - h-44 banner with zoom on hover (matches the design) */
+.courses_image-wrap { display:block; height:11rem; width:100%; overflow:hidden; background-color:var(--color-surface-container, #f5f5f4); }
+.courses_image { width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s ease-out; }
+.courses_card-1:hover .courses_image { transform:scale(1.05); }

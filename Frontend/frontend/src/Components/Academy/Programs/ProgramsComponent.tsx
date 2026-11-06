@@ -81,6 +81,19 @@ function ProgramsComponent({
         <div className="programs_box-2">
           {programs.map((prog) => (
             <article key={prog.id} className="programs_card-1">
+              {prog.image && (
+                <Link to={prog.link} className="programs_image-wrap" tabIndex={-1}>
+                  <img
+                    src={prog.image}
+                    alt={prog.title}
+                    className="programs_image"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.parentElement!.style.display = "none";
+                    }}
+                  />
+                </Link>
+              )}
               <div className="programs_box-3">
                 <div className="programs_box-4">
                   <span className="programs_text-1">{prog.category}</span>

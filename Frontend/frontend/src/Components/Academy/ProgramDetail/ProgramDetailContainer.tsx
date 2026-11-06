@@ -4,6 +4,9 @@ import ProgramDetailComponent from "./ProgramDetailComponent";
 import Breadcrumb from "../Shared/Breadcrumb";
 import CatalogState from "../Shared/CatalogState";
 import ApplyDialog from "../Shared/ApplyDialog";
+import { PROGRAM_IMAGES, PROGRAM_VIDEOS } from "../Programs/constants";
+import { getCatalogImage } from "../../../utils/catalogImage";
+import { getProgramVideo } from "../../../utils/catalogVideo";
 import { ApiError, isLoggedIn } from "../../../apis/academyApi";
 import { applyToProgram, useProgram } from "../../../hooks/academyHooks/useProgramsApi";
 import useSyllabusDownload from "../../../hooks/academyHooks/useSyllabusDownload";
@@ -80,6 +83,8 @@ function ProgramDetailContainer() {
     <>
       <ProgramDetailComponent
         program={data}
+        image={getCatalogImage(PROGRAM_IMAGES, "programs", data.title, data.slug)}
+        video={getProgramVideo(PROGRAM_VIDEOS, data.title, data.slug)}
         onApply={openDialog}
         onDownloadSyllabus={syllabus.download}
         syllabusLoading={syllabus.loading}

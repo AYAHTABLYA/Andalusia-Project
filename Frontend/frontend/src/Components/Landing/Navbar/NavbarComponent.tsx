@@ -5,13 +5,13 @@ import { ThemeSwitcher } from "../../ThemeSwitcher";
 import "./style.css";
 
 type Props = {
-  signedIn: boolean;
+  accountPath: string;
   menuOpen: boolean;
   onToggleMenu: () => void;
   onCloseMenu: () => void;
 };
 
-function NavbarComponent({ signedIn, menuOpen, onToggleMenu, onCloseMenu }: Props) {
+function NavbarComponent({ accountPath, menuOpen, onToggleMenu, onCloseMenu }: Props) {
   return (
     <header className="navbar" data-purpose="site-navigation">
       <div className="navbar_inner">
@@ -31,7 +31,7 @@ function NavbarComponent({ signedIn, menuOpen, onToggleMenu, onCloseMenu }: Prop
         <div className="navbar_actions">
           <LanguageSwitcher />
           <ThemeSwitcher />
-          <Link className="btn btn-outline navbar_signin" to={signedIn ? "/profile" : "/login"}>
+          <Link className="btn btn-outline navbar_signin" to={accountPath}>
             My Portal
           </Link>
           <Link className="btn btn-primary navbar_apply" to="/register">
@@ -86,7 +86,7 @@ function NavbarComponent({ signedIn, menuOpen, onToggleMenu, onCloseMenu }: Prop
             About Us
           </a>
           <div className="navbar_drawer-cta">
-            <Link className="btn btn-outline" to={signedIn ? "/profile" : "/login"} onClick={onCloseMenu}>
+            <Link className="btn btn-outline" to={accountPath} onClick={onCloseMenu}>
               My Portal
             </Link>
             <Link

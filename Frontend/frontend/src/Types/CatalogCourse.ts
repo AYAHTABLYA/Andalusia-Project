@@ -10,6 +10,7 @@ type CatalogCourse = {
   tuition: string;
   seats: string;
   link: string;
+  image?: string; // thumbnail, undefined when the item has none
 };
 
 export type { CatalogCourse };

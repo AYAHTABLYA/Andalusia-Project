@@ -16,7 +16,7 @@ import {
 } from "../../apis/authApi";
 import { ApiError, getErrorMessage, isLoggedIn } from "../../apis/academyApi";
 import { getStoredUser, homeRouteForRole } from "../../utils/session";
-import { canOpenPath } from "../../utils/roles";
+import { canReturnToPath } from "../../utils/roles";
 
 type LoginMode = "password" | "login-otp" | "forgot-request" | "forgot-reset";
 
@@ -38,7 +38,7 @@ function LoginContainer() {
   const from = locationState?.from;
   const afterLoginRoute = () => {
     const role = getStoredUser()?.role;
-    return from && from !== "/login" && canOpenPath(role, from)
+    return from && from !== "/login" && canReturnToPath(role, from)
       ? from
       : homeRouteForRole(role);
   };
@@ -193,6 +193,7 @@ function LoginContainer() {
         confirmPassword={confirmPassword}
         setConfirmPassword={setConfirmPassword}
         switchMode={switchMode}
+        from={from}
       />
     </AuthLayoutComponent>
   );

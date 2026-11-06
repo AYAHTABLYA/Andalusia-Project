@@ -128,5 +128,7 @@
 .apply-dialog_btn-1:hover:not(:disabled) { filter:brightness(1.06); }
 .apply-dialog_btn-1:disabled { opacity:.6; cursor:progress; }
 .apply-dialog_btn-link { display:block; }
+.apply-dialog_btn-link + .apply-dialog_btn-link { margin-top:.5rem; }
+.apply-dialog_btn-secondary { background-color:transparent; background-image:none; color:var(--color-primary); border:1px solid var(--color-primary); }
 
 .detail-state_wrap { max-width:80rem; margin:0 auto; padding:2rem 1.5rem; }

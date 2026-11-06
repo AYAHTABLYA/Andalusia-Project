@@ -66,6 +66,19 @@ function CoursesComponent({
         <div className="courses_box-2">
           {courses.map((item) => (
             <article key={item.id} className="courses_card-1">
+              {item.image && (
+                <Link to={item.link} className="courses_image-wrap" tabIndex={-1}>
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="courses_image"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.parentElement!.style.display = "none";
+                    }}
+                  />
+                </Link>
+              )}
               <div className="courses_box-3">
                 <div className="courses_box-4">
                   <span className="courses_text-1">{item.category}</span>

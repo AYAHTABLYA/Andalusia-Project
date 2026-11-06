@@ -10,12 +10,14 @@ import "./style.css";
 type Props = {
   links: NavLinkItem[];
   currentPath: string;
+  signedIn: boolean;
+  accountPath: string;
   menuOpen: boolean;
   onToggleMenu: () => void;
   onCloseMenu: () => void;
 };
 
-function AcademyNavbarComponent({ links, currentPath, menuOpen, onToggleMenu, onCloseMenu }: Props) {
+function AcademyNavbarComponent({ links, currentPath, signedIn, accountPath, menuOpen, onToggleMenu, onCloseMenu }: Props) {
   const isActive = (match?: string) => !!match && currentPath.includes(match);
 
   return (
@@ -50,9 +52,9 @@ function AcademyNavbarComponent({ links, currentPath, menuOpen, onToggleMenu, on
             <span className="material-symbols-outlined">support_agent</span>
             <span>{SUPPORT_PHONE}</span>
           </a>
-          <Link to="/login" className="academy-navbar_portal">
-            <span className="material-symbols-outlined">lock</span>
-            <span>Unified Portal</span>
+          <Link to={accountPath} className="academy-navbar_portal">
+            <span className="material-symbols-outlined">{signedIn ? "account_circle" : "lock"}</span>
+            <span>{signedIn ? "My Account" : "Unified Portal"}</span>
           </Link>
           <button type="button" className="academy-navbar_menu-btn" aria-label="Menu" aria-expanded={menuOpen} onClick={onToggleMenu}>
             <span className="material-symbols-outlined">{menuOpen ? "close" : "menu"}</span>
@@ -73,6 +75,10 @@ function AcademyNavbarComponent({ links, currentPath, menuOpen, onToggleMenu, on
               <span>{link.label}</span>
             </Link>
           ))}
+          <Link to={accountPath} onClick={onCloseMenu} className="academy-navbar_drawer-link">
+            <span className="material-symbols-outlined">{signedIn ? "account_circle" : "lock"}</span>
+            <span>{signedIn ? "My Account" : "Sign in"}</span>
+          </Link>
         </nav>
       )}
     </header>

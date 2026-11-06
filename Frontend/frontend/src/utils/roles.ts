@@ -40,10 +40,21 @@ function homeForRole(role?: string | null): string {
   return isKnownRole(role) ? ROLE_HOME[role] : "/profile";
 }
 
+// Public catalog pages are open to everyone, so after signing in a user can be sent back to them
+// (e.g. the program they were about to apply for).
+const PUBLIC_RETURN_PATHS = ["/programs", "/courses", "/career-paths"];
+
+function canReturnToPath(role: string | null | undefined, pathname: string): boolean {
+  if (PUBLIC_RETURN_PATHS.some((base) => pathname === base || pathname.startsWith(`${base}/`))) {
+    return true;
+  }
+  return canOpenPath(role, pathname);
+}
+
 function canOpenPath(role: string | null | undefined, pathname: string): boolean {
   if (!isKnownRole(role)) return false;
   return ROLE_PATHS[role].some((base) => pathname === base || pathname.startsWith(`${base}/`));
 }
 
 export type { RoleName };
-export { ROLES, ROLE_HOME, homeForRole, canOpenPath, isKnownRole };
+export { ROLES, ROLE_HOME, homeForRole, canOpenPath, canReturnToPath, isKnownRole };

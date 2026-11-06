@@ -8,13 +8,14 @@ import "./style.css";
 
 type Props = {
   course: CourseDetailDto;
+  image?: string;
   onApply: () => void;
   onDownloadSyllabus: () => void;
   syllabusLoading: boolean;
   syllabusFeedback: { kind: "success" | "error"; text: string } | null;
 };
 
-function CourseDetailComponent({ course, onApply, onDownloadSyllabus, syllabusLoading, syllabusFeedback }: Props) {
+function CourseDetailComponent({ course, image, onApply, onDownloadSyllabus, syllabusLoading, syllabusFeedback }: Props) {
   const stats = [
     { label: "Duration", value: course.stats.duration },
     { label: "Level", value: course.stats.level },
@@ -44,6 +45,18 @@ function CourseDetailComponent({ course, onApply, onDownloadSyllabus, syllabusLo
       <div className="course-detail_box-2">
         <div className="course-detail_box-3">
           <div className="course-detail_box-4">
+            {image && (
+              <div className="course-detail_image-wrap">
+                <img
+                  src={image}
+                  alt={course.title}
+                  className="course-detail_image"
+                  onError={(e) => {
+                    e.currentTarget.parentElement!.style.display = "none";
+                  }}
+                />
+              </div>
+            )}
             <div className="course-detail_box-5">
               <span className="course-detail_text-1"></span>
               {course.statusLabel}

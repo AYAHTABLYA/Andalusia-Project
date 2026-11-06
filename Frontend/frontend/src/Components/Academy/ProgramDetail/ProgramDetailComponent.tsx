@@ -2,12 +2,16 @@ import { Link } from "react-router-dom";
 import Breadcrumb from "../Shared/Breadcrumb";
 import StatGrid from "../Shared/StatGrid";
 import EnrollCard from "../Shared/EnrollCard";
+import ProgramVideo from "./ProgramVideo";
+import type { ProgramVideo as ProgramVideoData } from "../../../Types/CatalogVideo";
 import type { ProgramDetailDto } from "../../../Types/AcademyApi";
 import { formatMoney } from "../../../utils/format";
 import "./Style.css";
 
 type Props = {
   program: ProgramDetailDto;
+  image?: string;
+  video?: ProgramVideoData;
   onApply: () => void;
   onDownloadSyllabus: () => void;
   syllabusLoading: boolean;
@@ -18,7 +22,7 @@ const STATUS_LABELS: Record<string, string> = {
   Active: "Enrolling",
 };
 
-function ProgramDetailComponent({ program, onApply, onDownloadSyllabus, syllabusLoading, syllabusFeedback }: Props) {
+function ProgramDetailComponent({ program, image, video, onApply, onDownloadSyllabus, syllabusLoading, syllabusFeedback }: Props) {
   const stats = [
     { label: "Duration", value: program.stats.duration },
     { label: "Level", value: program.stats.level ?? "" },
@@ -43,6 +47,18 @@ function ProgramDetailComponent({ program, onApply, onDownloadSyllabus, syllabus
       <div className="program-detail_box-2">
         <div className="program-detail_box-3">
           <div className="program-detail_box-4">
+            {image && (
+              <div className="program-detail_image-wrap">
+                <img
+                  src={image}
+                  alt={program.title}
+                  className="program-detail_image"
+                  onError={(e) => {
+                    e.currentTarget.parentElement!.style.display = "none";
+                  }}
+                />
+              </div>
+            )}
             <div className="program-detail_box-5">
               <span className="program-detail_text-1">
                 {STATUS_LABELS[program.status] ?? program.status}
@@ -53,6 +69,7 @@ function ProgramDetailComponent({ program, onApply, onDownloadSyllabus, syllabus
             </div>
             <h1 className="program-detail_title-1">{program.title}</h1>
             <p className="program-detail_text-3">{program.overview}</p>
+            {video && <ProgramVideo video={video} title={program.title} poster={image} />}
             <StatGrid items={stats} />
           </div>
 

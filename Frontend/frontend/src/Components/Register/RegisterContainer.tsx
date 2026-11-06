@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { Feedback } from "../../Types/Feedback";
 import RegisterComponent from "./RegisterComponent";
 import AuthLayoutComponent from "../AuthLayout/AuthLayoutComponent";
@@ -15,6 +15,8 @@ function RegisterContainer() {
   const [otp, setOtp] = useState("");
   const [verified, setVerified] = useState(false);
   const navigate = useNavigate();
+  // Page the user came from (e.g. the program they wanted to apply for); passed on to /login.
+  const from = (useLocation().state as { from?: string } | null)?.from;
   const [formData, setFormData] = useState<RegisterFormValues>({
     firstName: "",
     lastName: "",
@@ -127,7 +129,7 @@ function RegisterContainer() {
       headerAction={
         <span className="auth_header_pill">
           Already registered?
-          <Link to="/login" className="auth_header_pill-btn">
+          <Link to="/login" state={{ from }} className="auth_header_pill-btn">
             Sign In
             <span className="material-symbols-outlined">arrow_forward</span>
           </Link>
@@ -144,7 +146,11 @@ function RegisterContainer() {
         setOtp={setOtp}
         handleVerifyOtp={handleVerifyOtp}
         handleResendOtp={handleResendOtp}
-        goToLogin={() => navigate("/login")}
+        goToLogin={() =>
+          navigate("/login", {
+            state: { from, email: formData.email, emailConfirmed: true },
+          })
+        }
         rules={rules}
         canSubmit={canSubmit}
         formData={formData}

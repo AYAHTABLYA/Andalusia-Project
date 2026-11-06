@@ -9,9 +9,9 @@ import "./Style.css";
 import { FEATURES } from "../../utils/features";
 
 type LoginMode = "password" | "login-otp" | "forgot-request" | "forgot-reset";
-function LoginComponent({ status, mode, feedback, onDismissFeedback, formData, handleChange, handleSubmit, otp, setOtp, newPassword, setNewPassword, confirmPassword, setConfirmPassword, switchMode }: {
+function LoginComponent({ status, mode, feedback, onDismissFeedback, formData, handleChange, handleSubmit, otp, setOtp, newPassword, setNewPassword, confirmPassword, setConfirmPassword, switchMode, from }: {
   status: SubmitStatus; mode: LoginMode; feedback: Feedback; onDismissFeedback: () => void; formData: loginFormType; handleChange: (e: ChangeEvent<HTMLInputElement>) => void; handleSubmit: (e: FormEvent) => void;
-  otp: string; setOtp: (value: string) => void; newPassword: string; setNewPassword: (value: string) => void; confirmPassword: string; setConfirmPassword: (value: string) => void; switchMode: (mode: LoginMode) => void;
+  otp: string; setOtp: (value: string) => void; newPassword: string; setNewPassword: (value: string) => void; confirmPassword: string; setConfirmPassword: (value: string) => void; switchMode: (mode: LoginMode) => void; from?: string;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -35,7 +35,7 @@ function LoginComponent({ status, mode, feedback, onDismissFeedback, formData, h
     </form>
     {FEATURES.loginOtp && mode === "password" && <p className="login_footer"><button type="button" className="text_button" onClick={() => switchMode("login-otp")}>Sign in with email code</button></p>}
     {mode !== "password" && <p className="login_footer"><button type="button" className="text_button" onClick={() => switchMode("password")}>Back to password login</button></p>}
-    <p className="login_footer">New learner? <Link to="/register">Create an account</Link></p>
+    <p className="login_footer">New learner? <Link to="/register" state={{ from }}>Create an account</Link></p>
   </div>;
 }
 export default memo(LoginComponent);

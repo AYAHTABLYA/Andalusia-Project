@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./style.css";
 
 type ApplyFormValues = {
@@ -27,6 +27,8 @@ type Props = {
 };
 
 function ApplyDialog({ title, description, mode, status, errorText, successText, initialValues, phoneRequired, onSubmit, onClose }: Props) {
+  // After signing in / registering the user comes back to this page to finish applying.
+  const { pathname } = useLocation();
   const [values, setValues] = useState<ApplyFormValues>({
     fullName: initialValues?.fullName ?? "",
     email: initialValues?.email ?? "",
@@ -69,9 +71,10 @@ function ApplyDialog({ title, description, mode, status, errorText, successText,
         ) : mode === "login-required" ? (
           <div className="apply-dialog_body">
             <p className="apply-dialog_text">
-              You need to sign in before you can apply. Your application is linked to your account.
+              You need an account before you can apply. Sign in, or create one in a minute. Your application is linked to your account.
             </p>
-            <Link to="/login" className="apply-dialog_btn-1 apply-dialog_btn-link">Sign in to continue</Link>
+            <Link to="/login" state={{ from: pathname }} className="apply-dialog_btn-1 apply-dialog_btn-link">Sign in</Link>
+            <Link to="/register" state={{ from: pathname }} className="apply-dialog_btn-1 apply-dialog_btn-link apply-dialog_btn-secondary">Create account</Link>
           </div>
         ) : (
           <form className="apply-dialog_body" onSubmit={handleSubmit}>

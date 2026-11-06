@@ -5,4 +5,6 @@ const flag = (value: unknown) => String(value ?? "").toLowerCase() === "true";
 export const FEATURES = {
   // needs POST /api/auth/request-login-otp and /api/auth/verify-login-otp
   loginOtp: flag(import.meta.env.VITE_ENABLE_LOGIN_OTP),
+  // true -> read thumbnails from public/images/..., false -> use the hosted links
+  localImages: flag(import.meta.env.VITE_USE_LOCAL_IMAGES),
 } as const;
