@@ -1,0 +1,178 @@
+/* 3D constellation card + card tilt. Uses the shared palette tokens from styles/design-system.css */
+.cs-card {
+  --cs-t0: #e4c9bb;
+  --cs-t1: #c2907b;
+  --cs-t2: #d9b98a;
+  --cs-t3: #9fbcbf;
+  --cs-ink: #141b1d;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem);
+  grid-template-areas: "head head" "canvas legend" "foot foot";
+  gap: 0.25rem 1.25rem;
+  margin-bottom: 1.25rem;
+  padding: 1.25rem 1.4rem 1rem;
+  overflow: hidden;
+  color: #fff;
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(
+      60% 90% at 30% 40%,
+      rgba(176, 121, 99, 0.22),
+      transparent 70%
+    ),
+    linear-gradient(145deg, var(--panel-2, #243033), var(--panel-1, #141b1d));
+  box-shadow: var(--shadow-md, 0 10px 30px -10px rgba(36, 48, 51, 0.12));
+}
+.cs-head {
+  grid-area: head;
+}
+.cs-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+.cs-head p {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.62);
+}
+.cs-canvas {
+  grid-area: canvas;
+  width: 100%;
+  height: 19rem;
+  display: block;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.cs-canvas:active {
+  cursor: grabbing;
+}
+.cs-empty {
+  grid-column: 1 / -1;
+  margin: 1.5rem 0 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.cs-legend {
+  grid-area: legend;
+  align-self: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  max-height: 19rem;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.cs-legend::-webkit-scrollbar {
+  display: none;
+}
+.cs-legend li {
+  min-width: 0;
+}
+.cs-legend a,
+.cs-static {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.86rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  min-width: 0;
+  box-sizing: border-box;
+}
+.cs-legend a:hover,
+.cs-legend a:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(228, 201, 187, 0.55);
+  outline: none;
+}
+.cs-legend a:focus-visible {
+  box-shadow: 0 0 0 3px rgba(228, 201, 187, 0.4);
+}
+.cs-legend span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cs-legend strong {
+  flex: none;
+  white-space: nowrap;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.cs-dot {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+}
+.cs-dot--0 {
+  background: var(--cs-t0);
+}
+.cs-dot--1 {
+  background: var(--cs-t1);
+}
+.cs-dot--2 {
+  background: var(--cs-t2);
+}
+.cs-dot--3 {
+  background: var(--cs-t3);
+}
+.cs-foot {
+  grid-area: foot;
+  margin: 0.4rem 0 0;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 760px) {
+  .cs-card {
+    grid-template-columns: 1fr;
+    grid-template-areas: "head" "canvas" "legend" "foot";
+    padding: 1rem;
+  }
+  .cs-canvas {
+    height: 15rem;
+  }
+  .cs-legend {
+    max-height: none;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+}
+
+/* ---- Card tilt (driven by useTilt) ---- */
+.tilt-scope .staff-stat,
+.tilt-scope .instructor-metric,
+.tilt-scope .portal-stat {
+  transform: perspective(700px) rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg));
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s;
+}
+.tilt-scope [data-tilt] {
+  transition-duration: 0.08s, 0.2s;
+  box-shadow: var(--shadow-md, 0 10px 30px -10px rgba(36, 48, 51, 0.18));
+}
+@media (prefers-reduced-motion: reduce) {
+  .tilt-scope .staff-stat,
+  .tilt-scope .instructor-metric,
+  .tilt-scope .portal-stat {
+    transform: none;
+    transition: none;
+  }
+}
