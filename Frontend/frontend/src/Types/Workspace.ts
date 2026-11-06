@@ -72,7 +72,7 @@ type WorkspaceData = {
   submitAssignment: (id: string, text: string) => Promise<void>;
 };
 
-type WorkspaceOutletContext = { workspace: WorkspaceData; userName: string };
+type WorkspaceOutletContext = { workspace: WorkspaceData; userName: string; email?: string; photoUrl?: string | null };
 
 export type {
   SessionStatus,

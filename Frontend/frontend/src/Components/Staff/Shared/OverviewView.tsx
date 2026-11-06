@@ -7,7 +7,7 @@ import OpsBar, { type OpsAction } from "./OpsBar";
 
 type Stat = { label: string; value?: string | number; icon: string; hint?: string; pct?: number; note?: string };
 type SessionRow = { id: number | string; time: string; date?: string; title: string; meta?: string; person?: string; students?: number; live?: boolean; done?: boolean; joinUrl?: string | null };
-type ActivityRow = { id: number | string; who: string; text: string; when: string };
+type ActivityRow = { id: number | string; who: string; text: string; when: string; icon?: string };
 
 type Props = {
   name: string;
@@ -25,14 +25,27 @@ type Props = {
   activity: ActivityRow[];
   scheduleLink?: string;
   loading?: boolean;
+  // Optional wording overrides (the student overview reuses this layout). Defaults keep the staff texts.
+  pulse?: string; // replaces the sentence computed from `sessions`
+  sessionsTitle?: string;
+  sessionsSub?: string;
+  emptySessions?: string;
+  activityTitle?: string;
+  activitySub?: string;
+  emptyActivity?: string;
+  activityLink?: { label: string; to: string };
 };
 
 // AHA-style overview: greeting, 4 stat cards, today's schedule and recent activity.
-function OverviewView({ name, email, role, photoUrl, workspace, tiles, scene, actions, charts, subtitle, stats, sessions, activity, scheduleLink, loading }: Props) {
+function OverviewView({
+  name, email, role, photoUrl, workspace, tiles, scene, actions, charts, subtitle, stats, sessions, activity, scheduleLink, loading,
+  pulse: pulseOverride, sessionsTitle = "Today's schedule", sessionsSub, emptySessions = "No sessions scheduled for today.",
+  activityTitle = "Recent activity", activitySub = "Latest updates", emptyActivity = "Nothing new yet.", activityLink,
+}: Props) {
   const tiltRef = useTilt<HTMLDivElement>(".staff-stat");
   const upcoming = sessions.filter((s) => !s.done).length;
   const live = sessions.filter((s) => s.live).length;
-  const pulse = loading ? undefined : live ? `${live} live session${live === 1 ? "" : "s"} right now` : upcoming ? `${upcoming} session${upcoming === 1 ? "" : "s"} still to go today` : "No sessions left today";
+  const pulse = loading ? undefined : pulseOverride ? pulseOverride : live ? `${live} live session${live === 1 ? "" : "s"} right now` : upcoming ? `${upcoming} session${upcoming === 1 ? "" : "s"} still to go today` : "No sessions left today";
   return (
     <>
       <div className="ov-top">
@@ -61,13 +74,13 @@ function OverviewView({ name, email, role, photoUrl, workspace, tiles, scene, ac
         <section className="staff-card">
           <div className="staff-card_head">
             <div>
-              <h2>Today's schedule</h2>
-              <p className="staff-page_sub">{upcoming} upcoming session{upcoming === 1 ? "" : "s"}</p>
+              <h2>{sessionsTitle}</h2>
+              <p className="staff-page_sub">{sessionsSub ?? `${upcoming} upcoming session${upcoming === 1 ? "" : "s"}`}</p>
             </div>
             {scheduleLink && <Link to={scheduleLink} className="staff-link">View calendar ↗</Link>}
           </div>
           {sessions.length === 0 ? (
-            <p className="staff-empty">{loading ? "Loading today's sessions…" : "No sessions scheduled for today."}</p>
+            <p className="staff-empty">{loading ? "Loading sessions…" : emptySessions}</p>
           ) : (
             sessions.map((s) => (
               <div key={s.id} className="staff-session">
@@ -83,13 +96,16 @@ function OverviewView({ name, email, role, photoUrl, workspace, tiles, scene, ac
         </section>
 
         <section className="staff-card">
-          <div className="staff-card_head"><div><h2>Recent activity</h2><p className="staff-page_sub">Latest updates</p></div></div>
+          <div className="staff-card_head">
+            <div><h2>{activityTitle}</h2><p className="staff-page_sub">{activitySub}</p></div>
+            {activityLink && <Link to={activityLink.to} className="staff-link">{activityLink.label} ↗</Link>}
+          </div>
           {activity.length === 0 ? (
-            <p className="staff-empty">{loading ? "Loading activity…" : "Nothing new yet."}</p>
+            <p className="staff-empty">{loading ? "Loading…" : emptyActivity}</p>
           ) : (
             activity.map((a) => (
               <div key={a.id} className="staff-activity">
-                <span className="material-symbols-outlined">chat_bubble</span>
+                <span className="material-symbols-outlined">{a.icon ?? "chat_bubble"}</span>
                 <div><strong>{a.who}</strong><small>{a.when}</small><p>{a.text}</p></div>
               </div>
             ))

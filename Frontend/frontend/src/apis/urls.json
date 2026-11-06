@@ -55,6 +55,7 @@
     "assignments": "/api/learner/enrollments/:id/assignments",
     "attendance": "/api/learner/enrollments/:id/attendance",
     "progress": "/api/learner/enrollments/:id/progress",
+    "course": "/api/learner/enrollments/:id/course",
     "submitAssignment": "/api/learner/assignments/:id/submit"
   },
   "enrollments": {

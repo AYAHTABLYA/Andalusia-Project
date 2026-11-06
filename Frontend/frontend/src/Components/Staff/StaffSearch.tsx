@@ -30,6 +30,16 @@ const KEYWORDS: Record<string, string> = {
   "/instructor/messages": "chat inbox students",
   "/instructor/earnings": "pay salary payments income",
   "/instructor/availability": "time slots free hours",
+  "/workspace": "home dashboard overview summary progress",
+  "/workspace/courses": "classes enrolled subjects my learning",
+  "/workspace/schedule": "calendar timetable sessions classes zoom",
+  "/workspace/assignments": "homework submit grades feedback due",
+  "/workspace/materials": "files slides documents links resources downloads",
+  "/workspace/messages": "chat inbox instructor teacher",
+  "/enrollments": "enrolled courses programs status",
+  "/applications": "apply requests applied status cancel",
+  "/payments": "pay fees invoices transactions billing due",
+  "/profile": "account settings password photo personal details",
 };
 
 const normalize = (value: string) => value.toLowerCase().trim();

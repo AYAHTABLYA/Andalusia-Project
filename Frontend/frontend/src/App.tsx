@@ -11,7 +11,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import CareerPathDetailContainer from "./Components/Academy/CareerPathDetail/CareerPathDetailContainer";
 import ProgramDetailContainer from "./Components/Academy/ProgramDetail/ProgramDetailContainer";
 import CourseDetailContainer from "./Components/Academy/CourseDetail/CourseDetailContainer";
-import PortalLayout from "./Components/Portal/PortalLayout";
+import StudentLayout from "./Components/Student/StudentLayout";
 import ProfileContainer from "./Components/Portal/Profile/ProfileContainer";
 import PaymentsContainer from "./Components/Portal/Payments/PaymentsContainer";
 import ApplicationsContainer from "./Components/Portal/Applications/ApplicationsContainer";
@@ -75,9 +75,9 @@ function App() {
             <Route path="/courses/:slug" element={<CourseDetailContainer />} />
           </Route>
 
-          {/* Learner workspace */}
+          {/* Student dashboard: same sidebar shell as the staff dashboards */}
           <Route element={<RequireRole allow={[ROLES.learner]} />}>
-            <Route element={<PortalLayout />}>
+            <Route element={<StudentLayout />}>
               <Route path="/profile" element={<ProfileContainer />} />
               <Route path="/payments" element={<PaymentsContainer />} />
               <Route path="/applications" element={<ApplicationsContainer />} />

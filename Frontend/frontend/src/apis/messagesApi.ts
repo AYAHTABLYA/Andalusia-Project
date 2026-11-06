@@ -24,3 +24,7 @@ export const getMessageThread = async (userId: number, signal?: AbortSignal) =>
 
 export const sendDirectMessage = async (recipientId: number, body: string) =>
   toMessage(await apiPost<ChatMessage>("/api/messages", { recipientId, body }));
+
+// Number of unread messages (drives the badge on the student sidebar).
+export const getUnreadMessageCount = async (signal?: AbortSignal) =>
+  (await apiGet<{ count: number }>("/api/messages/unread-count", undefined, signal)).count ?? 0;

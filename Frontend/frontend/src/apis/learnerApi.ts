@@ -1,5 +1,5 @@
 // Learner LMS: everything "My Workspace" shows comes from here (no sample data).
-//   GET  /api/learner/enrollments/{id}/materials | sessions | assignments | attendance | progress
+//   GET  /api/learner/enrollments/{id}/course | materials | sessions | assignments | attendance | progress
 //   POST /api/learner/assignments/{id}/submit
 // Paths live in urls.json. The mappers below accept camelCase or PascalCase and a few
 // common field names, so a small DTO rename on the API does not blank the screens.
@@ -149,6 +149,9 @@ function mapSession(
       : undefined) ??
     minutesBetween(date, startTime, endTime) ??
     60;
+  // The API sends one free-text field (roomDetails): a room name for on-site classes, a meeting URL for online ones.
+  const room = str(raw, "roomDetails", "location", "venue");
+  const roomIsLink = /^https?:\/\//i.test(room);
   return {
     id: str(raw, "id", "sessionId"),
     courseId: course.id,
@@ -159,8 +162,8 @@ function mapSession(
     students: num(raw, "studentsCount", "students", "enrolledCount") ?? null,
     start,
     durationMin,
-    zoomUrl: str(raw, "zoomUrl", "meetingUrl", "joinUrl", "onlineUrl") || null,
-    location: str(raw, "roomDetails", "location", "venue") || null,
+    zoomUrl: str(raw, "zoomUrl", "meetingUrl", "joinUrl", "onlineUrl") || (roomIsLink ? room : null),
+    location: roomIsLink ? null : room || null,
     attendance: toAttendanceStatus(pick(raw, "attendance", "attendanceStatus")),
   };
 }
@@ -239,10 +242,15 @@ function mapAssignment(raw: Raw, course: WorkspaceCourse): WorkspaceAssignment {
 function mapMaterial(raw: Raw, course: WorkspaceCourse): WorkspaceMaterial {
   const url =
     str(raw, "url", "fileUrl", "link", "downloadUrl", "contentUrl") || null;
-  const kind = (
-    str(raw, "type", "kind", "materialType", "contentType") ||
-    (url?.split(".").pop() ?? "file")
-  ).toLowerCase();
+  // API resource types are Slide | Document | Reference_Link; the screens use slides | doc/pdf/... | link.
+  const type = str(raw, "resourceType", "type", "kind", "materialType", "contentType").toLowerCase();
+  const ext = url?.split("?")[0].split(".").pop()?.toLowerCase() ?? "";
+  const fileExt = /^[a-z0-9]{2,5}$/.test(ext) ? ext : "";
+  const kind =
+    type === "slide" ? "slides"
+    : type === "reference_link" ? "link"
+    : type === "document" ? fileExt || "doc"
+    : type || fileExt || "file";
   return {
     id: str(raw, "id", "materialId"),
     courseId: course.id,
@@ -283,21 +291,27 @@ async function loadCourse(
   const get = (key: keyof typeof urls.learner) =>
     apiGet<unknown>(withId(urls.learner[key], id), undefined, signal);
 
-  const [progress, sessions, assignments, materials, attendance] =
+  const [progress, sessions, assignments, materials, attendance, courseInfo] =
     await Promise.allSettled([
       get("progress"),
       get("sessions"),
       get("assignments"),
       get("materials"),
       get("attendance"),
+      get("course"),
     ]);
 
   const progressBody = ok(progress);
+  // /course carries the batch and its instructors (the progress payload has neither).
+  const schedule = pick<Raw>(ok(courseInfo) as Raw, "schedule");
+  const instructorNames = (pick<Raw[]>(schedule, "instructors") ?? [])
+    .map((i) => str(i, "name"))
+    .filter(Boolean);
   const course: WorkspaceCourse = {
     id,
     title: (enrollment.courseTitle ?? enrollment.programTitle) as string,
-    group: str(progressBody as Raw, "batchCode", "group", "groupName"),
-    instructor: str(progressBody as Raw, "instructorName", "instructor"),
+    group: str(schedule, "batchCode") || str(progressBody as Raw, "batchCode", "group", "groupName"),
+    instructor: instructorNames.join(", ") || str(progressBody as Raw, "instructorName", "instructor"),
     progress: progressBody === undefined ? 0 : mapProgress(progressBody),
   };
 
@@ -314,6 +328,7 @@ async function loadCourse(
       ["assignments", assignments],
       ["materials", materials],
       ["attendance", attendance],
+      ["course", courseInfo],
     ] as const
   )
     .filter(([, r]) => r.status === "rejected")
