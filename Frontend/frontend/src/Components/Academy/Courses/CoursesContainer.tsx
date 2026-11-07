@@ -9,6 +9,7 @@ import useDebouncedValue from "../../../hooks/academyHooks/useDebouncedValue";
 function CoursesContainer() {
   const [category, setCategory] = useState("All");
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
 
   const debouncedSearch = useDebouncedValue(search);
@@ -16,6 +17,7 @@ function CoursesContainer() {
   const { data, loading, error, reload } = useCourses({
     search: debouncedSearch,
     category,
+    sort,
     page,
     pageSize: COURSES_PAGE_SIZE,
   });
@@ -36,6 +38,11 @@ function CoursesContainer() {
     setPage(1);
   }
 
+  function handleSort(value: string) {
+    setSort(value);
+    setPage(1);
+  }
+
   function handleCategory(value: string) {
     setCategory(value);
     setPage(1);
@@ -49,6 +56,7 @@ function CoursesContainer() {
       errorMessage={error?.message}
       search={search}
       category={category}
+      sort={sort}
       page={page}
       pageSize={COURSES_PAGE_SIZE}
       total={data?.count ?? 0}
@@ -56,6 +64,7 @@ function CoursesContainer() {
       onPageChange={setPage}
       onSearch={handleSearch}
       onCategory={handleCategory}
+      onSort={handleSort}
     />
   );
 }

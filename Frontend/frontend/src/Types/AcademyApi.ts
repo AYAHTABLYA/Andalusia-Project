@@ -60,7 +60,25 @@ type CareerPathDetailDto = {
   highlights: CareerPathHighlightDto[];
   guarantees: string[];
   programs: CareerPathProgramDto[];
+  recommendedSkills: string[];
+  relatedCourses: CareerPathCourseDto[];
   syllabusUrl: string;
+};
+
+/* ---------- Partners & popular categories (landing page) ---------- */
+type PartnerDto = {
+  partnerId: number;
+  name: string;
+  logoUrl: string;
+  type: "Accreditation" | "Success_Partner";
+};
+
+type PopularCategoryDto = {
+  categoryId: number;
+  name: string;
+  slug: string;
+  isTrending: boolean;
+  programsCount: number;
 };
 
 /* ---------- Programs ---------- */
@@ -260,6 +278,8 @@ export type {
   CareerPathCourseDto,
   CareerPathProgramDto,
   CareerPathDetailDto,
+  PartnerDto,
+  PopularCategoryDto,
   ProgramListItemDto,
   ProgramCategoryDto,
   ProgramStatsDto,

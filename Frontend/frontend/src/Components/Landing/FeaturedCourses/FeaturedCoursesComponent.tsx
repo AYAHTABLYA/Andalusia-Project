@@ -8,41 +8,45 @@ type Props = {
   loading: boolean;
   errorMessage?: string;
   onRetry: () => void;
+  // Optional copy/anchor overrides so the same section can also render "Coming Soon".
+  id?: string;
+  kicker?: string;
+  title?: string;
+  emptyText?: string;
 };
 
-function FeaturedCoursesComponent({ courses, loading, errorMessage, onRetry }: Props) {
+function FeaturedCoursesComponent({
+  courses,
+  loading,
+  errorMessage,
+  onRetry,
+  id = "featured-courses",
+  kicker = "Fall & Winter Cohorts",
+  title = "Featured Offline & Blended Programs",
+  emptyText = "New cohorts will be announced soon.",
+}: Props) {
   return (
-    <section className="featured-courses" data-purpose="course-offerings" id="featured-courses">
+    <section className="featured-courses" data-purpose="course-offerings" id={id}>
       <div className="section-wrap">
         <div className="featured-courses_head">
           <div>
             <div className="featured-courses_kicker">
               <span className="featured-courses_dot" />
-              <span className="eyebrow">Fall &amp; Winter Cohorts</span>
+              <span className="eyebrow">{kicker}</span>
             </div>
-            <h2 className="heading-serif featured-courses_title">
-              Featured Offline &amp; Blended Programs
-            </h2>
-          </div>
-          <div className="featured-courses_pills">
-            <button type="button" className="featured-courses_pill featured-courses_pill--active">
-              All Courses
-            </button>
-            <button type="button" className="featured-courses_pill">Offline Only (Alex)</button>
-            <button type="button" className="featured-courses_pill">Executive Diplomas</button>
-            <button type="button" className="featured-courses_pill">Cloud &amp; Security</button>
+            <h2 className="heading-serif featured-courses_title">{title}</h2>
           </div>
         </div>
 
         {loading ? (
-          <p className="featured-courses_state" aria-busy="true">Loading featured courses…</p>
+          <p className="featured-courses_state" aria-busy="true">Loading courses…</p>
         ) : errorMessage ? (
           <p className="featured-courses_state" role="alert">
-            Could not load featured courses. {errorMessage}{" "}
+            Could not load courses. {errorMessage}{" "}
             <button type="button" className="featured-courses_retry" onClick={onRetry}>Retry</button>
           </p>
         ) : courses.length === 0 ? (
-          <p className="featured-courses_state">New cohorts will be announced soon.</p>
+          <p className="featured-courses_state">{emptyText}</p>
         ) : (
         <div className="featured-courses_grid">
           {courses.map((course) => (

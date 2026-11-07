@@ -14,10 +14,11 @@ type CourseFilters = {
   category: string;
   page: number;
   pageSize: number;
+  sort?: string;
 };
 
-// GET /api/courses?search=&category=&page=&pageSize=
-function useCourses({ search, category, page, pageSize }: CourseFilters) {
+// GET /api/courses?search=&category=&sort=&page=&pageSize=
+function useCourses({ search, category, page, pageSize, sort }: CourseFilters) {
   return useApi<Paginated<CourseListItemDto>>(
     (signal) =>
       apiGet(
@@ -25,12 +26,13 @@ function useCourses({ search, category, page, pageSize }: CourseFilters) {
         {
           search: search.trim(),
           category: category === "All" ? undefined : category,
+          sort: sort || undefined,
           page,
           pageSize,
         },
         signal,
       ),
-    [search, category, page, pageSize],
+    [search, category, page, pageSize, sort],
   );
 }
 
@@ -43,6 +45,14 @@ function useCourseCategories() {
 function useFeaturedCourses(take = 3) {
   return useApi<FeaturedCourseDto[]>(
     (signal) => apiGet("/api/courses/featured", { take }, signal),
+    [take],
+  );
+}
+
+// GET /api/courses/coming-soon?take=3
+function useComingSoonCourses(take = 3) {
+  return useApi<FeaturedCourseDto[]>(
+    (signal) => apiGet("/api/courses/coming-soon", { take }, signal),
     [take],
   );
 }
@@ -63,4 +73,11 @@ function applyToCourse(slug: string, body: CreateCourseApplicationBody) {
   );
 }
 
-export { useCourses, useCourseCategories, useFeaturedCourses, useCourse, applyToCourse };
+export {
+  useCourses,
+  useCourseCategories,
+  useFeaturedCourses,
+  useComingSoonCourses,
+  useCourse,
+  applyToCourse,
+};

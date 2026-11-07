@@ -16,6 +16,7 @@ type Props = {
   errorMessage?: string;
   search: string;
   category: string;
+  sort: string;
   page: number;
   pageSize: number;
   total: number;
@@ -23,11 +24,12 @@ type Props = {
   onPageChange: (page: number) => void;
   onSearch: (v: string) => void;
   onCategory: (v: string) => void;
+  onSort: (v: string) => void;
 };
 
 function CoursesComponent({
-  courses, categories, loading, errorMessage, search, category,
-  page, pageSize, total, onRetry, onPageChange, onSearch, onCategory,
+  courses, categories, loading, errorMessage, search, category, sort,
+  page, pageSize, total, onRetry, onPageChange, onSearch, onCategory, onSort,
 }: Props) {
   return (
     <div className="courses_box-1">
@@ -44,6 +46,8 @@ function CoursesComponent({
         categories={categories}
         active={category}
         onCategory={onCategory}
+        sort={sort}
+        onSort={onSort}
       />
 
       {loading ? (

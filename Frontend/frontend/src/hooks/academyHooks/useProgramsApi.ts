@@ -5,6 +5,7 @@ import type {
   ProgramCategoryDto,
   ProgramDetailDto,
   ProgramListItemDto,
+  PopularCategoryDto,
 } from "../../Types/AcademyApi";
 import useApi from "./useApi";
 
@@ -13,10 +14,11 @@ type ProgramFilters = {
   category: string;
   page: number;
   pageSize: number;
+  sort?: string;
 };
 
-// GET /api/programs?search=&category=&page=&pageSize=
-function usePrograms({ search, category, page, pageSize }: ProgramFilters) {
+// GET /api/programs?search=&category=&sort=&page=&pageSize=
+function usePrograms({ search, category, page, pageSize, sort }: ProgramFilters) {
   return useApi<Paginated<ProgramListItemDto>>(
     (signal) =>
       apiGet(
@@ -24,12 +26,13 @@ function usePrograms({ search, category, page, pageSize }: ProgramFilters) {
         {
           search: search.trim(),
           category: category === "All" ? undefined : category,
+          sort: sort || undefined,
           page,
           pageSize,
         },
         signal,
       ),
-    [search, category, page, pageSize],
+    [search, category, page, pageSize, sort],
   );
 }
 
@@ -38,6 +41,14 @@ function useProgramCategories() {
   return useApi<ProgramCategoryDto[]>(
     (signal) => apiGet("/api/programs/categories", undefined, signal),
     [],
+  );
+}
+
+// GET /api/programs/categories/popular?take=6
+function usePopularCategories(take = 6) {
+  return useApi<PopularCategoryDto[]>(
+    (signal) => apiGet("/api/programs/categories/popular", { take }, signal),
+    [take],
   );
 }
 
@@ -57,4 +68,4 @@ function applyToProgram(slug: string, scheduleId?: number) {
   );
 }
 
-export { usePrograms, useProgramCategories, useProgram, applyToProgram };
+export { usePrograms, useProgramCategories, usePopularCategories, useProgram, applyToProgram };

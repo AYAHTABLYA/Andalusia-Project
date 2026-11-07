@@ -15,6 +15,7 @@ type Props = {
   errorMessage?: string;
   search: string;
   category: string;
+  sort: string;
   page: number;
   pageSize: number;
   total: number;
@@ -22,6 +23,7 @@ type Props = {
   onPageChange: (page: number) => void;
   onSearch: (v: string) => void;
   onCategory: (v: string) => void;
+  onSort: (v: string) => void;
 };
 
 function ProgramsComponent({
@@ -31,6 +33,7 @@ function ProgramsComponent({
   errorMessage,
   search,
   category,
+  sort,
   page,
   pageSize,
   total,
@@ -38,6 +41,7 @@ function ProgramsComponent({
   onPageChange,
   onSearch,
   onCategory,
+  onSort,
 }: Props) {
   return (
     <div className="programs_box-1">
@@ -59,6 +63,8 @@ function ProgramsComponent({
         categories={categories}
         active={category}
         onCategory={onCategory}
+        sort={sort}
+        onSort={onSort}
       />
 
       {loading ? (

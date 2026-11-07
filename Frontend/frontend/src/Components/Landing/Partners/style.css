@@ -1,0 +1,54 @@
+.partners {
+  padding: 64px 0;
+  background-color: var(--color-warm-canvas);
+  border-bottom: 1px solid var(--color-warm-border);
+}
+
+.partners_head {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.landing-page .partners_title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.landing-page .partners_head p {
+  max-width: 560px;
+  font-size: 13px;
+  color: #6c7b7f;
+  margin: 8px auto 0;
+}
+
+.partners_grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.partners_item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 200px;
+  padding: 16px 24px;
+}
+
+.partners_logo {
+  height: 32px;
+  width: auto;
+  max-width: 96px;
+  object-fit: contain;
+}
+
+.partners_name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-slate-900);
+}

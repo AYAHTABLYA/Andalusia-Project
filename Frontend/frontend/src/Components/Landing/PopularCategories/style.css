@@ -1,0 +1,96 @@
+.popular-categories {
+  padding: 64px 0;
+  background-color: var(--surface-white, #fff);
+  border-bottom: 1px solid var(--color-warm-border);
+}
+
+.popular-categories_head {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.landing-page .popular-categories_title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.popular-categories_grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .popular-categories_grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .popular-categories_grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.popular-categories_card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  padding: 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popular-categories_card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -14px rgba(0, 0, 0, 0.3);
+}
+
+.popular-categories_badge {
+  align-self: flex-start;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-primary-dark);
+  background-color: var(--color-primary-light);
+}
+
+.popular-categories_name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-slate-900);
+}
+
+.popular-categories_count {
+  font-size: 13px;
+  color: #6c7b7f;
+}
+
+.popular-categories_arrow {
+  margin-top: 8px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.popular-categories_state {
+  text-align: center;
+  font-size: 14px;
+  color: #6c7b7f;
+}
+
+.popular-categories_retry {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  color: var(--color-primary);
+}

@@ -23,6 +23,8 @@ function CareerPathDetailComponent({ path, onApply, onDownloadSyllabus, syllabus
   const programs = [...path.programs].sort((a, b) => a.orderIndex - b.orderIndex);
   // The API omits highlight values that are null, so only show the ones that have data.
   const highlights = path.highlights.filter((h) => h.value);
+  const skills = path.recommendedSkills ?? [];
+  const relatedCourses = path.relatedCourses ?? [];
 
   return (
     <div className="career-path-detail_box-1">
@@ -44,10 +46,15 @@ function CareerPathDetailComponent({ path, onApply, onDownloadSyllabus, syllabus
             <div>
               <h1 className="career-path-detail_title-1">{path.title}</h1>
               <p className="career-path-detail_text-6">{path.summary}</p>
-              {path.roles && (
-                <p className="career-path-detail_roles">
-                  <strong>Target Roles:</strong> {path.roles}
-                </p>
+              {skills.length > 0 && (
+                <div className="career-path-detail_skills">
+                  <strong className="career-path-detail_skills-label">Recommended Skills:</strong>
+                  <ul className="career-path-detail_skills-list">
+                    {skills.map((skill) => (
+                      <li key={skill} className="career-path-detail_skill-chip">{skill}</li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </div>
 
@@ -196,6 +203,31 @@ function CareerPathDetailComponent({ path, onApply, onDownloadSyllabus, syllabus
                     </Link>
                   </div>
                 </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {relatedCourses.length > 0 && (
+          <section className="career-path-detail_section-2" id="related-courses">
+            <div>
+              <span className="career-path-detail_text-18">Keep Learning</span>
+              <h2 className="career-path-detail_title-3">Related Courses</h2>
+            </div>
+            <div className="career-path-detail_related-grid">
+              {relatedCourses.map((c) => (
+                <Link
+                  key={c.id}
+                  to={c.link ?? `/courses/${c.slug}`}
+                  className="career-path-detail_related-card"
+                >
+                  <h3 className="career-path-detail_related-title">{c.title}</h3>
+                  <p className="career-path-detail_related-text">{c.description}</p>
+                  <span className="career-path-detail_related-meta">
+                    {c.duration}
+                    <span aria-hidden="true"> ➔</span>
+                  </span>
+                </Link>
               ))}
             </div>
           </section>

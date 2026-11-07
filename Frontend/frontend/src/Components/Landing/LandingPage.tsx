@@ -4,7 +4,14 @@ import TopBarComponent from "./TopBar/Topbarcomponent";
 import NavbarContainer from "./Navbar/NavbarContainer";
 import HeroContainer from "./Hero/HeroContainer";
 import ValuePillarsContainer from "./ValuePillars/ValuePillarsContainer";
+import PopularCategoriesContainer from "./PopularCategories/PopularCategoriesContainer";
+import FeaturedCoursesContainer from "./FeaturedCourses/FeaturedCoursesContainer";
+import ComingSoonContainer from "./ComingSoon/ComingSoonContainer";
+import CareerPathContainer from "./CareerPath/CareerPathContainer";
+import PortalPreviewContainer from "./PortalPreview/PortalPreviewContainer";
 import AccreditationsContainer from "./Accreditations/AccreditationsContainer";
+import PartnersContainer from "./Partners/PartnersContainer";
+import EnterpriseComponent from "./Enterprise/EnterpriseComponent";
 import TestimonialsContainer from "./Testimonials/TestimonialsContainer";
 import FaqContainer from "./Faq/FaqContainer";
 import ContactCampusContainer from "./ContactCampus/ContactCampusContainer";
@@ -26,7 +33,14 @@ function LandingPage() {
       <main>
         <HeroContainer />
         <ValuePillarsContainer />
+        <PopularCategoriesContainer />
+        <FeaturedCoursesContainer />
+        <ComingSoonContainer />
+        <CareerPathContainer />
+        <PortalPreviewContainer />
         <AccreditationsContainer />
+        <PartnersContainer />
+        <EnterpriseComponent />
         <TestimonialsContainer />
         <FaqContainer />
         <ContactCampusContainer />

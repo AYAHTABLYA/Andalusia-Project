@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import ProgramsComponent from "./ProgramsComponent";
 import { PROGRAMS_PAGE_SIZE, PROGRAM_IMAGES } from "./constants";
 import { toProgram } from "../../../apis/mappers";
@@ -7,8 +8,11 @@ import { getCatalogImage } from "../../../utils/catalogImage";
 import useDebouncedValue from "../../../hooks/academyHooks/useDebouncedValue";
 
 function ProgramsContainer() {
-  const [category, setCategory] = useState("All");
+  // The landing page links here with ?category=<name> (Popular Categories).
+  const [searchParams] = useSearchParams();
+  const [category, setCategory] = useState(() => searchParams.get("category") || "All");
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
 
   const debouncedSearch = useDebouncedValue(search);
@@ -16,6 +20,7 @@ function ProgramsContainer() {
   const { data, loading, error, reload } = usePrograms({
     search: debouncedSearch,
     category,
+    sort,
     page,
     pageSize: PROGRAMS_PAGE_SIZE,
   });
@@ -39,6 +44,11 @@ function ProgramsContainer() {
     setPage(1);
   }
 
+  function handleSort(value: string) {
+    setSort(value);
+    setPage(1);
+  }
+
   function handleCategory(value: string) {
     setCategory(value);
     setPage(1);
@@ -52,6 +62,7 @@ function ProgramsContainer() {
       errorMessage={error?.message}
       search={search}
       category={category}
+      sort={sort}
       page={page}
       pageSize={PROGRAMS_PAGE_SIZE}
       total={data?.count ?? 0}
@@ -59,6 +70,7 @@ function ProgramsContainer() {
       onPageChange={setPage}
       onSearch={handleSearch}
       onCategory={handleCategory}
+      onSort={handleSort}
     />
   );
 }
