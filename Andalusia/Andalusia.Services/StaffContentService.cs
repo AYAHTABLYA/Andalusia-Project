@@ -260,6 +260,9 @@ public sealed class StaffContentService(IUnitOfWork uow, INotificationService no
         repo.Update(submission);
         await uow.SaveChangesAsync();
 
+        await notifications.NotifyAsync(submission.LearnerId, "Assignment graded",
+            $"\"{assignment.Title}\" was graded: {submission.Score}/{assignment.MaxScore}.", "Success", ct);
+
         var learner = await uow.GetRepository<User>().GetByIdAsync(submission.LearnerId);
         return Result<StaffSubmissionDto>.Ok(new StaffSubmissionDto(
             submission.SubmissionId, submission.LearnerId,

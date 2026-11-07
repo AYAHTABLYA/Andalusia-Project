@@ -9,7 +9,7 @@ using AndalusiaApp.Models;
 
 namespace Andalusia.Services;
 
-public sealed class ScheduleAdminService(IUnitOfWork uow) : IScheduleAdminService
+public sealed class ScheduleAdminService(IUnitOfWork uow, INotificationService notifications) : IScheduleAdminService
 {
     public async Task<PaginatedResult<AdminScheduleDto>> GetSchedulesAsync(
         string? search, long? courseId, long? programId, string? status, int page, int pageSize, CancellationToken ct = default)
@@ -81,6 +81,7 @@ public sealed class ScheduleAdminService(IUnitOfWork uow) : IScheduleAdminServic
 
         await uow.GetRepository<Schedule>().AddAsync(schedule);
         await uow.SaveChangesAsync();
+        await NotifyInstructorsAsync(schedule, (dto.InstructorIds ?? []).Distinct().ToList(), ct);
         return Result<AdminScheduleDto>.Ok((await ToDtosAsync([schedule]))[0]);
     }
 
@@ -114,9 +115,11 @@ public sealed class ScheduleAdminService(IUnitOfWork uow) : IScheduleAdminServic
         if (!string.IsNullOrWhiteSpace(dto.Status)) schedule.Status = status;
 
         repo.Update(schedule);
-        if (dto.InstructorIds is not null) await ReplaceInstructorsAsync(id, dto.InstructorIds);
+        IReadOnlyList<long> added = [];
+        if (dto.InstructorIds is not null) added = await ReplaceInstructorsAsync(id, dto.InstructorIds);
 
         await uow.SaveChangesAsync();
+        await NotifyInstructorsAsync(schedule, added, ct);
         return Result<AdminScheduleDto>.Ok((await ToDtosAsync([schedule]))[0]);
     }
 
@@ -151,8 +154,9 @@ public sealed class ScheduleAdminService(IUnitOfWork uow) : IScheduleAdminServic
         var error = await ValidateInstructorsAsync(dto.InstructorIds);
         if (error is not null) return Result<AdminScheduleDto>.Fail(error);
 
-        await ReplaceInstructorsAsync(scheduleId, dto.InstructorIds);
+        var added = await ReplaceInstructorsAsync(scheduleId, dto.InstructorIds);
         await uow.SaveChangesAsync();
+        await NotifyInstructorsAsync(schedule, added, ct);
         return Result<AdminScheduleDto>.Ok((await ToDtosAsync([schedule]))[0]);
     }
 
@@ -176,7 +180,16 @@ public sealed class ScheduleAdminService(IUnitOfWork uow) : IScheduleAdminServic
     // ------------------------------------------------------------------ helpers
 
     /// <summary>Makes the schedule's instructor set exactly equal to <paramref name="instructorIds"/> (caller saves).</summary>
-    private async Task ReplaceInstructorsAsync(long scheduleId, IReadOnlyList<long> instructorIds)
+    /// <summary>Tells the newly assigned instructors (a failure here never breaks the schedule change).</summary>
+    private async Task NotifyInstructorsAsync(Schedule schedule, IReadOnlyList<long> instructorIds, CancellationToken ct)
+    {
+        if (instructorIds.Count == 0) return;
+        await notifications.NotifyManyAsync(instructorIds, "New batch assigned",
+            $"You were assigned to batch {schedule.BatchCode}.", "Info", ct);
+    }
+
+    /// <returns>The ids of the instructors that were newly added (not there before).</returns>
+    private async Task<IReadOnlyList<long>> ReplaceInstructorsAsync(long scheduleId, IReadOnlyList<long> instructorIds)
     {
         var wanted = instructorIds.Distinct().ToHashSet();
         var repo = uow.GetRepository<ScheduleInstructor>();
@@ -187,8 +200,10 @@ public sealed class ScheduleAdminService(IUnitOfWork uow) : IScheduleAdminServic
             repo.Remove(link);
 
         var have = existing.Select(l => l.InstructorId).ToHashSet();
-        foreach (var id in wanted.Where(id => !have.Contains(id)))
+        var added = wanted.Where(id => !have.Contains(id)).ToList();
+        foreach (var id in added)
             await repo.AddAsync(new ScheduleInstructor { ScheduleId = scheduleId, InstructorId = id });
+        return added;
     }
 
     /// <summary>Every id must be an existing, active instructor.</summary>

@@ -10,7 +10,7 @@ using AndalusiaApp.Models;
 
 namespace Andalusia.Services;
 
-public sealed class LearnerCourseService(IUnitOfWork uow) : ILearnerCourseService
+public sealed class LearnerCourseService(IUnitOfWork uow, INotificationService notifications) : ILearnerCourseService
 {
     // ================================================================== GET enrollments/{id}/course
 
@@ -179,6 +179,26 @@ public sealed class LearnerCourseService(IUnitOfWork uow) : ILearnerCourseServic
 
         await uow.GetRepository<AssignmentSubmission>().AddAsync(submission);
         await uow.SaveChangesAsync();
+
+        // Bell notification for the instructors teaching this schedule (never breaks the submission).
+        try
+        {
+            var instructorIds = (await uow.GetRepository<ScheduleInstructor>().GetAllAsync(
+                    new QuerySpecification<ScheduleInstructor>(si => si.ScheduleId == assignment.ScheduleId)))
+                .Select(si => si.InstructorId)
+                .ToList();
+            if (instructorIds.Count > 0)
+            {
+                var learner = await uow.GetRepository<User>().GetByIdAsync(userId);
+                var name = learner is null ? "A learner" : StaffScope.FullName(learner);
+                await notifications.NotifyManyAsync(instructorIds, "New submission",
+                    $"{name} submitted \"{assignment.Title}\".", "Info", ct);
+            }
+        }
+        catch
+        {
+            // ignored on purpose
+        }
 
         return Result<LearnerSubmissionDto>.Ok(ToSubmissionDto(submission));
     }

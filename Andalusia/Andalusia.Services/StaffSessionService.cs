@@ -9,7 +9,7 @@ using AndalusiaApp.Models;
 
 namespace Andalusia.Services;
 
-public sealed class StaffSessionService(IUnitOfWork uow) : IStaffSessionService
+public sealed class StaffSessionService(IUnitOfWork uow, INotificationService notifications) : IStaffSessionService
 {
     // ------------------------------------------------------------------ sessions
 
@@ -48,6 +48,8 @@ public sealed class StaffSessionService(IUnitOfWork uow) : IStaffSessionService
 
         await uow.GetRepository<Session>().AddAsync(session);
         await uow.SaveChangesAsync();
+        await NotifyLearnersAsync(session.ScheduleId, "New session",
+            $"\"{session.Title}\" was scheduled on {session.SessionDate:yyyy-MM-dd}.", "Info", ct);
         return Result<StaffSessionDto>.Ok(await ToDtoAsync(session));
     }
 
@@ -77,6 +79,8 @@ public sealed class StaffSessionService(IUnitOfWork uow) : IStaffSessionService
 
         repo.Update(session);
         await uow.SaveChangesAsync();
+        await NotifyLearnersAsync(session.ScheduleId, "Session updated",
+            $"\"{session.Title}\" is now on {session.SessionDate:yyyy-MM-dd}.", "Warning", ct);
         return Result<StaffSessionDto>.Ok(await ToDtoAsync(session));
     }
 
@@ -96,7 +100,26 @@ public sealed class StaffSessionService(IUnitOfWork uow) : IStaffSessionService
 
         repo.Remove(session);
         await uow.SaveChangesAsync();
+        await NotifyLearnersAsync(session.ScheduleId, "Session cancelled",
+            $"\"{session.Title}\" on {session.SessionDate:yyyy-MM-dd} was cancelled.", "Warning", ct);
         return Result.Ok();
+    }
+
+    /// <summary>Bell notification for every learner currently enrolled in the schedule.</summary>
+    private async Task NotifyLearnersAsync(long scheduleId, string title, string message, string type, CancellationToken ct)
+    {
+        try
+        {
+            var learnerIds = (await uow.GetRepository<Enrollment>().GetAllAsync(new QuerySpecification<Enrollment>(
+                    e => e.ScheduleId == scheduleId && e.Status != EnrollmentStatus.Cancelled)))
+                .Select(e => e.UserId)
+                .ToList();
+            await notifications.NotifyManyAsync(learnerIds, title, message, type, ct);
+        }
+        catch
+        {
+            // a notification must never break the session change
+        }
     }
 
     // ------------------------------------------------------------------ attendance
