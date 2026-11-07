@@ -22,6 +22,13 @@ public class ProgramsController(IProgramService svc) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<CategoryDto>>> Categories(CancellationToken ct)
         => Ok(await svc.GetCategoriesAsync(ct));
 
+    // GET /api/programs/categories/popular?take=6
+    [HttpGet("categories/popular")]
+    public async Task<ActionResult<IReadOnlyList<PopularCategoryDto>>> PopularCategories(
+        [FromQuery] int take = 6,
+        CancellationToken ct = default)
+        => Ok(await svc.GetPopularCategoriesAsync(take, ct));
+
     // GET /api/programs/{slug}
     [HttpGet("{slug}")]
     public async Task<ActionResult<ProgramDetailDto>> Get(

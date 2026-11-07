@@ -20,10 +20,22 @@ namespace Andalusia.Persistance.Repositories
             query = specification.IncludeExpressions
                 .Aggregate(query, (current, include) => current.Include(include));
 
+            // Without this, AddInclude("Programs.Category") on a specification was silently ignored.
+            query = specification.IncludeStrings
+                .Aggregate(query, (current, path) => current.Include(path));
+
+            IOrderedQueryable<TEntity>? ordered = null;
             if (specification.OrderBy is not null)
-                query = query.OrderBy(specification.OrderBy);
+                ordered = query.OrderBy(specification.OrderBy);
             else if (specification.OrderByDescending is not null)
-                query = query.OrderByDescending(specification.OrderByDescending);
+                ordered = query.OrderByDescending(specification.OrderByDescending);
+
+            if (ordered is not null)
+            {
+                if (specification.ThenBy is not null)
+                    ordered = ordered.ThenBy(specification.ThenBy);
+                query = ordered;
+            }
 
             if (specification.IsPaginated)
                 query = query.Skip(specification.Skip).Take(specification.Take);

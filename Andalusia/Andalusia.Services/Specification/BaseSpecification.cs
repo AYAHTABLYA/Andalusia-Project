@@ -18,6 +18,7 @@ namespace Andalusia.Services.Specification
         public List<string> IncludeStrings { get; } = [];
         public Expression<Func<TEntity, object>>? OrderBy { get; private set; }
         public Expression<Func<TEntity, object>>? OrderByDescending { get; private set; }
+        public Expression<Func<TEntity, object>>? ThenBy { get; private set; }
         public int Skip { get; private set; }
         public int Take { get; private set; }
         public bool IsPaginated { get; private set; }
@@ -34,6 +35,9 @@ namespace Andalusia.Services.Specification
 
         protected void AddOrderByDescending(Expression<Func<TEntity, object>> orderByDescExpression)
             => OrderByDescending = orderByDescExpression;
+
+        protected void AddThenBy(Expression<Func<TEntity, object>> thenByExpression)
+            => ThenBy = thenByExpression;
 
         protected void ApplyPaging(int skip, int take)
         {

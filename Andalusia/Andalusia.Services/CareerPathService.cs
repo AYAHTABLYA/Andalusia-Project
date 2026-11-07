@@ -149,6 +149,9 @@ public class CareerPathService(IUnitOfWork uow) : ICareerPathService
         var duration = BuildCareerDuration(orderedPrograms.Select(p => p.Duration));
         var courseCount = programCourseRows.Select(pc => pc.CourseId).Distinct().Count();
 
+        var pathCourseIds = programCourseRows.Select(pc => pc.CourseId).ToHashSet();
+        var relatedCourses = await GetRelatedCoursesAsync(careerPath.CareerPathId, pathCourseIds);
+
         // The current schema has RecommendedSkills rather than a dedicated Roles field.
         // Keep the API contract aligned with the UI while using the existing stored text.
         var roles = careerPath.RecommendedSkills;
@@ -176,8 +179,50 @@ public class CareerPathService(IUnitOfWork uow) : ICareerPathService
             highlights,
             ToLines(careerPath.LearningJourney).ToList(),
             programs,
+            ToSkills(careerPath.RecommendedSkills).ToList(),
+            relatedCourses,
             $"/api/career-paths/{careerPath.Slug}/syllabus"
         );
+    }
+
+    // Courses related (RELATED_COURSES) to any course in the path, plus courses linked directly to the
+    // path, minus the ones the path's programs already include.
+    private async Task<IReadOnlyList<CareerPathCourseDto>> GetRelatedCoursesAsync(
+        long careerPathId,
+        HashSet<long> pathCourseIds)
+    {
+        var candidates = new Dictionary<long, Course>();
+
+        if (pathCourseIds.Count > 0)
+        {
+            var rows = await uow.GetRepository<RelatedCourse>().GetAllAsync(
+                new RelatedCoursesByCourseIdsSpecification(pathCourseIds.ToArray()),
+                trackChanges: false);
+
+            foreach (var row in rows)
+                candidates.TryAdd(row.RelatedCourseId, row.Related);
+        }
+
+        var linked = await uow.GetRepository<Course>().GetAllAsync(
+            new CoursesByCareerPathSpecification(careerPathId),
+            trackChanges: false);
+
+        foreach (var course in linked)
+            candidates.TryAdd(course.CourseId, course);
+
+        return candidates.Values
+            .Where(c => !pathCourseIds.Contains(c.CourseId))
+            .OrderBy(c => c.Title)
+            .Take(6)
+            .Select((c, index) => new CareerPathCourseDto(
+                c.CourseId,
+                c.Slug,
+                c.Title,
+                c.Description,
+                c.DurationLabel,
+                index + 1,
+                string.IsNullOrWhiteSpace(c.Slug) ? null : $"/courses/{c.Slug}"))
+            .ToList();
     }
 
     private static CareerPathListItemDto ToListItem(
@@ -238,6 +283,18 @@ public class CareerPathService(IUnitOfWork uow) : ICareerPathService
             1 => values[0],
             _ => string.Join(" + ", values)
         };
+    }
+
+    // RecommendedSkills is stored as free text: comma / semicolon / bullet / newline separated.
+    private static IEnumerable<string> ToSkills(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return [];
+
+        return value
+            .Split([',', ';', '\r', '\n', '•'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct(StringComparer.OrdinalIgnoreCase);
     }
 
     private static IEnumerable<string> ToLines(string? value)

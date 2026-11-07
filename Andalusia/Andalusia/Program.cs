@@ -81,6 +81,7 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddScoped<IProgramService, ProgramService>();
 builder.Services.AddScoped<ICareerPathService, CareerPathService>();
 builder.Services.AddScoped<ITestimonialService, TestimonialService>();
+builder.Services.AddScoped<IPartnerService, PartnerService>();
 builder.Services.AddScoped<IFaqService, FaqService>();
 builder.Services.AddScoped<IContactEnquiryService, ContactEnquiryService>();
 builder.Services.AddScoped<

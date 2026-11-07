@@ -15,5 +15,9 @@ public record CareerPathDetailDto(
     IReadOnlyList<CareerPathHighlightDto> Highlights,
     IReadOnlyList<string> Guarantees,
     IReadOnlyList<CareerPathProgramDto> Programs,
+    // CareerPath.RecommendedSkills split into individual items.
+    IReadOnlyList<string> RecommendedSkills,
+    // Courses related to this path that are not already part of one of its programs.
+    IReadOnlyList<CareerPathCourseDto> RelatedCourses,
     string SyllabusUrl
 );

@@ -58,6 +58,24 @@ public class ProgramService(IUnitOfWork uow) : IProgramService
         return new PaginatedResult<ProgramListItemDto>(page, pageSize, totalCount, items);
     }
 
+    // Trending categories first, then by number of programs; empty categories are skipped.
+    public async Task<IReadOnlyList<PopularCategoryDto>> GetPopularCategoriesAsync(
+        int take = 6,
+        CancellationToken ct = default)
+    {
+        var repo = uow.GetRepository<Category>();
+        var categories = await repo.GetAllAsync(new PopularCategoriesSpecification(), trackChanges: false);
+
+        return categories
+            .Where(c => c.Programs.Count > 0)
+            .OrderByDescending(c => c.IsTrending)
+            .ThenByDescending(c => c.Programs.Count)
+            .ThenBy(c => c.Name)
+            .Take(Math.Clamp(take, 1, 12))
+            .Select(c => new PopularCategoryDto(c.CategoryId, c.Name, c.Slug, c.IsTrending, c.Programs.Count))
+            .ToList();
+    }
+
     public async Task<IReadOnlyList<CategoryDto>> GetCategoriesAsync(CancellationToken ct = default)
     {
         var repo = uow.GetRepository<Program>();

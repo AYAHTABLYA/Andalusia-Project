@@ -1,3 +1,4 @@
+using System.Globalization;
 using Andalusia.Domain.Contracts;
 using Andalusia.Domain.Enums;
 using Andalusia.Domain.Models;
@@ -32,11 +33,8 @@ public class DataInitializer : IDataInitializer
         {
             await SeedDemoUsersAsync();
             await SeedDemoPortalRecordsAsync();
-<<<<<<< HEAD
-            await SeedDemoLearnerWorkspaceAsync();
-=======
-            await SeedDemoTeachingAsync();
->>>>>>> 1be4a8f0a5946ba80e8e65c8023132943f80560f
+            await SeedDemoTeachingAsync();          // the demo instructor teaches the learner's program batch
+            await SeedDemoLearnerWorkspaceAsync();  // sessions, assignments, materials, messages for the student dashboard
             await SeedLandingContentAsync();
         }
     }
@@ -547,15 +545,15 @@ public class DataInitializer : IDataInitializer
             (string Name, string Role, string Quote, int Rating, string Course) x,
             bool featured,
             Func<string, long?> courseIdOf) => new()
-        {
-            ClientName = x.Name,
-            TitleOrRole = x.Role,
-            QuoteText = x.Quote,
-            AvatarUrl = "",
-            Rating = x.Rating,
-            IsFeatured = featured,
-            CourseId = courseIdOf(x.Course)
-        };
+            {
+                ClientName = x.Name,
+                TitleOrRole = x.Role,
+                QuoteText = x.Quote,
+                AvatarUrl = "",
+                Rating = x.Rating,
+                IsFeatured = featured,
+                CourseId = courseIdOf(x.Course)
+            };
     }
 
     private async Task SeedLandingFaqsAsync()
@@ -759,29 +757,373 @@ public class DataInitializer : IDataInitializer
     }
 
     // =====================================================================
-<
-public async Task InitializeAsync()
-{
-    await SeedPermissionsAsync();
-    await SeedCatalogAsync();
+    // 3c) Demo teaching: the demo instructor teaches the program batch the demo learner is enrolled in (Development only)
+    // =====================================================================
+    private const string DemoLearnerEmail = "learner@andalusia.local";
+    private const string DemoInstructorEmail = "instructor@andalusia.local";
+    private const string DemoMeetingLink = "https://meet.google.com/andalusia-demo-class";
 
-    // Demo accounts only in Development
-    var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
-    if (string.Equals(env, "Development", StringComparison.OrdinalIgnoreCase))
+    private async Task SeedDemoTeachingAsync()
     {
-        await SeedDemoUsersAsync();
-        await SeedDemoPortalRecordsAsync();
+        var instructor = await _db.Instructors.FirstOrDefaultAsync(i => i.User.Email == DemoInstructorEmail);
+        if (instructor is null) return;
 
-        await SeedDemoLearnerWorkspaceAsync();
-        await SeedDemoTeachingAsync();
+        // Idempotent: nothing to do once the instructor teaches any batch (also keeps manual assignments untouched).
+        if (await _db.ScheduleInstructors.AnyAsync(l => l.InstructorId == instructor.InstructorId)) return;
 
-        await SeedLandingContentAsync();
+        var learner = await _db.Users.FirstOrDefaultAsync(u => u.Email == DemoLearnerEmail);
+        var schedule = (learner is null ? null : await FindLearnerProgramBatchAsync(learner.UserId))
+                       ?? await _db.Schedules.OrderBy(s => s.StartDate).FirstOrDefaultAsync();
+        if (schedule is null) return;
+
+        _db.ScheduleInstructors.Add(new ScheduleInstructor { ScheduleId = schedule.ScheduleId, InstructorId = instructor.InstructorId });
+        await _db.SaveChangesAsync();
     }
-}
+
+    // =====================================================================
+    // 3d) Demo learner workspace (Development only). Everything the student dashboard shows comes from here:
+    //     batches + active enrollments, sessions, attendance, assignments (pending / submitted / graded),
+    //     materials, instructor messages and notifications. Every step is idempotent (keyed by batch code / title),
+    //     so it is safe on a fresh database and on one that was seeded by an earlier version.
+    // =====================================================================
+    private async Task SeedDemoLearnerWorkspaceAsync()
+    {
+        var learner = await _db.Users.FirstOrDefaultAsync(u => u.Email == DemoLearnerEmail);
+        if (learner is null) return;
+
+        var instructor = await _db.Instructors
+            .Include(i => i.User)
+            .FirstOrDefaultAsync(i => i.User.Email == DemoInstructorEmail);
+        var instructorUser = instructor?.User;
+
+        // 1) The program batch the learner already belongs to (created by SeedDemoPortalRecordsAsync).
+        var programBatch = await FindLearnerProgramBatchAsync(learner.UserId);
+        if (programBatch is not null)
+            await SeedBatchContentAsync(programBatch, learner, instructorUser, null, ProgramBatchContent);
+
+        // 2) Course batches: a course enrollment is what gives the learner course materials, a mentor and a course page.
+        foreach (var plan in CourseBatchPlans)
+        {
+            var course = await _db.Courses.FirstOrDefaultAsync(c => c.Slug == plan.CourseSlug);
+            if (course is null) continue;
+
+            var batch = await EnsureCourseBatchAsync(course, plan);
+            await EnsureEnrollmentAsync(learner, course, batch, plan.EnrolledDaysAgo);
+            if (instructor is not null) await EnsureInstructorAsync(batch, instructor);
+            await SeedBatchContentAsync(batch, learner, instructorUser, course.CourseId, plan.Content);
+        }
+
+        await SeedDemoMessagesAsync(learner, instructorUser);
+        await SeedDemoNotificationsAsync(learner);
+    }
+
+    /// <summary>The batch of the learner's (non-cancelled) program enrollment, if any.</summary>
+    private async Task<Schedule?> FindLearnerProgramBatchAsync(long learnerId)
+    {
+        var scheduleId = await _db.Enrollments
+            .Where(e => e.UserId == learnerId && e.ProgramId != null && e.ScheduleId != null
+                        && e.Status != EnrollmentStatus.Cancelled)
+            .OrderBy(e => e.EnrollmentId)
+            .Select(e => e.ScheduleId)
+            .FirstOrDefaultAsync();
+
+        return scheduleId is null
+            ? null
+            : await _db.Schedules.FirstOrDefaultAsync(s => s.ScheduleId == scheduleId.Value);
+    }
+
+    private async Task<Schedule> EnsureCourseBatchAsync(Course course, CourseBatchPlan plan)
+    {
+        var batch = await _db.Schedules.FirstOrDefaultAsync(s => s.BatchCode == plan.BatchCode);
+        if (batch is not null) return batch;
+
+        batch = new Schedule
+        {
+            CourseId = course.CourseId, // course XOR program (CK_Schedules_CourseXorProgram)
+            BatchCode = plan.BatchCode,
+            VenueName = "Alexandria: Smouha Campus",
+            RoomNumber = plan.Room,
+            StartDate = Today.AddDays(plan.StartDay),
+            EndDate = Today.AddDays(plan.EndDay),
+            Capacity = plan.Capacity,
+            Status = ScheduleStatus.Running
+        };
+        _db.Schedules.Add(batch);
+        await _db.SaveChangesAsync();
+        return batch;
+    }
+
+    private async Task EnsureEnrollmentAsync(User learner, Course course, Schedule batch, int enrolledDaysAgo)
+    {
+        if (await _db.Enrollments.AnyAsync(e => e.UserId == learner.UserId && e.ScheduleId == batch.ScheduleId)) return;
+
+        _db.Enrollments.Add(new Enrollment
+        {
+            UserId = learner.UserId,
+            CourseId = course.CourseId, // course XOR program (CK_Enrollments_CourseXorProgram)
+            ScheduleId = batch.ScheduleId,
+            Status = EnrollmentStatus.Active,
+            EnrolledAt = DateTime.UtcNow.AddDays(-enrolledDaysAgo)
+        });
+        await _db.SaveChangesAsync();
+    }
+
+    private async Task EnsureInstructorAsync(Schedule batch, Instructor instructor)
+    {
+        if (await _db.ScheduleInstructors.AnyAsync(l => l.ScheduleId == batch.ScheduleId && l.InstructorId == instructor.InstructorId))
+            return;
+
+        _db.ScheduleInstructors.Add(new ScheduleInstructor { ScheduleId = batch.ScheduleId, InstructorId = instructor.InstructorId });
+        await _db.SaveChangesAsync();
+    }
+
+    /// <summary>Sessions, attendance, assignments, submissions and (for course batches) materials of one batch.</summary>
+    private async Task SeedBatchContentAsync(
+        Schedule schedule, User learner, User? instructorUser, long? courseId, BatchContent content)
+    {
+        // ---- sessions ----
+        var sessions = await _db.Sessions.Where(s => s.ScheduleId == schedule.ScheduleId).ToListAsync();
+        foreach (var seed in content.Sessions)
+        {
+            if (sessions.Any(s => s.Title == seed.Title)) continue;
+
+            var session = new Session
+            {
+                ScheduleId = schedule.ScheduleId,
+                Title = seed.Title,
+                SessionDate = Today.AddDays(seed.Day),
+                StartTime = TimeOnly.Parse(seed.Start, CultureInfo.InvariantCulture),
+                EndTime = TimeOnly.Parse(seed.End, CultureInfo.InvariantCulture),
+                // One free-text field: a room for on-site classes, a meeting link for online ones.
+                RoomDetails = seed.Online ? DemoMeetingLink : schedule.RoomNumber
+            };
+            _db.Sessions.Add(session);
+            sessions.Add(session);
+        }
+        await _db.SaveChangesAsync(); // generates SessionId values used below
+
+        // ---- attendance: one row per learner + session (unique index) ----
+        var marked = (await _db.Attendances
+                .Where(a => a.LearnerId == learner.UserId && a.Session.ScheduleId == schedule.ScheduleId)
+                .Select(a => a.SessionId)
+                .ToListAsync())
+            .ToHashSet();
+        foreach (var seed in content.Sessions.Where(s => s.Attendance is not null))
+        {
+            var session = sessions.First(s => s.Title == seed.Title);
+            if (marked.Contains(session.SessionId)) continue;
+
+            _db.Attendances.Add(new Attendance
+            {
+                SessionId = session.SessionId,
+                LearnerId = learner.UserId,
+                Status = seed.Attendance!.Value,
+                MarkedAt = DateTime.SpecifyKind(session.SessionDate.ToDateTime(session.StartTime), DateTimeKind.Utc)
+            });
+        }
+
+        // ---- assignments ----
+        var assignments = await _db.Assignments.Where(a => a.ScheduleId == schedule.ScheduleId).ToListAsync();
+        foreach (var seed in content.Assignments)
+        {
+            if (assignments.Any(a => a.Title == seed.Title)) continue;
+
+            var assignment = new Assignment
+            {
+                ScheduleId = schedule.ScheduleId,
+                Title = seed.Title,
+                Description = seed.Description,
+                DueDate = DateTime.UtcNow.AddDays(seed.DueInDays),
+                MaxScore = seed.MaxScore
+            };
+            _db.Assignments.Add(assignment);
+            assignments.Add(assignment);
+        }
+        await _db.SaveChangesAsync(); // generates AssignmentId values used below
+
+        // ---- submissions: pending = no row, submitted = Score null, graded = Score set ----
+        var submitted = (await _db.AssignmentSubmissions
+                .Where(s => s.LearnerId == learner.UserId && s.Assignment.ScheduleId == schedule.ScheduleId)
+                .Select(s => s.AssignmentId)
+                .ToListAsync())
+            .ToHashSet();
+        foreach (var seed in content.Assignments.Where(a => a.Submission is not null))
+        {
+            var assignment = assignments.First(a => a.Title == seed.Title);
+            if (submitted.Contains(assignment.AssignmentId)) continue;
+
+            var sub = seed.Submission!;
+            var graded = sub.Score is not null;
+            _db.AssignmentSubmissions.Add(new AssignmentSubmission
+            {
+                AssignmentId = assignment.AssignmentId,
+                LearnerId = learner.UserId,
+                AttemptNumber = 1,
+                FileUrl = sub.File,
+                Status = sub.Late ? AssignmentSubmissionStatus.Late : AssignmentSubmissionStatus.Submitted,
+                SubmittedAt = sub.Late ? assignment.DueDate.AddHours(20) : assignment.DueDate.AddDays(-1),
+                Score = sub.Score,
+                Feedback = sub.Feedback,
+                GradedAt = graded ? assignment.DueDate.AddDays(2) : (DateTime?)null,
+                GradedBy = graded ? instructorUser?.UserId : (long?)null
+            });
+        }
+
+        // ---- materials (course batches only: materials belong to a course) ----
+        if (courseId is not null)
+        {
+            var titles = (await _db.CourseMaterials
+                    .Where(m => m.CourseId == courseId.Value)
+                    .Select(m => m.Title)
+                    .ToListAsync())
+                .ToHashSet();
+            foreach (var seed in content.Materials)
+            {
+                if (titles.Contains(seed.Title)) continue;
+
+                _db.CourseMaterials.Add(new CourseMaterial
+                {
+                    CourseId = courseId.Value,
+                    ScheduleId = seed.BatchOnly ? schedule.ScheduleId : null, // null = visible to every batch of the course
+                    Title = seed.Title,
+                    FileUrl = seed.Url,
+                    ResourceType = seed.Type,
+                    UploadedAt = DateTime.UtcNow.AddDays(-seed.AddedDaysAgo)
+                });
+            }
+        }
 
         await _db.SaveChangesAsync();
     }
+
+    /// <summary>A short thread with the instructor; the last two messages are unread (drives the Messages badge).</summary>
+    private async Task SeedDemoMessagesAsync(User learner, User? instructorUser)
+    {
+        if (instructorUser is null) return;
+
+        var any = await _db.DirectMessages.AnyAsync(m =>
+            (m.SenderId == learner.UserId && m.RecipientId == instructorUser.UserId) ||
+            (m.SenderId == instructorUser.UserId && m.RecipientId == learner.UserId));
+        if (any) return;
+
+        var now = DateTime.UtcNow;
+        var thread = new (bool FromLearner, string Body, TimeSpan Ago, bool Read)[]
+        {
+            (false, "Welcome to the program, Youssef! Please review the kick-off slides before our first lab.", TimeSpan.FromDays(6), true),
+            (true, "Thank you! Will the case brief be graded or is it practice only?", TimeSpan.FromDays(5) + TimeSpan.FromHours(20), true),
+            (false, "It is graded. Focus on the problem framing and your three recommendations.", TimeSpan.FromDays(5) + TimeSpan.FromHours(18), true),
+            (true, "Understood. I uploaded my vendor comparison, could you check the scoring criteria?", TimeSpan.FromDays(2), true),
+            (false, "Good structure. I left feedback on the submission, the criteria need clearer weights.", TimeSpan.FromHours(20), false),
+            (false, "Reminder: the governance outline is due next week. Office hours are open if you want a review.", TimeSpan.FromHours(3), false),
+        };
+
+        _db.DirectMessages.AddRange(thread.Select(t => new DirectMessage
+        {
+            SenderId = t.FromLearner ? learner.UserId : instructorUser.UserId,
+            RecipientId = t.FromLearner ? instructorUser.UserId : learner.UserId,
+            Body = t.Body,
+            SentAt = now - t.Ago,
+            ReadAt = t.Read ? now - t.Ago + TimeSpan.FromMinutes(20) : (DateTime?)null
+        }));
+        await _db.SaveChangesAsync();
+    }
+
+    private async Task SeedDemoNotificationsAsync(User learner)
+    {
+        if (await _db.Notifications.AnyAsync(n => n.UserId == learner.UserId && n.Type == "Assignment")) return;
+
+        var now = DateTime.UtcNow;
+        _db.Notifications.AddRange(
+            new Notification { UserId = learner.UserId, Type = "Assignment", Title = "Assignment graded", Message = "\"Use-case shortlist\" was graded: 92/100.", CreatedAt = now.AddDays(-8), IsRead = true },
+            new Notification { UserId = learner.UserId, Type = "Material", Title = "New material", Message = "\"Session 3: Build, buy or partner (slides)\" was added to AI Strategy for Executives.", CreatedAt = now.AddDays(-6), IsRead = false },
+            new Notification { UserId = learner.UserId, Type = "Session", Title = "Session tomorrow", Message = "Applied lab starts tomorrow at 10:00.", CreatedAt = now.AddHours(-4), IsRead = false });
+        await _db.SaveChangesAsync();
+    }
+
+    // ---------------------------------------------------------------------
+    // Demo workspace content (data only). Day offsets are relative to the day the seed runs.
+    // ---------------------------------------------------------------------
+    private sealed record SessionSeed(int Day, string Title, string Start, string End, AttendanceStatus? Attendance = null, bool Online = false);
+    private sealed record SubmissionSeed(string File, bool Late, int? Score = null, string? Feedback = null);
+    private sealed record AssignmentSeed(string Title, string Description, int DueInDays, int MaxScore, SubmissionSeed? Submission = null);
+    private sealed record MaterialSeed(string Title, string Url, CourseMaterialResourceType Type, int AddedDaysAgo, bool BatchOnly = false);
+    private sealed record BatchContent(IReadOnlyList<SessionSeed> Sessions, IReadOnlyList<AssignmentSeed> Assignments, IReadOnlyList<MaterialSeed> Materials);
+    private sealed record CourseBatchPlan(string CourseSlug, string BatchCode, string Room, int StartDay, int EndDay, int Capacity, int EnrolledDaysAgo, BatchContent Content);
+
+    private static readonly BatchContent ProgramBatchContent = new(
+        Sessions: new SessionSeed[]
+        {
+            new(-2, "Kick-off workshop", "10:00", "12:00", AttendanceStatus.Present),
+            new(1, "Applied lab", "10:00", "12:30"),
+            new(3, "Case study review", "14:00", "16:00"),
+            new(8, "Open banking studio (online)", "10:00", "13:00", Online: true),
+        },
+        Assignments: new AssignmentSeed[]
+        {
+            new("Week 1 case brief", "Summarise the case and propose next steps.", 7, 100),
+            new("Digital channels audit", "Audit one digital channel and list three improvements.", 14, 100),
+        },
+        Materials: Array.Empty<MaterialSeed>());
+
+    private static readonly CourseBatchPlan[] CourseBatchPlans =
+    {
+        new("ai-strategy-for-executives", "EAS-C-2026-A", "Hall B-101", StartDay: -21, EndDay: 35, Capacity: 24, EnrolledDaysAgo: 24,
+            new BatchContent(
+                Sessions: new SessionSeed[]
+                {
+                    new(-20, "Kick-off: AI strategy foundations", "18:00", "20:00", AttendanceStatus.Present),
+                    new(-13, "Use-case discovery workshop", "18:00", "20:00", AttendanceStatus.Present),
+                    new(-9, "Vendor evaluation clinic (online)", "19:00", "20:00", AttendanceStatus.Excused, Online: true),
+                    new(-6, "Build, buy or partner", "18:00", "20:00", AttendanceStatus.Late),
+                    new(-2, "Measuring AI value (KPIs)", "18:00", "20:00", AttendanceStatus.Absent),
+                    new(2, "Governance and risk review", "18:00", "20:00"),
+                    new(5, "Roadmap studio: part 1", "18:00", "20:30"),
+                    new(9, "Roadmap studio: part 2 (online)", "19:00", "20:30", Online: true),
+                    new(16, "Board-ready roadmap presentations", "18:00", "21:00"),
+                },
+                Assignments: new AssignmentSeed[]
+                {
+                    new("Use-case shortlist", "Rank five AI use cases for your organisation by value and feasibility.", -10, 100,
+                        new SubmissionSeed("/uploads/demo/use-case-shortlist.pdf", Late: false, Score: 92, Feedback: "Strong prioritisation. Add cost estimates next time.")),
+                    new("Vendor comparison matrix", "Compare two vendors against weighted criteria.", -4, 100,
+                        new SubmissionSeed("/uploads/demo/vendor-comparison.xlsx", Late: true, Score: 74, Feedback: "Good structure; the scoring criteria need clearer weights.")),
+                    new("KPI framework draft", "Define the KPIs you would use to track one AI initiative.", -1, 100,
+                        new SubmissionSeed("/uploads/demo/kpi-framework.docx", Late: false)),
+                    new("AI governance policy outline", "Outline the policy sections your teams would follow.", 6, 100),
+                    new("Board roadmap (final)", "Present a 12-month AI roadmap ready for a board meeting.", 17, 100),
+                },
+                Materials: new MaterialSeed[]
+                {
+                    new("Session 1: AI strategy foundations (slides)", "/materials/ai-strategy/session-1-foundations.pdf", CourseMaterialResourceType.Slide, 20),
+                    new("Use-case prioritisation template", "/materials/ai-strategy/use-case-template.xlsx", CourseMaterialResourceType.Document, 14, BatchOnly: true),
+                    new("Session 3: Build, buy or partner (slides)", "/materials/ai-strategy/session-3-build-buy-partner.pdf", CourseMaterialResourceType.Slide, 6, BatchOnly: true),
+                    new("NIST AI Risk Management Framework", "https://www.nist.gov/itl/ai-risk-management-framework", CourseMaterialResourceType.Reference_Link, 12),
+                    new("Stanford AI Index report", "https://aiindex.stanford.edu/report/", CourseMaterialResourceType.Reference_Link, 9),
+                })),
+
+        new("product-discovery-bootcamp", "PDB-C-2026-A", "Hall C-204", StartDay: -14, EndDay: 28, Capacity: 30, EnrolledDaysAgo: 16,
+            new BatchContent(
+                Sessions: new SessionSeed[]
+                {
+                    new(-14, "Discovery fundamentals", "10:00", "13:00", AttendanceStatus.Present),
+                    new(-7, "Customer interview lab", "10:00", "13:00", AttendanceStatus.Present),
+                    new(-1, "Opportunity mapping", "10:00", "13:00", AttendanceStatus.Present),
+                    new(6, "Rapid experiments", "10:00", "13:00"),
+                    new(13, "Portfolio review", "10:00", "12:00"),
+                },
+                Assignments: new AssignmentSeed[]
+                {
+                    new("Interview synthesis", "Synthesise five customer interviews into themes.", -5, 100,
+                        new SubmissionSeed("/uploads/demo/interview-synthesis.pdf", Late: false, Score: 85, Feedback: "Clear themes. Quote more customer language.")),
+                    new("Opportunity map", "Map the opportunities you found and pick one to test.", 4, 100),
+                },
+                Materials: new MaterialSeed[]
+                {
+                    new("Discovery fundamentals (slides)", "/materials/product-discovery/discovery-fundamentals.pdf", CourseMaterialResourceType.Slide, 14),
+                    new("Customer interview guide", "/materials/product-discovery/interview-guide.docx", CourseMaterialResourceType.Document, 7, BatchOnly: true),
+                    new("Continuous discovery resources", "https://www.producttalk.org/", CourseMaterialResourceType.Reference_Link, 10),
+                })),
+    };
 
     // =====================================================================
     // Helpers

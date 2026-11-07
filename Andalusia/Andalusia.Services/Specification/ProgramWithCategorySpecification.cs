@@ -18,7 +18,28 @@ public class ProgramWithCategorySpecification : BaseSpecification<Program>
     {
         AddInclude(p => p.Category);
         AddInclude(p => p.ProgramCourses);
-        AddOrderBy(p => p.ProgramId);
+        switch (query.Sort?.Trim().ToLowerInvariant())
+        {
+            case "title_asc":
+                AddOrderBy(p => p.Title);
+                AddThenBy(p => p.ProgramId);
+                break;
+            case "title_desc":
+                AddOrderByDescending(p => p.Title);
+                AddThenBy(p => p.ProgramId);
+                break;
+            case "price_asc":
+                AddOrderBy(p => p.Price);
+                AddThenBy(p => p.ProgramId);
+                break;
+            case "price_desc":
+                AddOrderByDescending(p => p.Price);
+                AddThenBy(p => p.ProgramId);
+                break;
+            default:
+                AddOrderBy(p => p.ProgramId);
+                break;
+        }
 
         var page = Math.Max(query.Page, 1);
         var pageSize = Math.Clamp(query.PageSize, 1, 50);

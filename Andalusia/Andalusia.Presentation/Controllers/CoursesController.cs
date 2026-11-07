@@ -28,6 +28,12 @@ public class CoursesController(ICourseService svc) : ControllerBase
         [FromQuery] int take = 3, CancellationToken ct = default)
         => Ok(await svc.GetFeaturedAsync(take, ct));
 
+    // GET /api/courses/coming-soon?take=3
+    [HttpGet("coming-soon")]
+    public async Task<ActionResult<List<FeaturedCourseDto>>> ComingSoon(
+        [FromQuery] int take = 3, CancellationToken ct = default)
+        => Ok(await svc.GetComingSoonAsync(take, ct));
+
     // 3. GET /api/courses/{slug}
     [HttpGet("{slug}")]
     public async Task<ActionResult<CourseDetailDto>> Get(string slug, CancellationToken ct)

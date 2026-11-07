@@ -70,30 +70,54 @@ public class CourseService(IUnitOfWork uow) : ICourseService
 
         var courses = await repo.GetAllAsync(spec, trackChanges: false);
 
-        return courses.Select(c =>
-        {
-            var cohort = c.Cohorts
-                .Where(ch => ch.StartDate >= today && ch.Status != ScheduleStatus.Cancelled)
-                .OrderBy(ch => ch.StartDate)
-                .FirstOrDefault();
+        return courses.Select(c => ToFeaturedDto(c, today)).ToList();
+    }
 
-            return new FeaturedCourseDto(
-                c.CourseId,
-                c.Slug,
-                c.Title,
-                c.Description,
-                c.Category,
-                c.DeliveryMode,
-                "offline",
-                cohort?.StartDate.ToString("MMM yyyy") ?? "Upcoming",
-                c.Hall,
-                c.DurationLabel,
-                c.Mentor.Name,
-                c.Mentor.Title,
-                c.Tuition,
-                CalculateSeatsLabel(cohort?.Capacity, cohort?.EnrolledCount, cohort?.Status)
-            );
-        }).ToList();
+    // Courses whose next scheduled cohort starts in the future, soonest first.
+    public async Task<List<FeaturedCourseDto>> GetComingSoonAsync(int take = 3, CancellationToken ct = default)
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var repo = uow.GetRepository<Course>();
+        var courses = await repo.GetAllAsync(new ComingSoonCoursesSpecification(today), trackChanges: false);
+
+        return courses
+            .Select(c => new
+            {
+                Course = c,
+                NextStart = c.Cohorts
+                    .Where(ch => ch.StartDate > today && ch.Status == ScheduleStatus.Scheduled)
+                    .Min(ch => ch.StartDate)
+            })
+            .OrderBy(x => x.NextStart)
+            .ThenBy(x => x.Course.CourseId)
+            .Take(Math.Clamp(take, 1, 12))
+            .Select(x => ToFeaturedDto(x.Course, today))
+            .ToList();
+    }
+
+    private static FeaturedCourseDto ToFeaturedDto(Course c, DateOnly today)
+    {
+        var cohort = c.Cohorts
+            .Where(ch => ch.StartDate >= today && ch.Status != ScheduleStatus.Cancelled)
+            .OrderBy(ch => ch.StartDate)
+            .FirstOrDefault();
+
+        return new FeaturedCourseDto(
+            c.CourseId,
+            c.Slug,
+            c.Title,
+            c.Description,
+            c.Category,
+            c.DeliveryMode,
+            "offline",
+            cohort?.StartDate.ToString("MMM yyyy") ?? "Upcoming",
+            c.Hall,
+            c.DurationLabel,
+            c.Mentor.Name,
+            c.Mentor.Title,
+            c.Tuition,
+            CalculateSeatsLabel(cohort?.Capacity, cohort?.EnrolledCount, cohort?.Status)
+        );
     }
 
     public async Task<CourseDetailDto?> GetBySlugAsync(string slug, CancellationToken ct = default)
