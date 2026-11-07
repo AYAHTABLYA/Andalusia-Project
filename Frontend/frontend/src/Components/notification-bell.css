@@ -114,7 +114,8 @@ html[dir="rtl"] .notification-bell_menu { right: auto; left: 0; }
   max-height: 320px;
   overflow-y: auto;
 }
-.notification-bell_list button {
+.notification-bell_list li { position: relative; }
+.notification-bell_list .notification-bell_item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -127,7 +128,44 @@ html[dir="rtl"] .notification-bell_menu { right: auto; left: 0; }
   text-align: start;
   cursor: pointer;
 }
-.notification-bell_list button:hover { background: var(--tint-brand, #f7f0ec); }
+.notification-bell_list .notification-bell_item:hover { background: var(--tint-brand, #f7f0ec); }
+.notification-bell_list .notification-bell_item { padding-inline-end: 30px; }
+.notification-bell_list .notification-bell_delete {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #9aa6a9;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.notification-bell_list li:hover .notification-bell_delete,
+.notification-bell_list .notification-bell_delete:focus-visible { opacity: 1; }
+.notification-bell_list .notification-bell_delete:hover { background: #f3e4de; color: #8f3b2a; }
+@media (hover: none) { .notification-bell_list .notification-bell_delete { opacity: 1; } }
+.notification-bell_retry {
+  margin-top: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--line-soft, #d8e0e5);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--on-brand, #8f5d49);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.notification-bell_retry:hover { background: var(--tint-brand, #f7f0ec); }
 .notification-bell_dot {
   flex: 0 0 auto;
   width: 8px;
@@ -137,6 +175,10 @@ html[dir="rtl"] .notification-bell_menu { right: auto; left: 0; }
   background: transparent;
 }
 .notification-bell_list .is-unread .notification-bell_dot { background: #b07963; }
+.notification-bell_list .is-unread.is-success .notification-bell_dot { background: #2f8f5b; }
+.notification-bell_list .is-unread.is-warning .notification-bell_dot { background: #d99a1e; }
+.notification-bell_list .is-unread.is-alert .notification-bell_dot { background: #c0392b; }
+.notification-bell_list .is-unread .notification-bell_body strong { font-weight: 800; }
 .notification-bell_body { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 12px; color: #6c7b7f; }
 .notification-bell_body strong { font-size: 13px; color: var(--text-strong, #2d414e); }
 .notification-bell_body small { font-size: 11px; color: #9aa6a9; }

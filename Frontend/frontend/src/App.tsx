@@ -47,6 +47,7 @@ import InstructorSchedule from "./Components/Staff/Instructor/InstructorSchedule
 import InstructorAssignments from "./Components/Staff/Instructor/InstructorAssignments";
 import InstructorMessages from "./Components/Staff/Instructor/InstructorMessages";
 import InstructorEarnings from "./Components/Staff/Instructor/InstructorEarnings";
+import SendNotificationContainer from "./Components/Staff/Admin/Notifications/SendNotificationContainer";
 import { ROLES } from "./utils/roles";
 
 function App() {
@@ -114,6 +115,7 @@ function App() {
               <Route path="/admin/compensation" element={<CompensationContainer />} />
               <Route path="/admin/reports" element={<ReportsContainer />} />
               <Route path="/admin/permissions" element={<PermissionsContainer />} />
+              <Route path="/admin/notifications" element={<SendNotificationContainer />} />
             </Route>
           </Route>
 

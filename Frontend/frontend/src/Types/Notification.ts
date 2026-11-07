@@ -14,4 +14,15 @@ type NotificationsDto = {
   unreadCount: number;
 };
 
-export type { NotificationDto, NotificationsDto };
+// Exactly one of userId / role.
+type SendNotificationInput = {
+  userId?: number;
+  role?: string;
+  title: string;
+  message: string;
+  type?: string;
+};
+
+type SendNotificationResult = { recipients: number };
+
+export type { NotificationDto, NotificationsDto, SendNotificationInput, SendNotificationResult };

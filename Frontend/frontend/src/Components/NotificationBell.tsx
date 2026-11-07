@@ -1,19 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import { useNotifications } from "../hooks/portalHooks/useNotifications";
+import { useSiteLanguage, type SiteLanguage } from "./LanguageSwitcher";
 import "./notification-bell.css";
 
-// "5 min ago", "2 h ago", "3 d ago", then a plain date.
-function timeAgo(iso: string): string {
+// "5 min ago", "2 h ago", "3 d ago", then a plain date. The time sits in a data-no-translate node
+// (the page translator would not understand it), so it is written in the site language right here.
+function timeAgo(iso: string, language: SiteLanguage): string {
   const then = new Date(iso).getTime();
   if (Number.isNaN(then)) return "";
+  const ar = language === "ar";
   const mins = Math.max(0, Math.floor((Date.now() - then) / 60000));
-  if (mins < 1) return "Just now";
-  if (mins < 60) return `${mins} min ago`;
+  if (mins < 1) return ar ? "الآن" : "Just now";
+  if (mins < 60) return ar ? `منذ ${mins} دقيقة` : `${mins} min ago`;
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours} h ago`;
+  if (hours < 24) return ar ? `منذ ${hours} ساعة` : `${hours} h ago`;
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days} d ago`;
-  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  if (days < 7) return ar ? `منذ ${days} يوم` : `${days} d ago`;
+  return new Date(iso).toLocaleDateString(ar ? "ar-EG" : "en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+// Info | Success | Warning | Alert  ->  a CSS modifier (anything else is treated as Info).
+function typeClass(type: string): string {
+  const t = (type || "").toLowerCase();
+  return t === "success" || t === "warning" || t === "alert" ? t : "info";
 }
 
 /**
@@ -23,7 +32,8 @@ function timeAgo(iso: string): string {
  */
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const { items, unreadCount: unread, markRead, markAllRead, reload } = useNotifications();
+  const { items, unreadCount: unread, loading, error, markRead, markAllRead, remove, reload } = useNotifications();
+  const language = useSiteLanguage();
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -82,7 +92,18 @@ export function NotificationBell() {
             )}
           </div>
 
-          {items.length === 0 ? (
+          {items.length === 0 && loading ? (
+            <div className="notification-bell_empty" role="status">
+              <span>Loading…</span>
+            </div>
+          ) : items.length === 0 && error ? (
+            <div className="notification-bell_empty" role="alert">
+              <strong>Couldn't load notifications.</strong>
+              <button type="button" className="notification-bell_retry" onClick={() => void reload()}>
+                Try again
+              </button>
+            </div>
+          ) : items.length === 0 ? (
             <div className="notification-bell_empty">
               <span className="notification-bell_empty-icon">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -101,14 +122,23 @@ export function NotificationBell() {
           ) : (
             <ul className="notification-bell_list">
               {items.map((n) => (
-                <li key={n.id} className={n.isRead ? "" : "is-unread"}>
-                  <button type="button" onClick={() => void markRead(n.id)}>
+                <li key={n.id} className={`${n.isRead ? "" : "is-unread"} is-${typeClass(n.type)}`}>
+                  <button type="button" className="notification-bell_item" onClick={() => void markRead(n.id)}>
                     <span className="notification-bell_dot" />
                     <span className="notification-bell_body">
                       <strong>{n.title}</strong>
                       {n.message && <span>{n.message}</span>}
-                      <small data-no-translate>{timeAgo(n.createdAt)}</small>
+                      <small data-no-translate>{timeAgo(n.createdAt, language)}</small>
                     </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="notification-bell_delete"
+                    onClick={() => void remove(n.id)}
+                    aria-label="Delete notification"
+                    title="Delete notification"
+                  >
+                    ×
                   </button>
                 </li>
               ))}

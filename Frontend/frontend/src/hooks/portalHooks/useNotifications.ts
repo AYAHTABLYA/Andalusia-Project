@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  deleteNotification,
   getNotifications,
   markAllNotificationsRead,
   markNotificationRead,
@@ -39,7 +40,10 @@ export function useNotifications(take = 20) {
   useEffect(() => {
     alive.current = true;
     void load();
-    const timer = window.setInterval(() => void load(), POLL_MS);
+    // No point polling while the tab is hidden: the focus handler catches up when it comes back.
+    const timer = window.setInterval(() => {
+      if (!document.hidden) void load();
+    }, POLL_MS);
     const onFocus = () => void load();
     window.addEventListener("focus", onFocus);
     return () => {
@@ -74,5 +78,20 @@ export function useNotifications(take = 20) {
     }
   }, [load]);
 
-  return { items, unreadCount, loading, error, reload: load, markRead, markAllRead };
+  const remove = useCallback(
+    async (id: number) => {
+      const target = items.find((n) => n.id === id);
+      if (!target) return;
+      setItems((list) => list.filter((n) => n.id !== id));
+      if (!target.isRead) setUnreadCount((c) => Math.max(0, c - 1));
+      try {
+        await deleteNotification(id);
+      } catch {
+        void load();
+      }
+    },
+    [items, load],
+  );
+
+  return { items, unreadCount, loading, error, reload: load, markRead, markAllRead, remove };
 }

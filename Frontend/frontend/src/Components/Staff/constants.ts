@@ -14,6 +14,7 @@ const STAFF_TABS: StaffTab[] = [
   { to: "/admin/compensation", label: "Compensation", icon: "payments", roles: [ROLES.admin] },
   { to: "/admin/reports", label: "Reports", icon: "bar_chart", roles: admins },
   { to: "/admin/permissions", label: "Roles & permissions", icon: "shield", roles: [ROLES.admin] },
+  { to: "/admin/notifications", label: "Send notification", icon: "campaign", roles: admins },
   { to: "/admin/users", label: "Users & roles", icon: "badge", roles: [ROLES.admin], permission: "users.manage" },
   { to: "/coordinator", label: "Overview", icon: "grid_view", roles: [ROLES.coordinator] },
   { to: "/coordinator/instructors", label: "Instructors", icon: "person_apron", roles: [ROLES.coordinator], permission: "instructors.manage" },
