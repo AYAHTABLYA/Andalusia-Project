@@ -7,7 +7,7 @@ function HeaderComponent({ user, logout }: { user: User | null; logout: any }) {
   return (
     <div className="header">
       <div className="header_brand">
-        <img className="header_logo-img" src={logo} alt="Andalusia Academy" />
+        <img className="header_logo-img" src={logo} alt="Andalusia Academy" width={1125} height={290} />
       </div>
 
       <div className="header_side">

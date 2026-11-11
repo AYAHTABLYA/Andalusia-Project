@@ -173,7 +173,7 @@ function LoginContainer() {
       text="One portal for students, mentors, coordinators, and administrators. Sign in and we take you to the right workspace."
       headerAction={
         <Link to="/" className="auth_back_link">
-          <span className="material-symbols-outlined">arrow_back</span>Back to
+          <span className="material-symbols-outlined icon-dir">arrow_back</span>Back to
           Main Platform
         </Link>
       }

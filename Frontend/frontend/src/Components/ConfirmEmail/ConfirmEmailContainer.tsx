@@ -131,7 +131,7 @@ function ConfirmEmailContainer() {
       text="Confirm your email address to activate your account and access your learner workspace."
       headerAction={
         <Link to="/login" className="auth_back_link">
-          <span className="material-symbols-outlined">arrow_back</span>Back to
+          <span className="material-symbols-outlined icon-dir">arrow_back</span>Back to
           Login
         </Link>
       }

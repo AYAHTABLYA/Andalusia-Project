@@ -109,7 +109,7 @@ function CoursesComponent({
                 <span className="courses_text-4">{item.tuition}</span>
                 <Link to={item.link} className="courses_link-1">
                   <span>View Course</span>
-                  <span className="courses_text-5 material-symbols-outlined">arrow_forward</span>
+                  <span className="courses_text-5 material-symbols-outlined icon-dir">arrow_forward</span>
                 </Link>
               </div>
             </article>

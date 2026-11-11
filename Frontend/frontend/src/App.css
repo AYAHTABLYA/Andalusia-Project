@@ -73,7 +73,7 @@
 #next-steps {
   display: flex;
   border-top: 1px solid var(--border);
-  text-align: left;
+  text-align: start;
 
   & > div {
     flex: 1 1 0;
@@ -96,10 +96,10 @@
 }
 
 #docs {
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
 
   @media (max-width: 1024px) {
-    border-right: none;
+    border-inline-end: none;
     border-bottom: 1px solid var(--border);
   }
 }

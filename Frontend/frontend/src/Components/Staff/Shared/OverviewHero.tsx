@@ -29,7 +29,7 @@ function OverviewHero({ workspace, name, subtitle, pulse, cta }: HeroProps) {
       <p className="ov-hero_sub">{subtitle}</p>
       <div className="ov-hero_foot">
         {pulse && <span className="ov-hero_pulse"><i />{pulse}</span>}
-        {cta && <Link to={cta.to} className="ov-hero_cta">{cta.label} <span className="material-symbols-outlined">chevron_right</span></Link>}
+        {cta && <Link to={cta.to} className="ov-hero_cta">{cta.label} <span className="material-symbols-outlined icon-dir">chevron_right</span></Link>}
       </div>
     </section>
   );

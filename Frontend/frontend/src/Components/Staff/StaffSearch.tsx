@@ -9,6 +9,8 @@ const KEYWORDS: Record<string, string> = {
   "/admin/instructors": "teachers mentors trainers staff",
   "/admin/students": "learners trainees enrolled",
   "/admin/courses": "programs classes catalog curriculum",
+  "/admin/faqs": "questions answers help landing content",
+  "/admin/testimonials": "reviews quotes feedback ratings landing content",
   "/admin/schedule": "calendar timetable sessions",
   "/admin/compensation": "pay salary payroll payments earnings",
   "/admin/reports": "analytics statistics export",

@@ -1,5 +1,5 @@
 // src/apis/academyApi.ts
-// Thin typed helpers (GET / POST / PUT / DELETE / upload / download) on top of the single
+// Thin typed helpers (GET / POST / PUT / DELETE / download) on top of the single
 // axios client in axiosInstance.ts. Auth header, error mapping and 401 handling live there.
 import axiosInstance, {
   ACCESS_TOKEN_KEY,
@@ -59,19 +59,6 @@ export async function apiDelete<T = void>(
   signal?: AbortSignal,
 ): Promise<T> {
   const response = await apiClient.delete<T>(path, { signal });
-  return response.data;
-}
-
-// Multipart upload (profile photo)
-export async function apiUpload<T>(
-  path: string,
-  formData: FormData,
-  signal?: AbortSignal,
-): Promise<T> {
-  const response = await apiClient.post<T>(path, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-    signal,
-  });
   return response.data;
 }
 

@@ -7,7 +7,7 @@ function Breadcrumb({ items, bar = false }: { items: Crumb[]; bar?: boolean }) {
   const nav = (
     <nav className={`breadcrumb${bar ? " breadcrumb--bar" : ""}`} aria-label="Breadcrumb">
       <Link to="/" className="breadcrumb_home">
-        <span className="material-symbols-outlined">arrow_back</span>
+        <span className="material-symbols-outlined icon-dir">arrow_back</span>
         Back to Home
       </Link>
       <ol className="breadcrumb_list">

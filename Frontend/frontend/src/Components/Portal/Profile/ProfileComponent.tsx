@@ -26,7 +26,7 @@ type Props = {
   changingPassword: boolean;
   onEdit: () => void;
   onCloseEdit: () => void;
-  onSave: (values: EditableProfile, photo: File | null) => Promise<void>;
+  onSave: (values: EditableProfile) => Promise<void>;
   onChangePassword: () => void;
   onClosePassword: () => void;
   onSubmitPassword: (values: ChangePasswordValues) => Promise<void>;

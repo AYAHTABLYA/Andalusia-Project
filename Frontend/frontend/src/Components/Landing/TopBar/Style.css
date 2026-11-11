@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  text-align: left;
+  text-align: start;
 }
 
 .top-bar_dot {

@@ -149,7 +149,7 @@ function StaffLayout() {
           <span className="material-symbols-outlined">close</span>
         </button>
         <Link to="/" className="staff-side_logo" aria-label="Andalusia Academy">
-          <img src={logo} alt="Andalusia Academy" />
+          <img src={logo} alt="Andalusia Academy" width={1125} height={290} />
         </Link>
         <p className="staff-side_label">{workspace}</p>
         <nav className="staff-side_nav" aria-label={workspace}>
@@ -212,7 +212,7 @@ function StaffLayout() {
             <span className="material-symbols-outlined">menu</span>
           </button>
           <Link to="/" className="staff-back-home">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <span className="material-symbols-outlined icon-dir">arrow_back</span>
             Back to Home
           </Link>
           <StaffSearch tabs={tabs} />
@@ -235,7 +235,7 @@ function StaffLayout() {
             </div>
           </div>
         </header>
-        <main className="staff-main">
+        <main className="staff-main" key={pathname}>
           <Outlet />
         </main>
       </div>

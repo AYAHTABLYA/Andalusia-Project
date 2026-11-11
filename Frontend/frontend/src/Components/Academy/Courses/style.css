@@ -1,4 +1,4 @@
-.courses_box-1 { max-width:80rem; margin-left:auto; margin-right:auto; padding-left:1.5rem; padding-right:1.5rem; }
+.courses_box-1 { max-width:80rem; margin-inline-start:auto; margin-inline-end:auto; padding-inline-start:1.5rem; padding-inline-end:1.5rem; }
 .courses_box-1 > * + * { margin-top:2rem; }
 
 .courses_box-2 { display:grid; grid-template-columns:repeat(1,minmax(0,1fr)); gap:1.5rem; }
@@ -13,7 +13,7 @@
 
 .courses_box-4 { display:flex; align-items:center; justify-content:space-between; }
 
-.courses_text-1 { font-size:11px; font-weight:700; padding-left:0.5rem; padding-right:0.5rem; padding-top:0.125rem; padding-bottom:0.125rem; border-radius:.25rem; background-color:var(--color-surface-container); color:var(--color-primary); }
+.courses_text-1 { font-size:11px; font-weight:700; padding-inline-start:0.5rem; padding-inline-end:0.5rem; padding-top:0.125rem; padding-bottom:0.125rem; border-radius:.25rem; background-color:var(--color-surface-container); color:var(--color-primary); }
 
 .courses_text-2 { font-size:11px; font-weight:600; color:var(--color-success); }
 

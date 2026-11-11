@@ -7,7 +7,6 @@ import ValuePillarsContainer from "./ValuePillars/ValuePillarsContainer";
 import PopularCategoriesContainer from "./PopularCategories/PopularCategoriesContainer";
 import FeaturedCoursesContainer from "./FeaturedCourses/FeaturedCoursesContainer";
 import ComingSoonContainer from "./ComingSoon/ComingSoonContainer";
-import CareerPathContainer from "./CareerPath/CareerPathContainer";
 import PortalPreviewContainer from "./PortalPreview/PortalPreviewContainer";
 import AccreditationsContainer from "./Accreditations/AccreditationsContainer";
 import PartnersContainer from "./Partners/PartnersContainer";
@@ -36,7 +35,6 @@ function LandingPage() {
         <PopularCategoriesContainer />
         <FeaturedCoursesContainer />
         <ComingSoonContainer />
-        <CareerPathContainer />
         <PortalPreviewContainer />
         <AccreditationsContainer />
         <PartnersContainer />

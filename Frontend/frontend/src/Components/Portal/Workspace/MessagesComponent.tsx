@@ -83,7 +83,7 @@ function MessagesComponent({
               <form className="ws_chat-compose is-disabled" onSubmit={(e) => e.preventDefault()}>
                 <input disabled placeholder="No instructor selected" aria-label="Write a message" />
                 <button type="button" className="portal-btn portal-btn-primary ws_send" disabled aria-label="Send message">
-                  <span className="material-symbols-outlined">send</span>
+                  <span className="material-symbols-outlined icon-dir">send</span>
                 </button>
               </form>
             </>
@@ -121,7 +121,7 @@ function MessagesComponent({
                   aria-label="Write a message"
                 />
                 <button className="portal-btn portal-btn-primary ws_send" disabled={!draft.trim() || sending} aria-label="Send message">
-                  <span className="material-symbols-outlined">send</span>
+                  <span className="material-symbols-outlined icon-dir">send</span>
                 </button>
               </form>
             </>

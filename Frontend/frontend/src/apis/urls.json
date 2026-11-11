@@ -38,8 +38,7 @@
   "profile": {
     "get": "/api/profile",
     "update": "/api/profile",
-    "changePassword": "/api/profile/change-password",
-    "photo": "/api/profile/photo"
+    "changePassword": "/api/profile/change-password"
   },
   "payments": {
     "initiate": "/api/payments",
@@ -71,6 +70,10 @@
     "users": "/api/admin/users",
     "userRole": "/api/admin/users/:id/role",
     "userStatus": "/api/admin/users/:id/status",
-    "roles": "/api/admin/roles"
+    "roles": "/api/admin/roles",
+    "faqs": "/api/admin/faqs",
+    "faq": "/api/admin/faqs/:id",
+    "testimonials": "/api/admin/testimonials",
+    "testimonial": "/api/admin/testimonials/:id"
   }
 }

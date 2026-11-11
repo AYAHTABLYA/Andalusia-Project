@@ -169,7 +169,7 @@ function CareerPathsComponent({
                     </div>
                     <Link to={item.pathUrl} className="career-paths_link-3">
                       <span>Explore Career Path</span>
-                      <span className="career-paths_text-22 material-symbols-outlined">arrow_forward</span>
+                      <span className="career-paths_text-22 material-symbols-outlined icon-dir">arrow_forward</span>
                     </Link>
                   </div>
                 </div>

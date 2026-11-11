@@ -4,10 +4,10 @@
 
 .program-detail_box-2 {
   max-width: 80rem;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+  padding-inline-start: 1.5rem;
+  padding-inline-end: 1.5rem;
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 2rem;
@@ -54,8 +54,8 @@
 }
 
 .program-detail_text-1 {
-  padding-left: 0.625rem;
-  padding-right: 0.625rem;
+  padding-inline-start: 0.625rem;
+  padding-inline-end: 0.625rem;
   padding-top: 0.125rem;
   padding-bottom: 0.125rem;
   border-radius: 0.25rem;
@@ -67,8 +67,8 @@
 }
 
 .program-detail_text-2 {
-  padding-left: 0.625rem;
-  padding-right: 0.625rem;
+  padding-inline-start: 0.625rem;
+  padding-inline-end: 0.625rem;
   padding-top: 0.125rem;
   padding-bottom: 0.125rem;
   border-radius: 0.25rem;

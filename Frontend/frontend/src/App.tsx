@@ -47,6 +47,8 @@ import InstructorSchedule from "./Components/Staff/Instructor/InstructorSchedule
 import InstructorAssignments from "./Components/Staff/Instructor/InstructorAssignments";
 import InstructorMessages from "./Components/Staff/Instructor/InstructorMessages";
 import InstructorEarnings from "./Components/Staff/Instructor/InstructorEarnings";
+import FaqsContainer from "./Components/Staff/Admin/Faqs/FaqsContainer";
+import TestimonialsContainer from "./Components/Staff/Admin/Testimonials/TestimonialsContainer";
 import SendNotificationContainer from "./Components/Staff/Admin/Notifications/SendNotificationContainer";
 import { ROLES } from "./utils/roles";
 
@@ -98,10 +100,12 @@ function App() {
             </Route>
           </Route>
 
-          {/* Content Manager: course content only */}
+          {/* Content Manager: course content + landing content (FAQs, testimonials) */}
           <Route element={<RequireRole allow={[ROLES.admin, ROLES.manager, ROLES.contentManager]} />}>
             <Route element={<StaffLayout />}>
               <Route path="/admin/courses" element={<AdminCoursesManager />} />
+              <Route path="/admin/faqs" element={<FaqsContainer />} />
+              <Route path="/admin/testimonials" element={<TestimonialsContainer />} />
             </Route>
           </Route>
 

@@ -102,10 +102,10 @@
 .ws_chat-head > div { display: flex; flex-direction: column; min-width: 0; }
 .ws_chat-head small { color: var(--color-on-surface-variant); }
 .ws_chat-body { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; max-height: 26rem; padding: 1rem; overflow-y: auto; overscroll-behavior: contain; }
-.ws_msg { align-self: flex-start; max-width: min(85%, 28rem); padding: 0.55rem 0.8rem; border-radius: 1rem 1rem 1rem 0.3rem; background: var(--surface-mid); }
+.ws_msg { align-self: flex-start; max-width: min(85%, 28rem); padding: 0.55rem 0.8rem; border-radius: 1rem; border-end-start-radius: 0.3rem; background: var(--surface-mid); }
 .ws_msg p { margin: 0; white-space: pre-wrap; }
 .ws_msg small { display: block; margin-top: 0.15rem; font-size: 0.65rem; color: var(--color-on-surface-variant); }
-.ws_msg.is-me { align-self: flex-end; border-radius: 1rem 1rem 0.3rem 1rem; background: var(--brand-500); color: #fff; }
+.ws_msg.is-me { align-self: flex-end; border-radius: 1rem; border-end-end-radius: 0.3rem; background: var(--brand-500); color: #fff; }
 .ws_msg.is-me small { color: rgba(255, 255, 255, 0.8); }
 .ws_chat-compose { display: flex; gap: 0.5rem; padding: 0.7rem; border-top: 1px solid var(--color-outline); }
 .ws_chat-compose input { flex: 1; min-width: 0; padding: 0.65rem 0.9rem; border: 1px solid var(--color-outline); border-radius: 999px; background: var(--surface-low); color: inherit; font: inherit; }

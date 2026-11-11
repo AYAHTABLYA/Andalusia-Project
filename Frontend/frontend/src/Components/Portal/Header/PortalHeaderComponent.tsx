@@ -23,7 +23,7 @@ function PortalHeaderComponent({ links, name, role, photoUrl, onLogout }: Props)
     <header className="portal-header">
       <div className="portal-header_inner">
         <Link to={homeForRole(role)} className="portal-header_brand">
-          <img className="portal-header_logo" src={logo} alt="Andalusia Academy" />
+          <img className="portal-header_logo" src={logo} alt="Andalusia Academy" width={1125} height={290} />
         </Link>
 
         <nav className="portal-header_links" aria-label="Academy">
@@ -40,7 +40,7 @@ function PortalHeaderComponent({ links, name, role, photoUrl, onLogout }: Props)
           <NotificationBell />
           <a href={`tel:${SUPPORT_PHONE.replace(/[^+\d]/g, "")}`} className="portal-header_phone">
             <span className="material-symbols-outlined">support_agent</span>
-            <span>{SUPPORT_PHONE}</span>
+            <span dir="ltr">{SUPPORT_PHONE}</span>
           </a>
           <button type="button" className="portal-header_logout" onClick={onLogout}>
             <span className="material-symbols-outlined">logout</span>

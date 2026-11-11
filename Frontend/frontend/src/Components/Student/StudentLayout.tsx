@@ -136,7 +136,7 @@ function StudentLayout() {
           <span className="material-symbols-outlined">close</span>
         </button>
         <Link to="/" className="staff-side_logo" aria-label="Andalusia Academy">
-          <img src={logo} alt="Andalusia Academy" />
+          <img src={logo} alt="Andalusia Academy" width={1125} height={290} />
         </Link>
         {sections.map((section) => (
           <div key={section.key} className="staff-side_group">
@@ -198,7 +198,7 @@ function StudentLayout() {
             <span className="material-symbols-outlined">menu</span>
           </button>
           <Link to="/" className="staff-back-home">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <span className="material-symbols-outlined icon-dir">arrow_back</span>
             Back to Home
           </Link>
           <StaffSearch tabs={STUDENT_TABS} />
@@ -216,7 +216,7 @@ function StudentLayout() {
             </div>
           </div>
         </header>
-        <main className="staff-main">
+        <main className="staff-main" key={pathname}>
           <Outlet context={context} />
         </main>
       </div>

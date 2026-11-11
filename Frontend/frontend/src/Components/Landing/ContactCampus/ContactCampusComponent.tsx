@@ -28,12 +28,12 @@ function ContactCampusComponent({
     <section className="contact-campus" data-purpose="alexandria-campus-info" id="contact-campus">
       <div className="section-wrap contact-campus_grid">
         <div className="contact-campus_info">
-          <span className="eyebrow">In-Person Learning Space</span>
-          <h2 className="heading-serif">The Executive Campus</h2>
+          <span className="eyebrow">Learning &amp; Corporate Partnerships</span>
+          <h2 className="heading-serif">Connect With Andalusia Academy</h2>
           <p>
-            Designed explicitly for peer collaboration, quiet research
-            pods, high-bandwidth compute terminals, and executive
-            networking mixers.
+            Whether you’re looking to advance your skills, explore our
+            training programs, or discuss corporate training opportunities,
+            our team is ready to assist.
           </p>
 
           <div className="contact-campus_details">
@@ -62,8 +62,8 @@ function ContactCampusComponent({
         </div>
 
         <div className="contact-campus_form-wrap card" id="apply-now">
-          <h3>Request Admission Interview</h3>
-          <p>Cohort seats are capped to maintain 1:12 mentor-to-learner ratio.</p>
+          <h3>Get in Touch With Our Team</h3>
+          <p>Tell us a little about your interests and we’ll help you find the right opportunity.</p>
 
           <form data-purpose="application-form" onSubmit={handleSubmit}>
             <div className="contact-campus_form-row">
@@ -73,19 +73,19 @@ function ContactCampusComponent({
                   id="fullName"
                   name="fullName"
                   type="text"
-                  placeholder="e.g. Youssef El-Sherif"
+                  placeholder="Enter your full name"
                   value={formData.fullName}
                   onChange={handleChange}
                   required
                 />
               </div>
               <div>
-                <label htmlFor="email">Corporate Email (Optional)</label>
+                <label htmlFor="email">Email Address</label>
                 <input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="name@company.com"
+                  placeholder="name@example.com"
                   value={formData.email}
                   onChange={handleChange}
                 />
@@ -107,8 +107,11 @@ function ContactCampusComponent({
                 />
               </div>
               <div>
-                <label htmlFor="track">Desired Track</label>
+                <label htmlFor="track">Program / Training Interest</label>
                 <Select id="track" name="track" value={formData.track} onChange={handleChange}>
+                  <option value="" disabled>
+                    Select your area of interest
+                  </option>
                   {trackOptions.map((option) => (
                     <option key={option}>{option}</option>
                   ))}
@@ -118,7 +121,7 @@ function ContactCampusComponent({
 
             <div>
               <label htmlFor="experience">
-                Years of Technical / Management Experience (Optional)
+                Professional Experience (Optional)
               </label>
               <Select
                 id="experience"
@@ -126,6 +129,9 @@ function ContactCampusComponent({
                 value={formData.experience}
                 onChange={handleChange}
               >
+                <option value="" disabled>
+                  Select experience level
+                </option>
                 {experienceOptions.map((option) => (
                   <option key={option}>{option}</option>
                 ))}
@@ -146,7 +152,7 @@ function ContactCampusComponent({
                 <span className="contact-campus_notice-text">
                   {status === "error"
                     ? errorMessage
-                    : "Thank you! We received your application. Our admissions team will contact you within 2 business days."}
+                    : "Thank you! We received your inquiry. Our team will get back to you shortly."}
                 </span>
                 <button
                   type="button"
@@ -164,11 +170,10 @@ function ContactCampusComponent({
               className="contact-campus_submit"
               disabled={status === "submitting"}
             >
-              {status === "submitting" ? "Submitting…" : "Submit Application"}
+              {status === "submitting" ? "Sending…" : "Send Inquiry"}
             </button>
             <p className="contact-campus_privacy">
-              Submissions are kept strictly confidential under educational data
-              protection standards.
+              Our team will get back to you to discuss your inquiry.
             </p>
           </form>
         </div>

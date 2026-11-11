@@ -29,7 +29,7 @@ const ROLE_PATHS: Record<RoleName, string[]> = {
   [ROLES.coordinator]: ["/coordinator", "/profile"],
   [ROLES.manager]: ["/admin", "/profile"],
   [ROLES.admin]: ["/admin", "/profile"],
-  [ROLES.contentManager]: ["/admin/courses", "/profile"],
+  [ROLES.contentManager]: ["/admin/courses", "/admin/faqs", "/admin/testimonials", "/profile"],
 };
 
 function isKnownRole(role?: string | null): role is RoleName {

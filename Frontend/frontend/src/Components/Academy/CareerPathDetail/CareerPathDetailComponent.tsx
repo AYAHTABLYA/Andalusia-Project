@@ -94,7 +94,7 @@ function CareerPathDetailComponent({ path, onApply, onDownloadSyllabus, syllabus
                 <div className="career-path-detail_box-19">
                   <button type="button" onClick={onApply} className="career-path-detail_btn-1">
                     <span>Apply for Executive Path Interview</span>
-                    <span className="career-path-detail_text-14 material-symbols-outlined">arrow_forward</span>
+                    <span className="career-path-detail_text-14 material-symbols-outlined icon-dir">arrow_forward</span>
                   </button>
                   <button type="button" onClick={onDownloadSyllabus} disabled={syllabusLoading} className="career-path-detail_btn-2">
                     <span className="career-path-detail_text-4 material-symbols-outlined">download</span>
@@ -199,7 +199,7 @@ function CareerPathDetailComponent({ path, onApply, onDownloadSyllabus, syllabus
                     </div>
                     <Link to={`/programs/${p.slug}`} className="career-path-detail_link-3">
                       <span>View Program Details</span>
-                      <span className="career-path-detail_text-24 material-symbols-outlined">arrow_forward</span>
+                      <span className="career-path-detail_text-24 material-symbols-outlined icon-dir">arrow_forward</span>
                     </Link>
                   </div>
                 </div>

@@ -51,7 +51,8 @@
 .payments_toolbar-top { display: flex; align-items: center; gap: 0.75rem; }
 .payments_search { position: relative; flex: 1; }
 .payments_search .material-symbols-outlined { position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%); font-size: 1.25rem; color: var(--color-on-surface-variant); }
-.payments_search input { width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; font-size: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--color-outline); background-color: var(--color-surface); }
+html[dir="rtl"] .payments_search .material-symbols-outlined { left: auto; right: 0.875rem; }
+.payments_search input { width: 100%; padding-block: 0.5rem; padding-inline: 2.5rem 1rem; font-size: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--color-outline); background-color: var(--color-surface); }
 .payments_export { display: grid; place-items: center; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--color-outline); color: var(--color-on-surface-variant); transition: all 0.2s ease; }
 .payments_export:hover { color: var(--color-primary); border-color: var(--color-primary); background-color: var(--color-surface-container-low); }
 .payments_toolbar-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--color-outline-variant); font-size: 0.75rem; color: var(--color-on-surface-variant); }
@@ -65,11 +66,11 @@
 /* ---- Table ---- */
 .payments_table-card { overflow: hidden; border-radius: 1rem; }
 .payments_table-scroll { overflow-x: auto; }
-.payments_table { width: 100%; font-size: 0.75rem; text-align: left; }
+.payments_table { width: 100%; font-size: 0.75rem; text-align: start; }
 .payments_table thead tr { background-color: var(--color-surface-container-low); border-bottom: 1px solid var(--color-outline-variant); }
 .payments_table th { padding: 0.875rem 1rem; font-weight: 600; color: var(--color-on-surface-variant); }
 .payments_th-right,
-.payments_td-right { text-align: right; }
+.payments_td-right { text-align: end; }
 .payments_table tbody tr + tr { border-top: 1px solid var(--color-outline-variant); }
 .payments_table tbody tr:hover { background-color: var(--color-surface); }
 .payments_table td { padding: 1rem; vertical-align: top; }
@@ -140,9 +141,9 @@
 .payments_breakdown table { width: 100%; }
 .payments_breakdown thead { background-color: var(--color-surface-container-low); color: var(--color-on-surface-variant); border-bottom: 1px solid var(--color-outline-variant); }
 .payments_breakdown th,
-.payments_breakdown td { padding: 0.625rem 1rem; text-align: left; }
+.payments_breakdown td { padding: 0.625rem 1rem; text-align: start; }
 .payments_breakdown th:last-child,
-.payments_breakdown td:last-child { text-align: right; }
+.payments_breakdown td:last-child { text-align: end; }
 .payments_breakdown tbody tr + tr { border-top: 1px solid var(--color-outline-variant); }
 .payments_breakdown-total { font-weight: 700; background-color: rgba(244, 244, 242, 0.6); }
 .payments_breakdown-total td:last-child { font-size: 1rem; color: var(--color-primary); }

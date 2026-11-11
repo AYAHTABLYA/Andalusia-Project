@@ -131,7 +131,7 @@ function RegisterContainer() {
           Already registered?
           <Link to="/login" state={{ from }} className="auth_header_pill-btn">
             Sign In
-            <span className="material-symbols-outlined">arrow_forward</span>
+            <span className="material-symbols-outlined icon-dir">arrow_forward</span>
           </Link>
         </span>
       }

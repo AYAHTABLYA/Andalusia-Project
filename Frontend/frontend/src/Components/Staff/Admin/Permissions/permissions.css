@@ -11,7 +11,7 @@
 .perm_groups { display: grid; gap: 0.85rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); align-items: start; margin-bottom: 1rem; }
 .perm_g { border: 1px solid var(--line); border-radius: 1rem; background: var(--surface-white, #fff); box-shadow: var(--shadow-sm); overflow: hidden; }
 .perm_g.is-open { border-color: var(--brand-300); }
-.perm_g-head { display: flex; align-items: center; gap: 0.5rem; padding-right: 0.7rem; }
+.perm_g-head { display: flex; align-items: center; gap: 0.5rem; padding-inline-end: 0.7rem; }
 .perm_g-toggle {
   flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.55rem; padding: 0.85rem 0.9rem;
   border: 0; background: transparent; font: inherit; text-align: start; color: var(--ink-900); cursor: pointer;

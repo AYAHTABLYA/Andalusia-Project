@@ -55,7 +55,7 @@
 .checkout_total { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; padding: 1rem; border-radius: 0.75rem; border: 1px solid var(--color-outline-variant); background-color: var(--color-surface-container-low); }
 .checkout_total > div:first-child { display: flex; flex-direction: column; }
 .checkout_total-label { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-primary); }
-.checkout_total-amount { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.checkout_total-amount { display: flex; flex-direction: column; align-items: flex-end; text-align: end; }
 .checkout_total-amount strong { font-size: 1.5rem; line-height: 2rem; font-weight: 700; color: var(--color-primary); }
 .checkout_total-amount span { font-size: 0.6875rem; color: var(--color-on-surface-variant); }
 .checkout_guarantee { display: flex; align-items: center; justify-content: center; gap: 0.375rem; margin-top: 1rem; font-size: 0.8125rem; text-align: center; color: var(--color-on-surface-variant); }
@@ -92,7 +92,8 @@
 .checkout_form .portal-ui_field label { text-transform: none; font-size: 0.8125rem; color: var(--color-on-surface); }
 .checkout_input { position: relative; }
 .checkout_input .material-symbols-outlined { position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%); font-size: 1.25rem; color: var(--color-on-surface-variant); pointer-events: none; }
-.checkout_input .portal-ui_input { height: 3rem; padding-left: 2.75rem; }
+html[dir="rtl"] .checkout_input .material-symbols-outlined { left: auto; right: 0.875rem; }
+.checkout_input .portal-ui_input { height: 3rem; padding-inline-start: 2.75rem; }
 .checkout_input .portal-ui_input:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--ring); }
 .checkout_input .portal-ui_input[aria-invalid="true"] { border-color: var(--color-error); }
 .checkout_error { font-size: 0.75rem; color: var(--color-error); }
@@ -115,7 +116,7 @@
 .checkout_receipt > div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.5rem 0; font-size: 0.8125rem; }
 .checkout_receipt > div + div { border-top: 1px solid var(--color-surface-container); }
 .checkout_receipt dt { color: var(--color-on-surface-variant); }
-.checkout_receipt dd { text-align: right; font-weight: 600; }
+.checkout_receipt dd { text-align: end; font-weight: 600; }
 .checkout_receipt-total { font-size: 0.9375rem !important; }
 .checkout_receipt-total dt { font-weight: 700; color: var(--color-on-surface); }
 .checkout_receipt-total dd { color: var(--color-primary); }

@@ -16,7 +16,7 @@ function NavbarComponent({ accountPath, menuOpen, onToggleMenu, onCloseMenu }: P
     <header className="navbar" data-purpose="site-navigation">
       <div className="navbar_inner">
         <Link className="navbar_brand" to="/" onClick={onCloseMenu}>
-          <img className="navbar_logo-img" src={logo} alt="Andalusia Academy" />
+          <img className="navbar_logo-img" src={logo} alt="Andalusia Academy" width={1125} height={290} />
         </Link>
 
         <nav className="navbar_links">

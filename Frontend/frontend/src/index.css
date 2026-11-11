@@ -109,3 +109,17 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* RTL helpers: --dir is +1 in LTR and -1 in RTL. Use it for slide-in / nudge transforms:
+   translateX(calc(var(--dir) * 100%)). */
+:root { --dir: 1; }
+html[dir="rtl"] { --dir: -1; }
+
+/* Directional icons (chevrons, back/forward arrows, send, reply) point the wrong way in RTL.
+   Add the .icon-dir class to the icon element. Never use it on logos, clocks, checkmarks, etc. */
+html[dir="rtl"] .icon-dir { transform: scaleX(-1); }
+
+/* LTR islands inside Arabic text: emails, phone numbers, URLs and card fields are typed in Latin/digits.
+   plaintext lets each field pick its own text direction (the box, padding and icons stay RTL). */
+html[dir="rtl"] :is(input[type="email"], input[type="tel"], input[type="url"], input[autocomplete^="cc-"]) { unicode-bidi: plaintext; }
+.ltr-isolate { direction: ltr; unicode-bidi: isolate; }

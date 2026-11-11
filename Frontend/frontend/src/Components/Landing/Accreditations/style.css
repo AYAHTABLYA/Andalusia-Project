@@ -62,7 +62,7 @@
   align-items: center;
   flex-shrink: 0;
   gap: 16px;
-  padding-right: 16px;
+  padding-inline-end: 16px;
 }
 
 .accreditations_badge {

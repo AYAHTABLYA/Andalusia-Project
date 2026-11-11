@@ -39,7 +39,7 @@ function FooterComponent() {
               <img
                 className="landing-footer_logo"
                 src={logo}
-                alt="Andalusia Academy"
+                alt="Andalusia Academy" width={1125} height={290}
               />
             </div>
             <p>

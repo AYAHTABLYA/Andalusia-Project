@@ -31,7 +31,7 @@ function Pagination({ page, pageSize, total, onPage }: Props) {
         disabled={page <= 1}
         onClick={() => onPage(page - 1)}
       >
-        <span className="material-symbols-outlined">chevron_left</span>
+        <span className="material-symbols-outlined icon-dir">chevron_left</span>
         Prev
       </button>
 
@@ -58,7 +58,7 @@ function Pagination({ page, pageSize, total, onPage }: Props) {
         onClick={() => onPage(page + 1)}
       >
         Next
-        <span className="material-symbols-outlined">chevron_right</span>
+        <span className="material-symbols-outlined icon-dir">chevron_right</span>
       </button>
     </nav>
   );

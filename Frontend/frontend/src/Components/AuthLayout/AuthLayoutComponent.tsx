@@ -20,7 +20,7 @@ function AuthLayoutComponent({
     <div className="auth">
       <header className="auth_header">
         <div className="auth_brand">
-          <img className="auth_logo-img" src={logo} alt="Andalusia Academy" />
+          <img className="auth_logo-img" src={logo} alt="Andalusia Academy" width={1125} height={290} />
         </div>
         <div className="auth_header_side">
           <LanguageSwitcher />

@@ -109,7 +109,7 @@ export default function InstructorMessages() {
                   onChange={(e) => setDraft(e.target.value)}
                 />
                 <button type="submit" className="ins-send" disabled={!draft.trim() || m.sending} aria-label="Send">
-                  <span className="material-symbols-outlined">send</span>
+                  <span className="material-symbols-outlined icon-dir">send</span>
                 </button>
               </form>
             </>

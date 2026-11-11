@@ -9,8 +9,8 @@ const INITIAL_FORM: ApplicationFormType = {
   fullName: "",
   email: "",
   phone: "",
-  track: TRACK_OPTIONS[0],
-  experience: EXPERIENCE_OPTIONS[0],
+  track: "",
+  experience: "",
 };
 
 function ContactCampusContainer() {
@@ -38,8 +38,8 @@ function ContactCampusContainer() {
         fullName: formData.fullName.trim(),
         mobileNumber: formData.phone.trim(),
         email: formData.email.trim() || undefined,
-        desiredTrack: formData.track,
-        experience: formData.experience,
+        desiredTrack: formData.track || undefined,
+        experience: formData.experience || undefined,
       });
       setFormData(INITIAL_FORM);
       setStatus("success");
@@ -47,7 +47,7 @@ function ContactCampusContainer() {
       setErrorMessage(
         err instanceof ApiError && err.status === 429
           ? "Too many requests from this device. Please try again in a few minutes."
-          : getErrorMessage(err, "We could not send your application. Please try again."),
+          : getErrorMessage(err, "We could not send your inquiry. Please try again."),
       );
       setStatus("error");
     }

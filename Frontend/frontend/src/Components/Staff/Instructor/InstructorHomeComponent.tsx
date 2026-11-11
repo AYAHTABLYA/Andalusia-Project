@@ -177,7 +177,7 @@ function InstructorHomeComponent() {
       <section className="instructor-panel" id="instructor-today">
         <div className="instructor-panel_header">
           <div><h2>Today’s schedule</h2><p>{view.upcoming} upcoming {view.upcoming === 1 ? "session" : "sessions"}</p></div>
-          <Link to="/instructor/schedule" className="instructor-text-link">View calendar <span className="material-symbols-outlined">arrow_forward</span></Link>
+          <Link to="/instructor/schedule" className="instructor-text-link">View calendar <span className="material-symbols-outlined icon-dir">arrow_forward</span></Link>
         </div>
         {today.length ? <div className="instructor-tools-list">{today.map(s => {
           const href = joinHref(s);
@@ -201,7 +201,7 @@ function InstructorHomeComponent() {
           <span className="instructor-tool_copy"><strong>{a.title}</strong><small>{a.detail}</small></span>
           <small className="instructor-activity_time">{ago(a.at)}</small>
         </div>)}</div> : <div className="instructor-inline-empty"><span className="material-symbols-outlined">notifications</span><span><strong>{loading ? "Loading activity…" : "No recent activity"}</strong><small>Submissions and payouts will show up here.</small></span></div>}
-        <Link to="/instructor/assignments" className="instructor-see-all">See all activity <span className="material-symbols-outlined">arrow_forward</span></Link>
+        <Link to="/instructor/assignments" className="instructor-see-all">See all activity <span className="material-symbols-outlined icon-dir">arrow_forward</span></Link>
       </section>
     </div>
     <OpsBar actions={[

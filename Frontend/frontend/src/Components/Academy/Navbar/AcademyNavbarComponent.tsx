@@ -27,7 +27,7 @@ function AcademyNavbarComponent({ links, currentPath, signedIn, accountPath, men
           <img
             className="academy-navbar_logo-img"
             src={logo}
-            alt="Andalusia Academy"
+            alt="Andalusia Academy" width={1125} height={290}
           />
         </Link>
 
@@ -50,7 +50,7 @@ function AcademyNavbarComponent({ links, currentPath, signedIn, accountPath, men
           <ThemeSwitcher />
           <a href={`tel:${SUPPORT_PHONE.replace(/[^+\d]/g, "")}`} className="academy-navbar_phone">
             <span className="material-symbols-outlined">support_agent</span>
-            <span>{SUPPORT_PHONE}</span>
+            <span dir="ltr">{SUPPORT_PHONE}</span>
           </a>
           <Link to={accountPath} className="academy-navbar_portal">
             <span className="material-symbols-outlined">{signedIn ? "account_circle" : "lock"}</span>

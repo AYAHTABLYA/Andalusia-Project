@@ -391,7 +391,7 @@ function PaymentsComponent({
                   <div>
                     <p><strong>Bursar &amp; Registrar desk:</strong> {BILLING_CONTACT.location}</p>
                     <ul className="payments_mono">
-                      <li><span className="material-symbols-outlined">phone</span>{SUPPORT_PHONE}</li>
+                      <li><span className="material-symbols-outlined">phone</span><bdi dir="ltr">{SUPPORT_PHONE}</bdi></li>
                       <li><span className="material-symbols-outlined">mail</span>{BILLING_CONTACT.email}</li>
                     </ul>
                   </div>

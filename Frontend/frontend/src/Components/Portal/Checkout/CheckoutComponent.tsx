@@ -69,7 +69,7 @@ function CheckoutComponent({
 
       <div>
         <button type="button" className="portal-ui_btn portal-ui_btn--outline portal-ui_btn--sm" onClick={onBack}>
-          <span className="material-symbols-outlined">arrow_back</span>
+          <span className="material-symbols-outlined icon-dir">arrow_back</span>
           Back to Payments
         </button>
       </div>
@@ -101,7 +101,7 @@ function CheckoutComponent({
               <span className="checkout_ref">REF: {target.applicationRef}</span>
             </div>
             <h2 className="checkout_program">{target.title}</h2>
-            <p className="checkout_muted">{target.itemType} application</p>
+            <p className="checkout_muted">{`${target.itemType} application`}</p>
 
             {(target.scheduleLabel || target.startDate) && (
               <ul className="checkout_facts">
@@ -129,7 +129,7 @@ function CheckoutComponent({
 
             <ul className="checkout_lines">
               <li>
-                <div><strong>{target.title}</strong><span>{target.itemType} tuition</span></div>
+                <div><strong>{target.title}</strong><span>{`${target.itemType} tuition`}</span></div>
                 <b>{money(target.amount)}</b>
               </li>
             </ul>
@@ -137,7 +137,7 @@ function CheckoutComponent({
             <div className="checkout_total">
               <div>
                 <span className="checkout_total-label">Total Due Now</span>
-                <span className="checkout_muted">Tuition as published for this {target.itemType.toLowerCase()}</span>
+                <span className="checkout_muted">{`Tuition as published for this ${target.itemType.toLowerCase()}`}</span>
               </div>
               <div className="checkout_total-amount">
                 <strong>{money(target.amount)}</strong>
@@ -286,7 +286,7 @@ function CheckoutComponent({
             <>
               <a className="portal-ui_btn portal-ui_btn--outline" href={`tel:${SUPPORT_PHONE.replace(/[^\d+]/g, "")}`}>
                 <span className="material-symbols-outlined">support_agent</span>
-                Contact Campus Bursar • {SUPPORT_PHONE}
+                Contact Campus Bursar • <bdi dir="ltr">{SUPPORT_PHONE}</bdi>
               </a>
               <button type="button" className="portal-ui_btn portal-ui_btn--primary" onClick={onRetry}>
                 <span className="material-symbols-outlined">refresh</span>

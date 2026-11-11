@@ -2,7 +2,7 @@ import { ROLES } from "../../utils/roles";
 
 // permission: a single code, or a list where ANY one of them is enough to show the tab.
 type StaffTab = { to: string; label: string; icon: string; roles: string[]; permission?: string | string[] };
-// Content_Manager only manages course content: it gets the Courses tab and nothing else,
+// Content_Manager only manages content: Courses, FAQs and Testimonials (content.manage),
 // because every other /api/admin/* endpoint answers 403 for that role.
 const admins = [ROLES.admin, ROLES.manager];
 const STAFF_TABS: StaffTab[] = [
@@ -10,6 +10,8 @@ const STAFF_TABS: StaffTab[] = [
   { to: "/admin/instructors", label: "Instructors", icon: "person_apron", roles: admins },
   { to: "/admin/students", label: "Students", icon: "school", roles: admins },
   { to: "/admin/courses", label: "Courses", icon: "menu_book", roles: [...admins, ROLES.contentManager] },
+  { to: "/admin/faqs", label: "FAQs", icon: "help", roles: [...admins, ROLES.contentManager], permission: "content.manage" },
+  { to: "/admin/testimonials", label: "Testimonials", icon: "format_quote", roles: [...admins, ROLES.contentManager], permission: "content.manage" },
   { to: "/admin/schedule", label: "Schedule", icon: "calendar_month", roles: admins },
   { to: "/admin/compensation", label: "Compensation", icon: "payments", roles: [ROLES.admin] },
   { to: "/admin/reports", label: "Reports", icon: "bar_chart", roles: admins },

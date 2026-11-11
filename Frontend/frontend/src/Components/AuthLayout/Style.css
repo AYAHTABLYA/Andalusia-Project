@@ -124,7 +124,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 6px 6px 14px;
+  padding-block: 6px;
+  padding-inline: 14px 6px;
   border-radius: 999px;
   border: 1px solid var(--header-border);
   background: var(--card);
@@ -217,7 +218,7 @@
   color: var(--muted);
 }
 .auth_accreditations .material-symbols-outlined {
-  margin-right: 4px;
+  margin-inline-end: 4px;
   font-size: 17px;
   color: var(--primary);
 }
@@ -305,12 +306,16 @@
   color: var(--faint);
   pointer-events: none;
 }
+html[dir="rtl"] .auth .input_wrap > .material-symbols-outlined:first-child {
+  left: auto;
+  right: 12px;
+}
 .auth .input_wrap .input {
-  padding-left: 38px;
+  padding-inline-start: 38px;
 }
 .auth .input_wrap button {
   position: absolute;
-  right: 8px;
+  inset-inline-end: 8px;
   display: flex;
   background: none;
   border: none;
@@ -389,7 +394,7 @@
   color: var(--muted);
   background: var(--card);
   border: none;
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
   padding: 8px 10px;
   cursor: pointer;
   transition:
@@ -397,7 +402,7 @@
     color 0.2s;
 }
 .auth .segmented button:last-child {
-  border-right: none;
+  border-inline-end: none;
 }
 .auth .segmented button:hover {
   background: var(--surface-low);
@@ -530,7 +535,7 @@
     border-color 0.3s ease;
 }
 .auth_pillar:hover {
-  transform: translateX(6px);
+  transform: translateX(calc(var(--dir) * 6px));
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(228, 201, 187, 0.5);
 }
@@ -583,7 +588,7 @@
   background: var(--surface-low);
 }
 .auth .input_wrap .input {
-  padding-left: 42px;
+  padding-inline-start: 42px;
 }
 .auth .input:focus {
   background: var(--surface-white, #fff);
@@ -740,11 +745,15 @@
   border-radius: 10px;
 }
 .auth .input_wrap .input {
-  padding-left: 38px;
+  padding-inline-start: 38px;
 }
 .auth .input_wrap > .material-symbols-outlined:first-child {
   left: 11px;
   font-size: 17px;
+}
+html[dir="rtl"] .auth .input_wrap > .material-symbols-outlined:first-child {
+  left: auto;
+  right: 11px;
 }
 .auth .btn {
   font-size: 13.5px;
@@ -801,5 +810,5 @@
 .auth_header_side { flex-wrap: wrap; min-width: 0; max-width: 100%; }
 @media (max-width: 520px) {
   .auth_header_side { gap: 8px; margin-inline-start: auto; }
-  .auth_header_pill { padding: 4px 4px 4px 10px; gap: 6px; font-size: 12px; }
+  .auth_header_pill { padding-block: 4px; padding-inline: 10px 4px; gap: 6px; font-size: 12px; }
 }
