@@ -5,7 +5,6 @@ import NavbarContainer from "./Navbar/NavbarContainer";
 import HeroContainer from "./Hero/HeroContainer";
 import ValuePillarsContainer from "./ValuePillars/ValuePillarsContainer";
 import PopularCategoriesContainer from "./PopularCategories/PopularCategoriesContainer";
-import FeaturedCoursesContainer from "./FeaturedCourses/FeaturedCoursesContainer";
 import ComingSoonContainer from "./ComingSoon/ComingSoonContainer";
 import PortalPreviewContainer from "./PortalPreview/PortalPreviewContainer";
 import AccreditationsContainer from "./Accreditations/AccreditationsContainer";
@@ -35,7 +34,6 @@ function LandingPage() {
         <HeroContainer />
         <ValuePillarsContainer />
         <PopularCategoriesContainer />
-        <FeaturedCoursesContainer />
         <ComingSoonContainer />
         <PortalPreviewContainer />
         <AccreditationsContainer />
