@@ -1,4 +1,5 @@
 import { Fragment, memo } from "react";
+import { Link } from "react-router-dom";
 import type { FaqItem } from "../../../Types/Faq";
 import "./style.css";
 
@@ -15,7 +16,9 @@ function FaqComponent({ items, loading, errorMessage, onRetry }: Props) {
       <div className="faq_wrap">
         <div className="faq_head">
           <span className="eyebrow">Need Clarification?</span>
-          <h2 className="heading-serif faq_title">Frequently Asked Questions</h2>
+          <h2 className="heading-serif faq_title">
+            Frequently Asked Questions
+          </h2>
           <p>
             Find answers regarding cohort schedules, offline studio access,
             admissions, and dual certifications.
@@ -34,7 +37,9 @@ function FaqComponent({ items, loading, errorMessage, onRetry }: Props) {
             </button>
           </p>
         ) : items.length === 0 ? (
-          <p className="faq_state">Frequently asked questions will appear here soon.</p>
+          <p className="faq_state">
+            Frequently asked questions will appear here soon.
+          </p>
         ) : (
           <div className="faq_list">
             {/* Native <details> keeps the accordion accessible without extra state */}
@@ -59,6 +64,11 @@ function FaqComponent({ items, loading, errorMessage, onRetry }: Props) {
             ))}
           </div>
         )}
+
+        <p className="faq_more">
+          Still have a question? Use the help button at the corner, or{" "}
+          <Link to="/#contact-campus">contact admissions</Link>.
+        </p>
       </div>
     </section>
   );

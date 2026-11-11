@@ -51,6 +51,7 @@ import FaqsContainer from "./Components/Staff/Admin/Faqs/FaqsContainer";
 import TestimonialsContainer from "./Components/Staff/Admin/Testimonials/TestimonialsContainer";
 import SendNotificationContainer from "./Components/Staff/Admin/Notifications/SendNotificationContainer";
 import { ROLES } from "./utils/roles";
+import CustomerServiceBot from "./Components/CustomerServiceBot/CustomerServiceBot";
 
 function App() {
   return (
@@ -158,6 +159,9 @@ function App() {
             </Route>
           </Route>
         </Routes>
+
+        {/* Floating support bot: inside Router (uses navigate), outside Routes (persists on every page) */}
+        <CustomerServiceBot />
       </Router>
     </div>
   );

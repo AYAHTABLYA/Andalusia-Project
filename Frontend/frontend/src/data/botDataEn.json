@@ -1,0 +1,189 @@
+{
+  "title": "Academy Help Center",
+  "welcomeMessage": "Welcome to Customer Service! Choose the topic you'd like to ask about:",
+  "ui": {
+    "back": "Back to topics",
+    "close": "Close",
+    "open": "Open customer service",
+    "closeBot": "Close customer service",
+    "defaultLink": "Go to the page for details"
+  },
+  "topics": [
+    {
+      "id": "courses",
+      "title": "📚 Courses, Programs & Career Paths",
+      "badgeColor": "#99634f",
+      "questions": [
+        {
+          "id": 101,
+          "question": "How do I apply for a course or program?",
+          "answerPoints": [
+            "Open the Courses or Programs page and pick what suits you.",
+            "Click the Apply button and fill in your basic details.",
+            "You'll find your request under \"My Applications\" and can track its status there."
+          ],
+          "visualization": {
+            "type": "stepper",
+            "steps": [
+              {
+                "step": "1",
+                "title": "Choose a course"
+              },
+              {
+                "step": "2",
+                "title": "Submit request"
+              },
+              {
+                "step": "3",
+                "title": "Track status"
+              }
+            ]
+          },
+          "topicPath": "/courses",
+          "topicLabel": "Browse courses"
+        },
+        {
+          "id": 102,
+          "question": "Where are the cohorts held?",
+          "answerPoints": [
+            "In-person cohorts are held at the Alexandria branch.",
+            "Room details and start date are listed on each course page.",
+            "If a cohort is full, you can join the waiting list or pick the nearest start date."
+          ],
+          "topicPath": "/courses",
+          "topicLabel": "Schedule details"
+        },
+        {
+          "id": 103,
+          "question": "What's the difference between a course, a program, and a career path?",
+          "answerPoints": [
+            "Course: standalone study in a single subject.",
+            "Program: a group of related courses ending with a graduation project.",
+            "Career path: a complete plan of several programs toward a specific job goal."
+          ],
+          "topicPath": "/career-paths",
+          "topicLabel": "Explore career paths"
+        }
+      ]
+    },
+    {
+      "id": "payment",
+      "title": "💳 Payment & Installments",
+      "badgeColor": "#059669",
+      "questions": [
+        {
+          "id": 201,
+          "question": "Can I pay in installments?",
+          "answerPoints": [
+            "Yes, installment plans are available for most programs.",
+            "Contact the admissions team to arrange a plan before the cohort starts."
+          ],
+          "visualization": {
+            "type": "timeline",
+            "steps": [
+              {
+                "step": "1",
+                "title": "Contact admissions"
+              },
+              {
+                "step": "2",
+                "title": "Choose a plan"
+              },
+              {
+                "step": "3",
+                "title": "Confirm booking"
+              }
+            ]
+          }
+        },
+        {
+          "id": 202,
+          "question": "Where can I track my payments and receipts?",
+          "answerPoints": [
+            "Sign in, then open the \"Payments\" page from the side menu.",
+            "You'll see all your transactions and their status (in progress / successful / failed / refunded)."
+          ],
+          "topicPath": "/payments",
+          "topicLabel": "Open the Payments page"
+        }
+      ]
+    },
+    {
+      "id": "account",
+      "title": "👤 Account & Sign-in",
+      "badgeColor": "#4f46e5",
+      "questions": [
+        {
+          "id": 301,
+          "question": "How do I create an account and verify my email?",
+          "answerPoints": [
+            "Click Create an account and enter your details.",
+            "You'll receive an email with a verification code (OTP).",
+            "Enter the code on the verification page to activate your account."
+          ],
+          "visualization": {
+            "type": "stepper",
+            "steps": [
+              {
+                "step": "1",
+                "title": "Create account"
+              },
+              {
+                "step": "2",
+                "title": "Get the code"
+              },
+              {
+                "step": "3",
+                "title": "Activate"
+              }
+            ]
+          },
+          "topicPath": "/register",
+          "topicLabel": "Create an account"
+        },
+        {
+          "id": 302,
+          "question": "I forgot my password. What should I do?",
+          "answerPoints": [
+            "On the sign-in page, choose \"Forgot password?\".",
+            "Enter your email and you'll receive a message to reset it."
+          ],
+          "topicPath": "/login",
+          "topicLabel": "Sign-in page"
+        }
+      ]
+    },
+    {
+      "id": "study",
+      "title": "🎓 Studying & Certificates",
+      "badgeColor": "#d97706",
+      "questions": [
+        {
+          "id": 401,
+          "question": "Are the certificates accredited?",
+          "answerPoints": [
+            "Our programs carry Pearson and CPD accreditation, as shown on each program page.",
+            "You receive the certificate after successfully completing the program."
+          ],
+          "topicPath": "/programs",
+          "topicLabel": "Browse programs"
+        },
+        {
+          "id": 402,
+          "question": "Where do I find my schedule, materials, and assignments?",
+          "answerPoints": [
+            "After you're accepted and enrolled, open \"Workspace\" from your account.",
+            "You'll find the schedule, assignments, materials, and messages in separate tabs."
+          ],
+          "topicPath": "/workspace",
+          "topicLabel": "Open Workspace"
+        }
+      ]
+    }
+  ],
+  "contactUs": {
+    "label": "Can't find your question? Contact us on WhatsApp",
+    "whatsappNumber": "201000000000",
+    "defaultMessage": "Hello, I have a question that isn't in the FAQ list."
+  }
+}
