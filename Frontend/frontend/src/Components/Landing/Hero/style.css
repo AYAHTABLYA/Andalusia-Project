@@ -1,0 +1,519 @@
+/* =====================================================================
+   Hero slider
+   Slide 1 ("cover"): light hero, text on the start side, artwork on the end side.
+   Slides 2+ ("photo") show a full photo: blurred panel on the start side
+   (where the text sits), clear on the end side.
+   ===================================================================== */
+.hero-slider {
+  --hero-autoplay: 4500ms;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  min-height: clamp(400px, 40vw, 540px);
+  background-color: #fff;
+  border-bottom: 1px solid var(--color-warm-border);
+}
+
+/* ---------- Slides (cross-fade) ----------
+   All slides share one grid cell, so the slider is as tall as the tallest slide. */
+.hero-slide {
+  position: relative;
+  grid-area: 1 / 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 40px 0 96px; /* bottom room for the controls */
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.5s ease,
+    visibility 0s linear 0.5s;
+}
+.hero-slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 1;
+  transition:
+    opacity 0.5s ease,
+    visibility 0s;
+}
+
+.hero-slide_bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-slide_wrap {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+}
+
+/* ---------- Slide 1: light cover, artwork already on the end side of the picture ---------- */
+.hero-slide--cover {
+  background-color: #faf6f2;
+}
+/* Zoomed out: the whole picture is shown (full height) on the end side and its
+   start edge fades into the page, instead of being cropped to fill the hero. */
+.hero-slide--cover .hero-slide_bg {
+  inset: auto 2.5% 0 auto;
+  width: auto;
+  height: 100%;
+  aspect-ratio: 922 / 512;
+  background-size: 100% 100%;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 16%,
+    #000 94%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 16%,
+    #000 94%,
+    transparent 100%
+  );
+}
+:root[dir="rtl"] .hero-slide--cover .hero-slide_bg {
+  inset: auto auto 0 2.5%;
+  -webkit-mask-image: linear-gradient(
+    270deg,
+    transparent 0,
+    #000 16%,
+    #000 94%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    270deg,
+    transparent 0,
+    #000 16%,
+    #000 94%,
+    transparent 100%
+  );
+}
+.hero-slide--cover .hero_content {
+  max-width: min(520px, 48%);
+  gap: 14px;
+}
+.hero-slide--cover .hero_title {
+  font-size: clamp(24px, 2.7vw, 40px);
+}
+.hero-slide--cover .hero_description {
+  font-size: clamp(14px, 1.1vw, 16px);
+}
+
+.hero_features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hero_features li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-800, #243033);
+}
+.hero_features li::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}
+
+/* ---------- Blurred start side, clear end side (all slides) ---------- */
+.hero-slide_glass {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  backdrop-filter: blur(16px) saturate(1.1);
+  background: linear-gradient(
+    90deg,
+    rgba(20, 27, 29, 0.66) 0%,
+    rgba(20, 27, 29, 0.5) 55%,
+    rgba(20, 27, 29, 0.2) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    #000 0%,
+    #000 40%,
+    transparent 72%
+  );
+  mask-image: linear-gradient(90deg, #000 0%, #000 40%, transparent 72%);
+}
+:root[dir="rtl"] .hero-slide_glass {
+  background: linear-gradient(
+    270deg,
+    rgba(20, 27, 29, 0.66) 0%,
+    rgba(20, 27, 29, 0.5) 55%,
+    rgba(20, 27, 29, 0.2) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    270deg,
+    #000 0%,
+    #000 40%,
+    transparent 72%
+  );
+  mask-image: linear-gradient(270deg, #000 0%, #000 40%, transparent 72%);
+}
+
+/* ---------- Text ---------- */
+.hero_content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 760px;
+}
+
+.hero_kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background-color: var(--surface-white, #fff);
+  border: 1px solid var(--color-warm-border);
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.hero_kicker-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}
+
+.hero_kicker-strong {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+
+.hero_title {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 800;
+  line-height: 1.15;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+
+.hero_title-accent {
+  color: var(--color-primary);
+}
+
+.hero_description {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-slate-700);
+  max-width: 600px;
+}
+
+@media (min-width: 1024px) {
+  .hero_description {
+    font-size: 16px;
+  }
+}
+
+/* Photo slides: light text on the dark blurred panel */
+.hero-slide--photo .hero_content {
+  max-width: 600px;
+}
+.landing-page .hero-slide--photo .hero_title {
+  color: #fff;
+}
+/* theme.css paints the accent with a dark brand gradient: too dim on photos */
+.landing-page .hero-slide--photo .hero_title-accent {
+  background: linear-gradient(
+    100deg,
+    var(--brand-100),
+    var(--brand-300) 60%,
+    #d8b19c
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.hero-slide--photo .hero_description {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* Replay the entrance animation every time a slide becomes active */
+.landing-page .hero-slide .hero_content > * {
+  animation: none;
+}
+.landing-page .hero-slide.is-active .hero_content > * {
+  animation: ds-rise 0.7s var(--ease) both;
+}
+.landing-page .hero-slide.is-active .hero_content > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.landing-page .hero-slide.is-active .hero_content > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.landing-page .hero-slide.is-active .hero_content > *:nth-child(4) {
+  animation-delay: 0.24s;
+}
+.hero_cta {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+/* ---------- Controls ---------- */
+.hero-slider_controls {
+  position: absolute;
+  z-index: 5;
+  inset-inline: 0;
+  bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 max(24px, calc((100% - 1280px) / 2 + 24px));
+  direction: ltr; /* arrows keep left = previous, also in Arabic */
+  pointer-events: none;
+}
+.hero-slider_controls > * {
+  pointer-events: auto;
+}
+
+.hero-slider_arrow,
+.hero-slider_pill {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  background: rgba(36, 48, 51, 0.72);
+  color: #fff;
+}
+
+.hero-slider_arrow {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.hero-slider_arrow:hover {
+  background: rgba(36, 48, 51, 0.92);
+}
+
+.hero-slider_pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+}
+
+.hero-slider_play {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface-white, #fff);
+  color: var(--ink-900);
+  cursor: pointer;
+}
+
+.hero-slider_dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    width 0.35s var(--ease),
+    background 0.2s;
+}
+.hero-slider_dot:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+.hero-slider_dot.is-active {
+  width: 44px;
+  background: rgba(255, 255, 255, 0.4);
+}
+/* Progress fill inside the active dot */
+.hero-slider_dot.is-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--surface-white, #fff);
+  transform-origin: left center;
+  animation: hero-dot-fill var(--hero-autoplay) linear forwards;
+}
+.hero-slider.is-paused .hero-slider_dot.is-active::after {
+  animation-play-state: paused;
+}
+@keyframes hero-dot-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.hero-slider button:focus-visible,
+.hero-slider a:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px var(--color-primary);
+}
+
+/* ---------- Responsive ---------- */
+@media (min-width: 1024px) {
+  .hero-slide {
+    padding-top: 48px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .hero-slide--cover .hero_content {
+    max-width: min(480px, 46%);
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-slider {
+    min-height: 0;
+  }
+  .hero-slide {
+    padding-bottom: 104px;
+  }
+  .hero-slider_controls {
+    padding: 0 16px;
+    bottom: 20px;
+  }
+  .hero-slider_arrow {
+    width: 40px;
+    height: 40px;
+  }
+  .hero_content,
+  .hero-slide--cover .hero_content,
+  .hero-slide--photo .hero_content {
+    max-width: 100%;
+    gap: 16px;
+  }
+  .hero-slide--cover .hero_title {
+    font-size: clamp(26px, 7.4vw, 34px);
+  }
+  .hero-slide--photo .hero_title {
+    font-size: clamp(26px, 7vw, 32px);
+  }
+  .hero_description,
+  .hero-slide--cover .hero_description {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  /* Phones: the picture gets its own band on top and the text sits below it,
+     so the photo is always visible (it used to be hidden under a full-screen blur). */
+  .hero-slide--cover {
+    padding-top: min(55.5vw, 260px);
+  }
+  .hero-slide--photo {
+    padding-top: 240px;
+    background-color: #141b1d;
+  }
+  .hero-slide--cover .hero-slide_bg,
+  :root[dir="rtl"] .hero-slide--cover .hero-slide_bg {
+    inset: 0 0 auto 0;
+    width: 100%;
+    height: min(55.5vw, 260px);
+    aspect-ratio: auto;
+    background-size: cover;
+    background-position: right top;
+    -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
+  }
+  .hero-slide--photo .hero-slide_bg {
+    inset: 0 0 auto 0;
+    height: 270px;
+  }
+  .hero-slide--photo .hero-slide_bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(20, 27, 29, 0) 45%, #141b1d 100%);
+  }
+  .hero-slide--photo .hero-slide_glass,
+  :root[dir="rtl"] .hero-slide--photo .hero-slide_glass {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-slider_pill {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .hero-slider_dot.is-active {
+    width: 32px;
+  }
+  .hero_features {
+    gap: 6px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide,
+  .hero-slide.is-active {
+    transition: none;
+  }
+  .hero-slider_dot.is-active::after {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+/* Arabic, slide 1: the artwork (and the "ANDALUSIA HEALTH" logo inside the picture) must not be mirrored,
+   so the picture stays on the right exactly as in English and the Arabic text sits in the free space on the left.
+   Without this the picture was moved to the left edge and ran into the right-aligned text. */
+@media (min-width: 768px) {
+  :root[dir="rtl"] .hero-slide--cover .hero-slide_bg {
+    inset: auto 2.5% 0 auto;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 16%,
+      #000 94%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 16%,
+      #000 94%,
+      transparent 100%
+    );
+  }
+  :root[dir="rtl"] .hero-slide--cover .hero_content {
+    margin-left: 0;
+    margin-right: auto;
+  }
+}

@@ -1,0 +1,36 @@
+/* Roles & permissions: collapsible groups in a responsive grid, with search. Extends the .perm_* rules in Staff/style.css */
+.perm_card { padding-bottom: 1rem; margin-bottom: 1rem; }
+.perm_tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
+.perm_search {
+  flex: 1 1 14rem; display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.8rem;
+  border: 1px solid var(--line); border-radius: 0.8rem; background: var(--surface-white, #fff); color: var(--muted);
+}
+.perm_search:focus-within { border-color: var(--brand-400); box-shadow: var(--ring); }
+.perm_search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; color: var(--ink-900); }
+
+.perm_groups { display: grid; gap: 0.85rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); align-items: start; margin-bottom: 1rem; }
+.perm_g { border: 1px solid var(--line); border-radius: 1rem; background: var(--surface-white, #fff); box-shadow: var(--shadow-sm); overflow: hidden; }
+.perm_g.is-open { border-color: var(--brand-300); }
+.perm_g-head { display: flex; align-items: center; gap: 0.5rem; padding-inline-end: 0.7rem; }
+.perm_g-toggle {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 0.55rem; padding: 0.85rem 0.9rem;
+  border: 0; background: transparent; font: inherit; text-align: start; color: var(--ink-900); cursor: pointer;
+}
+.perm_g-toggle:disabled { cursor: default; }
+.perm_g-toggle:focus-visible, .perm_g-all:focus-visible { outline: 2px solid var(--brand-400); outline-offset: -2px; border-radius: 0.6rem; }
+.perm_g-toggle .material-symbols-outlined { transition: transform 0.2s var(--ease, ease); color: var(--muted); }
+.perm_g.is-open .perm_g-toggle .material-symbols-outlined { transform: rotate(180deg); }
+.perm_g-count { padding: 0.1rem 0.5rem; border-radius: 999px; background: var(--surface-mid); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.perm_g-changed { padding: 0.1rem 0.5rem; border-radius: 999px; background: rgba(190, 140, 90, 0.2); color: var(--brand-700); font-size: 0.72rem; font-weight: 600; }
+.perm_g-all { flex: none; padding: 0.3rem 0.65rem; border: 1px solid var(--line); border-radius: 999px; background: transparent; font: inherit; font-size: 0.78rem; color: var(--brand-700); cursor: pointer; }
+.perm_g-all:hover:not(:disabled) { background: var(--brand-50); border-color: var(--brand-300); }
+.perm_g-all:disabled { opacity: 0.5; cursor: not-allowed; }
+.perm_g-list { list-style: none; margin: 0; padding: 0.25rem 0.5rem 0.6rem; border-top: 1px solid var(--line); }
+.perm_g-list li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.5rem 0.5rem; border-radius: 0.6rem; }
+.perm_g-list li:hover { background: var(--surface-low); }
+.perm_g-list li.is-changed { background: rgba(190, 140, 90, 0.14); }
+.perm_g-list li strong { display: block; font-size: 0.9rem; }
+.perm_g-list li small { display: block; opacity: 0.7; font-size: 0.78rem; }
+.perm_g-list .staff-switch { border: 0; padding: 0; flex: none; cursor: pointer; }
+.perm_g-list .staff-switch:disabled { cursor: not-allowed; opacity: 0.55; }
+.perm_g-list .staff-switch:focus-visible { outline: 2px solid var(--brand-400); outline-offset: 2px; }

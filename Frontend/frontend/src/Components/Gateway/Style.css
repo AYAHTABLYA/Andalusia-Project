@@ -1,0 +1,47 @@
+.gateway_form_component {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.gateway_form_component h2 {
+  font-size: 30px;
+}
+.gateway_intro h3 {
+  font-size: 18px;
+}
+.gateway_intro p {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.gateway_form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.gateway_password_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.gateway_password_row a,
+.gateway_footer a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-light);
+  text-decoration: none;
+}
+.gateway_password_row a:hover,
+.gateway_footer a:hover {
+  text-decoration: underline;
+}
+.gateway_footer {
+  font-size: 13px;
+  text-align: center;
+  color: var(--muted);
+}
+@media (max-width: 480px) {
+  .gateway_roles button {
+    font-size: 11.5px;
+  }
+}

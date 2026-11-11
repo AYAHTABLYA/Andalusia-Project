@@ -1,0 +1,418 @@
+/* =====================================================================
+   Andalusia Academy — Dark mode.
+   Switched by <html data-theme="dark"> (see utils/theme.ts + ThemeSwitcher).
+   Light mode is untouched: every token below is only defined here and every
+   place that uses one also carries its original light value as a fallback.
+   ===================================================================== */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* One accent only: rose-bronze, lifted so it reads on graphite */
+  --brand-50: #34302f;
+  --brand-100: #403a38;
+  --brand-300: #8a6454;
+  --brand-400: #d09a83;
+  --brand-500: #c08670;
+  --brand-600: #d39a84;
+  --brand-700: #efc9b8;
+  --amber: #dba37c;
+
+  /* Text: neutral light greys, all >= 4.5:1 on the surfaces below */
+  --ink-950: #f7f7f8;
+  --ink-900: #ececee;
+  --ink-800: #dcdde0;
+  --ink-700: #c3c5ca;
+  --muted: #aeb1b8;
+  --faint: #9a9da5;
+
+  /* Surfaces: dark graphite (not black), neutral, no colour cast */
+  --canvas: #26282c;
+  --surface-low: #2b2d32;
+  --surface-mid: #34373d;
+  --surface: #2f3136;
+  --line: #43464d;
+
+  --grad-ink: linear-gradient(145deg, #34373d, #25272b);
+  --grad-text: linear-gradient(100deg, #efc9b8, #d09a83 60%, #dba37c);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 28px 60px -24px rgba(0, 0, 0, 0.5);
+  --ring: 0 0 0 4px rgba(208, 154, 131, 0.28);
+
+  /* Tokens used by the hard-coded-colour replacements */
+  --surface-white: #303338;
+  --glass-rgb: 38 40 44;
+  --line-soft: #484b52;
+  --text-strong: #f1f1f3;
+  --tint-brand: #3c3735;
+  --tint-neutral: #383b41;
+  /* Status tints: same hues, quieter, so they stop competing */
+  --tint-green: rgba(110, 200, 140, 0.13);
+  --tint-amber: rgba(235, 180, 90, 0.13);
+  --tint-red: rgba(235, 120, 120, 0.13);
+  --tint-blue: rgba(130, 170, 230, 0.13);
+  --bd-green: rgba(110, 200, 140, 0.28);
+  --bd-amber: rgba(235, 180, 90, 0.28);
+  --bd-red: rgba(235, 120, 120, 0.28);
+  --bd-blue: rgba(130, 170, 230, 0.28);
+  --on-green: #9ad9b2;
+  --on-amber: #f0cd8e;
+  --on-blue: #b4c8f0;
+  --on-brand: #efc9b8;
+
+  /* Panels that stay dark in both themes (footer, toasts, dark cards) */
+  --panel-1: #1e2023;
+  --panel-2: #2b2d32;
+  --panel-3: #3a3d43;
+
+  /* Header controls (language / theme / bell / select) */
+  --ctl-border: #4a4d54;
+  --ctl-text: #ececee;
+  --ctl-hover: #3a3d43;
+}
+
+/* Landing defines its own slate palette with literal hex: flip it too */
+html[data-theme="dark"] .landing-page {
+  --color-slate-700: #c3c5ca;
+  --color-slate-800: #dcdde0;
+  --color-slate-900: #ececee;
+  --color-slate-950: #f7f7f8;
+  --shadow-elevated:
+    0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.35);
+  --shadow-premium: 0 18px 36px -12px rgba(0, 0, 0, 0.55);
+}
+
+/* Portal soft status tokens */
+html[data-theme="dark"] .portal {
+  --color-success-soft: rgba(110, 200, 140, 0.13);
+  --color-warning-soft: rgba(235, 180, 90, 0.13);
+  --color-success: #7ed69b;
+  --color-error: #ef8b8b;
+}
+html[data-theme="dark"] .academy {
+  --color-success: #7ed69b;
+  --color-error: #ef8b8b;
+}
+
+html[data-theme="dark"] body {
+  background: var(--canvas);
+  color: var(--ink-800);
+}
+html[data-theme="dark"] {
+  background: var(--canvas);
+}
+html[data-theme="dark"] ::selection {
+  background: var(--brand-300);
+  color: #fff;
+}
+
+/* Backdrop: flat graphite, no coloured glow or grid */
+html[data-theme="dark"] .ds-backdrop,
+html[data-theme="dark"] .academy,
+html[data-theme="dark"] .portal {
+  background-color: var(--canvas);
+  background-image: none;
+}
+
+/* Primary buttons: keep white text readable on hover */
+html[data-theme="dark"] .landing-page .btn-primary:hover,
+html[data-theme="dark"] .btn-primary:hover {
+  background-color: var(--brand-600);
+}
+html[data-theme="dark"] .landing-page .btn-dark {
+  color: #fff;
+}
+
+/* Hero slide 1 is a light, washed-out cover: tint it dark instead */
+html[data-theme="dark"] .hero-slider {
+  background-color: #26282c;
+}
+html[data-theme="dark"] .hero-slide--cover {
+  background-color: #26282c;
+}
+html[data-theme="dark"] .hero-slide--cover .hero-slide_bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(38, 40, 44, 0.8);
+}
+html[data-theme="dark"] .hero-slide--cover .hero-slide_glass {
+  background: linear-gradient(
+    90deg,
+    rgba(38, 40, 44, 0.9) 0%,
+    rgba(38, 40, 44, 0.72) 55%,
+    rgba(38, 40, 44, 0.3) 100%
+  );
+}
+html[data-theme="dark"][dir="rtl"] .hero-slide--cover .hero-slide_glass,
+html[data-theme="dark"]:root[dir="rtl"] .hero-slide--cover .hero-slide_glass {
+  background: linear-gradient(
+    270deg,
+    rgba(38, 40, 44, 0.9) 0%,
+    rgba(38, 40, 44, 0.72) 55%,
+    rgba(38, 40, 44, 0.3) 100%
+  );
+}
+@media (max-width: 767px) {
+  html[data-theme="dark"] .hero-slide--cover .hero-slide_glass,
+  html[data-theme="dark"]:root[dir="rtl"] .hero-slide--cover .hero-slide_glass {
+    background: rgba(38, 40, 44, 0.8);
+  }
+}
+html[data-theme="dark"] .hero-slider_play {
+  color: #26282c;
+  background: #fff;
+}
+html[data-theme="dark"] .hero-slider_dot.is-active::after {
+  background: #fff;
+}
+
+/* Staff dashboard welcome banners use light gradients */
+html[data-theme="dark"] .instructor-dashboard .instructor-welcome,
+html[data-theme="dark"] .instructor-welcome,
+html[data-theme="dark"] .admin-dashboard .admin-welcome {
+  background: linear-gradient(110deg, #3c3735, #303338 58%, #2b2d32);
+}
+
+/* Header controls */
+html[data-theme="dark"] .language-switcher {
+  color: var(--ctl-text);
+}
+html[data-theme="dark"] .language-switcher .language-switcher_trigger,
+html[data-theme="dark"] .notification-bell .notification-bell_trigger {
+  background: var(--surface-white);
+  border-color: var(--ctl-border);
+  color: var(--ctl-text);
+}
+html[data-theme="dark"] .language-switcher .language-switcher_trigger:hover,
+html[data-theme="dark"]
+  .language-switcher
+  .language-switcher_trigger[aria-expanded="true"],
+html[data-theme="dark"] .notification-bell .notification-bell_trigger:hover,
+html[data-theme="dark"]
+  .notification-bell
+  .notification-bell_trigger[aria-expanded="true"] {
+  background: var(--ctl-hover);
+  border-color: var(--brand-500);
+}
+html[data-theme="dark"] .language-switcher_menu,
+html[data-theme="dark"] .notification-bell_menu {
+  background: var(--surface-white);
+  border-color: var(--ctl-border);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+html[data-theme="dark"] .language-switcher .language-switcher_menu button {
+  color: var(--ctl-text);
+}
+html[data-theme="dark"] .language-switcher .language-switcher_menu button:hover,
+html[data-theme="dark"]
+  .language-switcher
+  .language-switcher_menu
+  button.is-selected {
+  background: var(--tint-brand);
+  color: var(--brand-700);
+}
+html[data-theme="dark"] .language-switcher_option-code {
+  background: var(--tint-neutral);
+  color: var(--ctl-text);
+}
+html[data-theme="dark"] .notification-bell_badge {
+  border-color: var(--surface-white);
+}
+
+/* Form fields & native controls */
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  color-scheme: dark;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: var(--faint);
+}
+
+/* Smooth switch, but not for people who asked for less motion */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease !important;
+  }
+}
+
+/* Text that was hard-coded as light-theme grey: map to readable dark tokens */
+html[data-theme="dark"] .accreditations_label {
+  color: var(--muted);
+}
+html[data-theme="dark"] .career-path_pathway > span:first-child {
+  color: var(--muted);
+}
+html[data-theme="dark"] .career-path_step-footer {
+  color: var(--muted);
+}
+html[data-theme="dark"] .career-path_step-phase {
+  color: var(--faint);
+}
+html[data-theme="dark"] .course-card_details span:first-child {
+  color: var(--faint);
+}
+html[data-theme="dark"] .course-card_instructor-title {
+  color: var(--faint);
+}
+html[data-theme="dark"] .course-card_price-label {
+  color: var(--faint);
+}
+html[data-theme="dark"] .enterprise_capability p {
+  color: var(--faint);
+}
+html[data-theme="dark"] .enterprise_cta {
+  color: var(--faint);
+}
+html[data-theme="dark"] .enterprise_dashboard-head p {
+  color: var(--faint);
+}
+html[data-theme="dark"] .landing-footer {
+  color: var(--faint);
+}
+html[data-theme="dark"] .landing-footer_bottom {
+  color: var(--muted);
+}
+html[data-theme="dark"] .landing-footer_meta {
+  color: var(--muted);
+}
+html[data-theme="dark"] .landing-page .accreditations_head p {
+  color: var(--muted);
+}
+html[data-theme="dark"] .landing-page .landing-footer_grid h4 {
+  color: var(--faint);
+}
+html[data-theme="dark"] .landing-page .partners_head p {
+  color: var(--muted);
+}
+html[data-theme="dark"] .notification-bell_body {
+  color: var(--muted);
+}
+html[data-theme="dark"] .notification-bell_body small {
+  color: var(--faint);
+}
+html[data-theme="dark"] .notification-bell_empty {
+  color: var(--muted);
+}
+html[data-theme="dark"] .notification-bell_list .notification-bell_delete {
+  color: var(--faint);
+}
+html[data-theme="dark"] .popular-categories_count {
+  color: var(--muted);
+}
+html[data-theme="dark"] .popular-categories_state {
+  color: var(--muted);
+}
+html[data-theme="dark"] .portal-preview_capability p {
+  color: var(--muted);
+}
+html[data-theme="dark"] .portal-preview_metric-box p {
+  color: var(--muted);
+}
+html[data-theme="dark"] .portal-preview_metric-box span {
+  color: var(--muted);
+}
+html[data-theme="dark"] .portal-preview_person p {
+  color: var(--muted);
+}
+html[data-theme="dark"] .portal-preview_stats span {
+  color: var(--faint);
+}
+html[data-theme="dark"] .send-notification header p {
+  color: var(--muted);
+}
+
+/* =====================================================================
+   Form fields: inset dark graphite (darker than the page) so they stop
+   looking like pale grey slabs. One token drives every field.
+   ===================================================================== */
+html[data-theme="dark"] {
+  --field-bg: #202226;
+  --field-border: #50545b;
+  --field-text: #f1f1f3;
+}
+
+html[data-theme="dark"]
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+    [type="file"]
+  ):not([type="color"]):not([type="submit"]):not([type="button"]),
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select,
+html[data-theme="dark"] .portal-ui_input,
+html[data-theme="dark"] .apply-dialog_input,
+html[data-theme="dark"] .catalog-toolbar_input-1,
+html[data-theme="dark"] .catalog-toolbar_select,
+html[data-theme="dark"] .career-paths_input-1,
+html[data-theme="dark"] .career-paths_select-1,
+html[data-theme="dark"] .staff-input,
+html[data-theme="dark"] .perm_search,
+html[data-theme="dark"] .portal-search,
+html[data-theme="dark"] .ui-select .ui-select_trigger,
+html[data-theme="dark"] .auth .otp_box,
+html[data-theme="dark"] .auth .otp_box:focus,
+html[data-theme="dark"] .auth .otp_box.is-filled {
+  background-color: var(--field-bg) !important;
+  color: var(--field-text) !important;
+  border-color: var(--field-border);
+}
+
+/* Search boxes whose inner <input> is transparent sit inside the wrapper above */
+html[data-theme="dark"] .perm_search input,
+html[data-theme="dark"] .portal-search input {
+  background-color: transparent !important;
+  border-color: transparent;
+}
+
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):focus,
+html[data-theme="dark"] textarea:focus,
+html[data-theme="dark"] select:focus,
+html[data-theme="dark"] .perm_search:focus-within,
+html[data-theme="dark"] .portal-search:focus-within {
+  border-color: var(--brand-400);
+  box-shadow: var(--ring);
+  outline: none;
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: var(--faint);
+  opacity: 1;
+}
+
+html[data-theme="dark"] input[disabled],
+html[data-theme="dark"] textarea[disabled],
+html[data-theme="dark"] select[disabled] {
+  background-color: #2a2c31 !important;
+  color: var(--faint) !important;
+}
+
+/* Custom select (trigger + dropdown) and native option lists */
+html[data-theme="dark"] select option {
+  background: #2b2d32;
+  color: var(--field-text);
+}
+html[data-theme="dark"] .ui-select .ui-select_trigger:focus-visible {
+  border-color: var(--brand-400);
+  box-shadow: var(--ring);
+}
+
+/* Browser autofill paints fields pale blue/white: repaint it graphite */
+html[data-theme="dark"] input:-webkit-autofill,
+html[data-theme="dark"] input:-webkit-autofill:hover,
+html[data-theme="dark"] input:-webkit-autofill:focus,
+html[data-theme="dark"] textarea:-webkit-autofill,
+html[data-theme="dark"] select:-webkit-autofill {
+  -webkit-text-fill-color: var(--field-text);
+  caret-color: var(--field-text);
+  box-shadow: 0 0 0 1000px var(--field-bg) inset;
+  transition: background-color 9999s ease-out 0s;
+}

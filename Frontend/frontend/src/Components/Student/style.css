@@ -1,0 +1,4 @@
+/* Student dashboard shell. Everything else comes from the shared Staff dashboard styles (.staff-*, .ov-*). */
+
+/* Two sidebar groups ("Student workspace" / "My account"): a little air between them. */
+.staff-side_group + .staff-side_group { margin-top: 1rem; }
